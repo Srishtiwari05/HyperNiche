@@ -1,0 +1,195 @@
+@import "tailwindcss";
+@source "../";
+@source "../../src";
+
+@custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *, .dark, .dark *));
+
+:root, [data-mode="light"] {
+  --font-sans: var(--font-archivo), 'Archivo', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --bg-primary: #FDF6EC;
+  --text-primary: #2B2622;
+  --text-secondary: #736B63;
+  --text-muted: #8F877E;
+  --bg-card: #FFFAF2;
+  --bg-card-subtle: #F8EFE3;
+  --border-primary: #EADFCF;
+  --border-subtle: #E2D5C3;
+  --accent: #F06A4D;
+  --accent-hover: #D95438;
+  --accent-soft: #FFE3D3;
+  --accent-soft-text: #2B2622;
+  --btn-primary-bg: #2B2622;
+  --btn-primary-text: #FDF6EC;
+  --input-bg: #FDF6EC;
+  --pill-bg: #FFE3D3;
+  --pill-text: #2B2622;
+  --badge-green-bg: #D9F2E6;
+  --badge-green-text: #1E4D38;
+  --badge-yellow-bg: #FFF0B8;
+  --badge-yellow-text: #5C4D0A;
+  --badge-pink-bg: #FFDBE6;
+  --badge-pink-text: #69182E;
+  --header-bg: rgba(253, 246, 236, 0.96);
+  --announcement-bg: #2B2622;
+  --announcement-text: #FDF6EC;
+  --modal-overlay: rgba(43, 38, 34, 0.65);
+}
+
+[data-mode="dark"] {
+  --bg-primary: #0B0B0B;
+  --text-primary: #EAE5DF;
+  --text-secondary: #A09A92;
+  --text-muted: #736E67;
+  --bg-card: #141414;
+  --bg-card-subtle: #1B1B1B;
+  --border-primary: #262626;
+  --border-subtle: #333333;
+  --accent: #B3121E;
+  --accent-hover: #960F19;
+  --accent-soft: #38161A;
+  --accent-soft-text: #FFE5E7;
+  --btn-primary-bg: #EAE5DF;
+  --btn-primary-text: #0B0B0B;
+  --input-bg: #181818;
+  --pill-bg: #38161A;
+  --pill-text: #FFE5E7;
+  --badge-green-bg: #18332A;
+  --badge-green-text: #D9F2E6;
+  --badge-yellow-bg: #36301A;
+  --badge-yellow-text: #FFF0B8;
+  --badge-pink-bg: #351D26;
+  --badge-pink-text: #FFDBE6;
+  --header-bg: rgba(11, 11, 11, 0.96);
+  --announcement-bg: #141414;
+  --announcement-text: #EAE5DF;
+  --modal-overlay: rgba(0, 0, 0, 0.8);
+}
+
+@theme {
+  --font-sans: 'Archivo', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --color-bg-primary: var(--bg-primary);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-bg-card: var(--bg-card);
+  --color-bg-card-subtle: var(--bg-card-subtle);
+  --color-border-primary: var(--border-primary);
+  --color-border-subtle: var(--border-subtle);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-soft-text: var(--accent-soft-text);
+  --color-btn-primary-bg: var(--btn-primary-bg);
+  --color-btn-primary-text: var(--btn-primary-text);
+  --color-input-bg: var(--input-bg);
+  --color-pill-bg: var(--pill-bg);
+  --color-pill-text: var(--pill-text);
+  --color-badge-green-bg: var(--badge-green-bg);
+  --color-badge-green-text: var(--badge-green-text);
+  --color-badge-yellow-bg: var(--badge-yellow-bg);
+  --color-badge-yellow-text: var(--badge-yellow-text);
+  --color-badge-pink-bg: var(--badge-pink-bg);
+  --color-badge-pink-text: var(--badge-pink-text);
+  --color-header-bg: var(--header-bg);
+  --color-announcement-bg: var(--announcement-bg);
+  --color-announcement-text: var(--announcement-text);
+}
+
+@layer base {
+  html, body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Archivo', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  *, ::before, ::after {
+    font-family: inherit;
+  }
+
+  button, input, select, textarea {
+    font-family: inherit !important;
+  }
+
+  h1, h2, h3, h4, h5, h6, nav, header, [class*="font-['Archivo']"] {
+    font-family: 'Archivo', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(150, 140, 130, 0.25);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(150, 140, 130, 0.4);
+}
+
+/* Aurora Northern Lights Background on First Page */
+@keyframes aurora-drift-mint {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(60px, -40px) scale(1.15);
+  }
+  100% {
+    transform: translate(-30px, 30px) scale(0.95);
+  }
+}
+
+@keyframes aurora-drift-lavender {
+  0% {
+    transform: translate(0, 0) scale(1.1);
+  }
+  50% {
+    transform: translate(-50px, 50px) scale(0.9);
+  }
+  100% {
+    transform: translate(40px, -20px) scale(1.05);
+  }
+}
+
+@keyframes aurora-drift-blush {
+  0% {
+    transform: translate(0, 0) scale(0.95);
+  }
+  50% {
+    transform: translate(30px, 45px) scale(1.1);
+  }
+  100% {
+    transform: translate(-40px, -30px) scale(1);
+  }
+}
+
+.aurora-blob-mint {
+  animation: aurora-drift-mint 22s ease-in-out infinite alternate;
+}
+
+.aurora-blob-lavender {
+  animation: aurora-drift-lavender 26s ease-in-out infinite alternate;
+}
+
+.aurora-blob-blush {
+  animation: aurora-drift-blush 20s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora-blob-mint,
+  .aurora-blob-lavender,
+  .aurora-blob-blush {
+    animation: none !important;
+  }
+}

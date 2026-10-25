@@ -1,0 +1,49 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: hyperniche-backend
+
+  datasource:
+    url: ${DATABASE_URL:jdbc:h2:file:./data/hyperniche;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE}
+    username: ${DATABASE_USER:sa}
+    password: ${DATABASE_PASSWORD:}
+    driver-class-name: ${DATABASE_DRIVER:org.h2.Driver}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 300000
+      max-lifetime: 1800000
+
+  jpa:
+    hibernate:
+      ddl-auto: ${HIBERNATE_DDL_AUTO:update}
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+supabase:
+  jwt:
+    secret: ${SUPABASE_JWT_SECRET:your-supabase-jwt-secret-placeholder}
+    issuer: ${SUPABASE_URL:https://xyzcompany.supabase.co}/auth/v1
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+  api-docs:
+    path: /v3/api-docs
+
+cors:
+  allowed-origins: ${FRONTEND_URL:http://localhost:3000}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics

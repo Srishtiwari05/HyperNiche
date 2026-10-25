@@ -1,0 +1,14 @@
+{
+  "name": "hyperniche-platform",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev:frontend": "npm --prefix frontend run dev",
+    "build:frontend": "npm --prefix frontend run build",
+    "lint:frontend": "npm --prefix frontend run lint",
+    "start:frontend": "npm --prefix frontend start"
+  },
+  "devDependencies": {
+    "@dietrichgebert/ponytail": "^5.3.2"
+  }
+}
