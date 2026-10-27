@@ -1,0 +1,16 @@
+{
+  "java.jdt.ls.java.home": "E:\\java_file\\IntelliJ IDEA Community Edition 2024.3.2.1\\jbr",
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-21",
+      "path": "E:\\java_file\\IntelliJ IDEA Community Edition 2024.3.2.1\\jbr",
+      "default": true
+    },
+    {
+      "name": "JavaSE-17",
+      "path": "E:\\java_file\\IntelliJ IDEA Community Edition 2024.3.2.1\\jbr"
+    }
+  ],
+  "java.import.maven.enabled": true,
+  "java.configuration.updateBuildConfiguration": "automatic"
+}

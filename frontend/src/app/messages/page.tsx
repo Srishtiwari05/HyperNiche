@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Conversation, Message } from "@/types";
 import { api } from "@/lib/api";
+import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { MessageSquare, Send, ShieldAlert, Sparkles } from "lucide-react";
@@ -21,9 +22,49 @@ export default function MessagesPage() {
   }, []);
 
   useEffect(() => {
-    if (selectedConversation) {
-      fetchMessages(selectedConversation.id);
-    }
+    if (!selectedConversation) return;
+    fetchMessages(selectedConversation.id);
+
+    // Subscribe to live Supabase Realtime broadcasts for this conversation
+    const channel = supabase
+      .channel(`chat_${selectedConversation.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
+          filter: `conversation_id=eq.${selectedConversation.id}`,
+        },
+        (payload) => {
+          const row = payload.new as any;
+          if (!row || !row.id) return;
+          setMessages((prev) => {
+            if (prev.some((m) => m.id === row.id)) return prev;
+            const senderName =
+              row.sender_id === selectedConversation.brandId
+                ? selectedConversation.brandName
+                : selectedConversation.creatorName;
+            const newMsg: Message = {
+              id: row.id,
+              conversationId: row.conversation_id,
+              senderId: row.sender_id,
+              senderName: senderName || "User",
+              messageText: row.message_text,
+              createdAt: row.created_at || new Date().toISOString(),
+              campaignId: selectedConversation.campaignId || "",
+              businessId: selectedConversation.brandId,
+              creatorId: selectedConversation.creatorId,
+            };
+            return [...prev, newMsg];
+          });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [selectedConversation]);
 
   async function fetchConversations() {

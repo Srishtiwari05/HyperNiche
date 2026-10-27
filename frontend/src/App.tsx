@@ -28,13 +28,13 @@ import { MyApplicationsView } from './components/MyApplicationsView';
 import { UserProfile, Campaign } from './types';
 
 const MainAppContent: React.FC = () => {
-  const { userProfile, isLoading, authError, retryAuth } = useAuth();
+  const { userProfile, currentUser, isLoading, authError, retryAuth } = useAuth();
   const { setSelectedCategory } = useMarketplace();
 
   // Navigation tab: 'browse' | 'my-campaigns' | 'applications' | 'messages' | 'profile'
   const [currentTab, setCurrentTab] = useState<
     'browse' | 'my-campaigns' | 'applications' | 'messages' | 'profile'
-  >('browse');
+  >('profile');
 
   // Currently viewed user profile (null = own profile)
   const [viewingUserProfile, setViewingUserProfile] = useState<UserProfile | null>(null);

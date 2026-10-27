@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-import { CheckCircle2, ShieldCheck, Sparkles, User as UserIcon } from "lucide-react";
+import { CheckCircle2, ShieldCheck, Sparkles, User as UserIcon, Camera, Loader2 } from "lucide-react";
+import { uploadMedia } from "@/lib/storage";
 
 export default function ProfilePage() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -20,10 +21,29 @@ export default function ProfilePage() {
   const [authLoading, setAuthLoading] = useState(false);
   const [authMsg, setAuthMsg] = useState("");
   const [verifying, setVerifying] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   useEffect(() => {
     loadUser();
   }, []);
+
+  async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingAvatar(true);
+    try {
+      const publicUrl = await uploadMedia(file, "avatars");
+      if (currentUser?.role === "CREATOR") {
+        await api.updateCreatorProfile({ avatarUrl: publicUrl });
+        setCreatorProfile((prev) => (prev ? { ...prev, avatarUrl: publicUrl } : prev));
+      }
+      setCurrentUser((prev) => (prev ? { ...prev, avatarUrl: publicUrl } : prev));
+    } catch (err: any) {
+      alert(err.message || "Upload failed");
+    } finally {
+      setUploadingAvatar(false);
+    }
+  }
 
   async function loadUser() {
     try {
@@ -124,17 +144,46 @@ export default function ProfilePage() {
       {currentUser ? (
         <div className="space-y-6">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle className="text-xl font-bold flex items-center gap-2">
-                  {currentUser.displayName}
-                  {creatorProfile?.isVerified && (
-                    <CheckCircle2 className="h-5 w-5 text-indigo-400 fill-indigo-400/20" />
-                  )}
-                </CardTitle>
-                <p className="text-xs text-zinc-400 mt-1">{currentUser.email}</p>
+            <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="relative group">
+                  <div className="h-16 w-16 rounded-full bg-zinc-800 border-2 border-indigo-500/50 flex items-center justify-center overflow-hidden">
+                    {creatorProfile?.avatarUrl || currentUser.avatarUrl ? (
+                      <img
+                        src={creatorProfile?.avatarUrl || currentUser.avatarUrl}
+                        alt="Avatar"
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <UserIcon className="h-8 w-8 text-zinc-400" />
+                    )}
+                  </div>
+                  <label className="absolute bottom-0 right-0 p-1 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white cursor-pointer shadow-lg">
+                    {uploadingAvatar ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Camera className="h-3.5 w-3.5" />
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarUpload}
+                      disabled={uploadingAvatar}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+                <div>
+                  <CardTitle className="text-xl font-bold flex items-center gap-2">
+                    {currentUser.displayName}
+                    {creatorProfile?.isVerified && (
+                      <CheckCircle2 className="h-5 w-5 text-indigo-400 fill-indigo-400/20" />
+                    )}
+                  </CardTitle>
+                  <p className="text-xs text-zinc-400 mt-1">{currentUser.email}</p>
+                </div>
               </div>
-              <Badge variant="default" className="text-sm px-3 py-1">
+              <Badge variant="default" className="text-sm px-3 py-1 self-start sm:self-auto">
                 {currentUser.role}
               </Badge>
             </CardHeader>

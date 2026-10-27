@@ -626,6 +626,60 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 </div>
               </div>
 
+              {/* SECTION: CREATOR PORTFOLIO & WORK SAMPLES */}
+              {!isBusiness && (
+                <div className="pt-6 border-t border-[var(--border-primary)]">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] font-['Archivo'] mb-0.5">
+                        Creator Portfolio & Work Samples
+                      </h2>
+                      <p className="text-xs text-[var(--text-secondary)]">
+                        Showcase your past brand integrations, viral reels, and content showreels.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-[var(--input-bg)] border border-[var(--border-primary)] space-y-3">
+                    {profile.portfolio ? (
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-lg bg-[var(--bg-card)] border border-[var(--border-primary)]">
+                        <div className="flex items-center gap-2.5 overflow-hidden">
+                          <Globe className="w-4 h-4 text-[var(--accent)] shrink-0" />
+                          <div className="truncate">
+                            <span className="text-xs font-bold text-[var(--text-primary)] block truncate">
+                              {profile.portfolio}
+                            </span>
+                            <span className="text-[10px] text-[var(--text-muted)]">Verified Showreel / Portfolio Link</span>
+                          </div>
+                        </div>
+                        <a
+                          href={profile.portfolio.startsWith('http') ? profile.portfolio : `https://${profile.portfolio}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--accent)] text-white text-xs font-bold hover:opacity-90 shrink-0 self-start sm:self-auto"
+                        >
+                          <span>Open Portfolio</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                      </div>
+                    ) : (
+                      <div className="text-center py-5 text-xs text-[var(--text-secondary)]">
+                        <span>No portfolio link attached yet.</span>
+                        {isOwnProfile && (
+                          <button
+                            type="button"
+                            onClick={startEditing}
+                            className="ml-2 text-[var(--accent)] font-bold hover:underline cursor-pointer"
+                          >
+                            Add portfolio link
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* SECTION: BRAND SEARCH (Creator's own profile) */}
               {!isBusiness && isOwnProfile && (
                 <div className="pt-6 border-t border-[var(--border-primary)]">

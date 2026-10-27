@@ -1,7 +1,7 @@
 import React from 'react';
 import { UserProfile } from '../types';
 import { VerificationBadge } from './VerificationBadge';
-import { MapPin, Send } from 'lucide-react';
+import { MapPin, Send, ExternalLink } from 'lucide-react';
 
 interface CreatorCardProps {
   creator: UserProfile;
@@ -82,7 +82,7 @@ export const CreatorCard: React.FC<CreatorCardProps> = ({ creator, onSendBrief, 
         </div>
 
         {/* Deliverable format & Location */}
-        <div className="flex items-center justify-between text-xs text-[var(--text-secondary)] mb-4 pb-3 border-b border-[var(--border-primary)]/60">
+        <div className="flex items-center justify-between text-xs text-[var(--text-secondary)] mb-3 pb-3 border-b border-[var(--border-primary)]/60">
           <span className="truncate pr-2 font-medium">
             Format: {creator.contentType || 'Reel + Story'}
           </span>
@@ -93,6 +93,21 @@ export const CreatorCard: React.FC<CreatorCardProps> = ({ creator, onSendBrief, 
             </span>
           )}
         </div>
+
+        {/* Creator Portfolio Link */}
+        {creator.portfolio && (
+          <div className="mb-3">
+            <a
+              href={creator.portfolio.startsWith('http') ? creator.portfolio : `https://${creator.portfolio}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-[11px] font-bold text-[var(--accent)] hover:underline"
+            >
+              <span>View Portfolio & Showreel</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
+        )}
       </div>
 
       {/* Bottom Footer: Send Collab Invitation button */}

@@ -19,7 +19,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
 import java.util.Map;
 import java.util.UUID;
 
@@ -84,12 +83,13 @@ public class SupabaseJwtAuthFilter extends OncePerRequestFilter {
     private UserPrincipal parseToken(String token) {
         try {
             if (StringUtils.hasText(jwtSecret) && !jwtSecret.contains("placeholder")) {
-                javax.crypto.SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
-                Claims claims = Jwts.parser()
-                        .verifyWith(key)
-                        .build()
-                        .parseSignedClaims(token)
-                        .getPayload();
+                Claims claims = null;
+                try {
+                    byte[] decoded = java.util.Base64.getDecoder().decode(jwtSecret.trim());
+                    claims = Jwts.parser().verifyWith(Keys.hmacShaKeyFor(decoded)).build().parseSignedClaims(token).getPayload();
+                } catch (Exception ex) {
+                    claims = Jwts.parser().verifyWith(Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8))).build().parseSignedClaims(token).getPayload();
+                }
 
                 String sub = claims.getSubject();
                 if (sub != null) {

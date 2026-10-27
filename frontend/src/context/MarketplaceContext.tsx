@@ -316,7 +316,28 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
         setCampaigns((prev) => [normalizeCampaign(created), ...prev.filter((c) => c.id !== newId)]);
       }
     } catch {
-      // Local optimistic fallback is maintained
+      // Backend unavailable — save directly to Supabase so it persists for all users
+      try {
+        const { data: sbRow, error: sbErr } = await supabase.from('campaigns').insert({
+          id: newId,
+          business_id: newCampaign.businessId,
+          business_name: newCampaign.businessName,
+          business_handle: newCampaign.businessHandle,
+          title: newCampaign.title,
+          description: newCampaign.description,
+          category: newCampaign.category,
+          platform: newCampaign.platforms[0] || 'Instagram Reels',
+          budget_inr: newCampaign.budget,
+          requirements: newCampaign.requirements || '',
+          deadline: newCampaign.deadline || '2027-12-31',
+          status: 'open',
+          created_at: newCampaign.createdAt,
+        }).select().maybeSingle();
+        if (!sbErr && sbRow) {
+          setCampaigns((prev) => [normalizeCampaign(sbRow), ...prev.filter((c) => c.id !== newId)]);
+        }
+        // If Supabase also fails, the optimistic local entry stays visible for this session
+      } catch { /* optimistic local state remains */ }
     }
   };
 

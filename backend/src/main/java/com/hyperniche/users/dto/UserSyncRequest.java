@@ -16,5 +16,8 @@ public record UserSyncRequest(
     String niche,
     Integer followersCount,
     String websiteUrl,
-    BigDecimal rateReelInr
+    BigDecimal rateReelInr,
+    String companyName,
+    String industry,
+    String whatYouSell
 ) {}

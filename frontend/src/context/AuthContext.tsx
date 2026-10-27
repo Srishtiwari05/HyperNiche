@@ -84,7 +84,7 @@ export interface AuthContextType {
       whatYouSell?: string;
     }
   ) => Promise<void>;
-  exploreAsGuest: (guestRole?: UserRole) => void;
+  // exploreAsGuest removed — no guest mode
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -122,7 +122,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (typeof window === 'undefined') return null;
     try {
       const data = localStorage.getItem(LOCAL_STORAGE_PROFILE_KEY);
-      return data ? JSON.parse(data) : null;
+      if (!data) return null;
+      const parsed = JSON.parse(data);
+      if (parsed?.id?.startsWith('guest_')) {
+        localStorage.removeItem(LOCAL_STORAGE_PROFILE_KEY);
+        return null;
+      }
+      return parsed;
     } catch {
       return null;
     }
@@ -130,7 +136,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const loadUserProfile = async (user: AuthUser) => {
     try {
-      // 1. Try fetching from Supabase table or backend API
+      // 1. Fetch the auth row from Supabase
       const { data: dbUser } = await supabase
         .from('users')
         .select('*')
@@ -138,16 +144,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .maybeSingle();
 
       if (dbUser) {
-        const activeRole = (dbUser.role?.toLowerCase() || 'creator') as UserRole;
+        // Merge: DB is authoritative for auth fields; cached localStorage holds
+        // the full profile (handle, niche, creatorProfile, businessProfile, etc.)
+        const cached = getProfileLocally();
+        const isSameUser = cached && (cached.id === user.id || cached.email === (dbUser.email || user.email));
+        const activeRole = (dbUser.role?.toLowerCase() || cached?.role || 'creator') as UserRole;
+        const base = isSameUser ? cached! : {};
+
+        // Parse profile_json column if it exists (future-proof)
+        let fromDb: Partial<UserProfile> = {};
+        if (dbUser.profile_json) {
+          try { fromDb = JSON.parse(dbUser.profile_json); } catch { /* ignore */ }
+        }
+
         const profile: UserProfile = {
+          ...base,
+          ...fromDb,
           id: dbUser.id,
           role: activeRole,
           activeRole,
-          lastActiveRole: activeRole,
-          roles: [activeRole],
+          lastActiveRole: (base as UserProfile).lastActiveRole || activeRole,
+          roles: (base as UserProfile).roles?.length ? (base as UserProfile).roles! : [activeRole],
           email: dbUser.email || user.email || '',
-          name: dbUser.display_name || user.email?.split('@')[0] || 'User',
-          handle: `@${(dbUser.display_name || user.email?.split('@')[0] || 'user').toLowerCase().replace(/\s+/g, '')}`,
+          name: dbUser.display_name || (base as UserProfile).name || user.email?.split('@')[0] || 'User',
+          handle: (base as UserProfile).handle || `@${(dbUser.display_name || user.email?.split('@')[0] || 'user').toLowerCase().replace(/\s+/g, '')}`,
           isVerified: Boolean(dbUser.is_verified),
           verified: Boolean(dbUser.is_verified),
           createdAt: dbUser.created_at || new Date().toISOString(),
@@ -169,9 +189,57 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
 
-      // 3. Needs profile completion
-      setUserProfile(null);
-      setNeedsProfileCompletion(true);
+      // 3. Fallback: build a complete profile from user metadata and email
+      const rawRole = (user.user_metadata?.role || 'creator').toLowerCase();
+      const activeRole: UserRole = rawRole.includes('biz') || rawRole.includes('business') ? 'business' : 'creator';
+      const displayName = user.user_metadata?.displayName || user.user_metadata?.name || user.email?.split('@')[0] || 'User';
+      const cleanHandle = `@${displayName.toLowerCase().replace(/[^a-z0-9_]/g, '') || 'user'}`;
+
+      const fallbackProfile: UserProfile = {
+        id: user.id,
+        role: activeRole,
+        activeRole,
+        lastActiveRole: activeRole,
+        roles: [activeRole],
+        hasBusinessProfile: activeRole === 'business',
+        hasCreatorProfile: activeRole === 'creator',
+        email: user.email || '',
+        name: displayName,
+        handle: cleanHandle,
+        followers: user.user_metadata?.followers || '10K-50K',
+        niche: user.user_metadata?.niche || 'Fashion & Lifestyle',
+        websiteOrInstagram: user.user_metadata?.websiteOrInstagram || '',
+        whatYouSell: user.user_metadata?.whatYouSell || 'Direct to Consumer',
+        bio: 'Hyperniche member',
+        platform: 'Instagram Reels',
+        contentType: 'Reels & Stories',
+        letBrandsFindMe: true,
+        isVerified: false,
+        verified: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      if (activeRole === 'business') {
+        fallbackProfile.businessProfile = {
+          name: displayName,
+          handle: cleanHandle,
+          websiteOrInstagram: '',
+          whatYouSell: 'Direct to Consumer',
+        };
+      } else {
+        fallbackProfile.creatorProfile = {
+          name: displayName,
+          handle: cleanHandle,
+          followers: '10K-50K',
+          niche: 'Fashion & Lifestyle',
+          minRate: 25000,
+        };
+      }
+
+      setUserProfile(fallbackProfile);
+      saveProfileLocally(fallbackProfile);
+      setNeedsProfileCompletion(false);
       setAuthError(null);
     } catch (err: any) {
       console.warn('Error fetching Supabase user profile:', err);
@@ -180,7 +248,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUserProfile(cached);
         setNeedsProfileCompletion(false);
       } else {
-        setNeedsProfileCompletion(true);
+        const rawRole = (user.user_metadata?.role || 'creator').toLowerCase();
+        const activeRole: UserRole = rawRole.includes('biz') || rawRole.includes('business') ? 'business' : 'creator';
+        const displayName = user.user_metadata?.displayName || user.email?.split('@')[0] || 'User';
+        const cleanHandle = `@${displayName.toLowerCase().replace(/[^a-z0-9_]/g, '') || 'user'}`;
+        const fallbackProfile: UserProfile = {
+          id: user.id,
+          role: activeRole,
+          activeRole,
+          lastActiveRole: activeRole,
+          roles: [activeRole],
+          hasBusinessProfile: activeRole === 'business',
+          hasCreatorProfile: activeRole === 'creator',
+          email: user.email || '',
+          name: displayName,
+          handle: cleanHandle,
+          followers: '10K-50K',
+          niche: 'Fashion & Lifestyle',
+          websiteOrInstagram: '',
+          whatYouSell: '',
+          isVerified: false,
+          verified: false,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        setUserProfile(fallbackProfile);
+        saveProfileLocally(fallbackProfile);
+        setNeedsProfileCompletion(false);
       }
     }
   };
@@ -191,13 +285,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Safety timeout so UI never hangs
     timerId = setTimeout(() => {
-      if (isMounted && isLoading) {
+      if (isMounted) {
         setIsLoading(false);
       }
-    }, 4000);
+    }, 1500);
 
-    // Initial check
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Initial check with 1.5s timeout fallback
+    const sessionPromise = supabase.auth.getSession();
+    const timeoutPromise = new Promise<{ data: { session: null } }>((resolve) =>
+      setTimeout(() => resolve({ data: { session: null } }), 1500)
+    );
+
+    Promise.race([sessionPromise, timeoutPromise]).then(({ data: { session } }) => {
       if (!isMounted) return;
       if (session?.user) {
         const user: AuthUser = {
@@ -212,8 +311,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
       } else {
         const cached = getProfileLocally();
-        if (cached && (cached.id?.startsWith('guest_') || cached.id?.startsWith('user_'))) {
+        if (cached && !cached.id?.startsWith('guest_')) {
+          setCurrentUser({
+            id: cached.id,
+            uid: cached.id,
+            email: cached.email,
+            user_metadata: { role: cached.role?.toUpperCase(), displayName: cached.name },
+          });
           setUserProfile(cached);
+        } else {
+          setCurrentUser(null);
+          setUserProfile(null);
         }
         setIsLoading(false);
       }
@@ -222,7 +330,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (isMounted) setIsLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!isMounted) return;
       if (session?.user) {
         const user: AuthUser = {
@@ -233,9 +341,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         };
         setCurrentUser(user);
         await loadUserProfile(user);
-      } else {
+      } else if (event === 'SIGNED_OUT') {
         setCurrentUser(null);
-        setUserProfile((prev) => (prev?.id?.startsWith('guest_') ? prev : null));
+        setUserProfile(null);
+        saveProfileLocally(null);
       }
       setIsLoading(false);
     });
@@ -377,6 +486,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           role: targetRole.toUpperCase(),
           display_name: updated.name,
           updated_at: updated.updatedAt,
+          profile_json: JSON.stringify(updated),
         });
       } catch (err) {
         console.warn('Supabase role setup update note:', err);
@@ -455,6 +565,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         followersCount: followersCount || 10000,
         websiteUrl: newProfile.websiteOrInstagram || '',
         bio: newProfile.bio || '',
+        companyName: newProfile.name,
+        industry: newProfile.whatYouSell || newProfile.niche || '',
+        whatYouSell: newProfile.whatYouSell || '',
       }).catch(() => null);
 
       await supabase.from('users').upsert({
@@ -463,6 +576,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         role: targetRole.toUpperCase(),
         display_name: newProfile.name,
         updated_at: newProfile.updatedAt,
+        // Store full profile so re-login restores everything
+        profile_json: JSON.stringify(newProfile),
       });
 
       setUserProfile(newProfile as UserProfile);
@@ -514,6 +629,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       const uid = authData.user?.id || `user_${Date.now()}`;
+      const authUser: AuthUser = {
+        id: uid,
+        uid: uid,
+        email: email.trim(),
+        user_metadata: {
+          role: role.toUpperCase(),
+          displayName: extra.name || (role === 'business' ? 'Business Partner' : 'Creator User'),
+        },
+      };
+      setCurrentUser(authUser);
+
       const newProfile: any = {
         id: uid,
         role,
@@ -559,6 +685,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       setUserProfile(newProfile as UserProfile);
       saveProfileLocally(newProfile as UserProfile);
+      setNeedsProfileCompletion(false);
 
       // Sync with DB & backend
       try {
@@ -573,6 +700,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           followersCount: followersCount || 10000,
           websiteUrl: newProfile.websiteOrInstagram || '',
           bio: newProfile.bio || '',
+          companyName: newProfile.name,
+          industry: newProfile.whatYouSell || newProfile.niche || '',
+          whatYouSell: newProfile.whatYouSell || '',
         }).catch(() => null);
 
         await supabase.from('users').upsert({
@@ -581,6 +711,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           role: role.toUpperCase(),
           display_name: newProfile.name,
           updated_at: newProfile.updatedAt,
+          // Store full profile so re-login restores everything
+          profile_json: JSON.stringify(newProfile),
         });
       } catch {
         // ignore
@@ -604,7 +736,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (error) {
-        throw new Error('Email or password is incorrect');
+        if (error.message?.toLowerCase().includes('email not confirmed')) {
+          throw new Error('Please confirm your email address or turn off "Confirm email" in Supabase Auth settings.');
+        }
+        throw new Error(error.message || 'Invalid email or password.');
       }
 
       if (data.user) {
@@ -619,7 +754,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     } catch (err: any) {
       console.warn('Sign in failed:', err);
-      throw new Error('Email or password is incorrect');
+      throw err;
     } finally {
       setIsLoading(false);
     }
@@ -655,6 +790,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await supabase.from('users').update({
           display_name: updated.name,
           updated_at: updated.updatedAt,
+          profile_json: JSON.stringify(updated),
         }).eq('id', currentUser.id);
       } catch (err) {
         console.warn('Supabase profile update note:', err);
@@ -666,51 +802,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!userProfile) return;
     const newRole: UserRole = userProfile.role === 'business' ? 'creator' : 'business';
     switchActiveRole(newRole);
-  };
-
-  const exploreAsGuest = (guestRole: UserRole = 'business') => {
-    const isBiz = guestRole === 'business' || guestRole === 'BRAND';
-    const guestProfile: UserProfile = {
-      id: isBiz ? 'guest_brand' : 'guest_creator',
-      role: isBiz ? 'business' : 'creator',
-      activeRole: isBiz ? 'business' : 'creator',
-      lastActiveRole: isBiz ? 'business' : 'creator',
-      name: isBiz ? 'Guest Business' : 'Guest Creator',
-      handle: isBiz ? '@guestbrand' : '@guestcreator',
-      email: isBiz ? 'guest@business.local' : 'guest@creator.local',
-      whatYouSell: isBiz ? 'Consumer Brands' : undefined,
-      websiteOrInstagram: isBiz ? '@guestbrand' : '@guestcreator',
-      niche: !isBiz ? 'Lifestyle' : 'Consumer Goods',
-      followers: !isBiz ? '25K' : undefined,
-      minRate: !isBiz ? 15000 : undefined,
-      bio: isBiz 
-        ? 'Exploring brand partnerships and verified creator discovery on Hyperniche.'
-        : 'Creator exploring active brand briefs and marketplace campaigns.',
-      isVerified: false,
-      verified: false,
-      hasBusinessProfile: true,
-      hasCreatorProfile: true,
-      creatorProfile: {
-        name: 'Guest Creator',
-        handle: '@guestcreator',
-        followers: '25K',
-        niche: 'Lifestyle',
-        minRate: 15000,
-        city: 'Mumbai',
-        bio: 'Creator exploring active brand briefs and marketplace campaigns.',
-      },
-      businessProfile: {
-        name: 'Guest Business',
-        handle: '@guestbrand',
-        websiteOrInstagram: '@guestbrand',
-        whatYouSell: 'Consumer Brands',
-        city: 'Mumbai',
-        bio: 'Exploring brand partnerships and verified creator discovery on Hyperniche.',
-      },
-    };
-    setUserProfile(guestProfile);
-    saveProfileLocally(guestProfile);
-    setIsLoading(false);
   };
 
   return (
@@ -731,7 +822,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         switchActiveRole,
         completeRoleSetup,
         completeProfileForCurrentUser,
-        exploreAsGuest,
       }}
     >
       {children}

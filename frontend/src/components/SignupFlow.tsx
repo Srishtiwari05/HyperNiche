@@ -32,7 +32,6 @@ export const SignupFlow: React.FC = () => {
     signIn, 
     needsProfileCompletion, 
     completeProfileForCurrentUser,
-    exploreAsGuest,
   } = useAuth();
 
   // Slide state: 1 to 4 (always starts on Step 1 "Who are you?")
@@ -271,13 +270,6 @@ export const SignupFlow: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => exploreAsGuest('business')}
-              className="px-3.5 py-1.5 rounded-xl bg-[var(--accent)] text-white text-xs font-bold hover:opacity-90 transition-all cursor-pointer shadow-xs flex items-center gap-1.5"
-            >
-              <span>⚡ Explore Marketplace</span>
-            </button>
             <ThemeToggle />
           </div>
         </div>
@@ -377,31 +369,6 @@ export const SignupFlow: React.FC = () => {
                   <ArrowRight className="w-3.5 h-3.5" />
                 </div>
               </button>
-            </div>
-
-            {/* Quick Guest Exploration Buttons */}
-            <div className="mt-8 pt-6 border-t border-[var(--border-primary)] text-center">
-              <p className="text-xs text-[var(--text-secondary)] mb-3">
-                Want to preview the marketplace, active campaigns & creators first?
-              </p>
-              <div className="flex flex-wrap items-center justify-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => exploreAsGuest('business')}
-                  className="px-4 py-2 rounded-xl bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] text-xs font-bold hover:opacity-90 transition-all cursor-pointer shadow-xs flex items-center gap-2"
-                >
-                  <Building2 className="w-4 h-4 text-[var(--accent)]" />
-                  <span>Explore as Brand</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => exploreAsGuest('creator')}
-                  className="px-4 py-2 rounded-xl border border-[var(--border-primary)] bg-[var(--bg-card)] hover:border-[var(--accent)] text-xs font-bold text-[var(--text-primary)] transition-all cursor-pointer shadow-2xs flex items-center gap-2"
-                >
-                  <User className="w-4 h-4 text-emerald-500" />
-                  <span>Explore as Creator</span>
-                </button>
-              </div>
             </div>
           </div>
         )}

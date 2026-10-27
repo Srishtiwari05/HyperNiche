@@ -1,5 +1,7 @@
 package com.hyperniche.users;
 
+import com.hyperniche.brands.BrandProfile;
+import com.hyperniche.brands.BrandRepository;
 import com.hyperniche.creators.CreatorProfile;
 import com.hyperniche.creators.CreatorRepository;
 import com.hyperniche.users.dto.UserResponse;
@@ -14,10 +16,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final CreatorRepository creatorRepository;
+    private final BrandRepository brandRepository;
 
-    public UserService(UserRepository userRepository, CreatorRepository creatorRepository) {
+    public UserService(UserRepository userRepository, CreatorRepository creatorRepository, BrandRepository brandRepository) {
         this.userRepository = userRepository;
         this.creatorRepository = creatorRepository;
+        this.brandRepository = brandRepository;
     }
 
     @Transactional(readOnly = true)
@@ -72,6 +76,25 @@ public class UserService {
                 cp.setRateReelInr(request.rateReelInr());
             }
             creatorRepository.save(cp);
+        } else if ("BRAND".equalsIgnoreCase(saved.getRole()) || "BUSINESS".equalsIgnoreCase(saved.getRole())) {
+            BrandProfile bp = brandRepository.findById(saved.getId()).orElseGet(() -> {
+                BrandProfile newBp = new BrandProfile(saved.getId());
+                newBp.setUser(saved);
+                return newBp;
+            });
+            bp.setCompanyName(request.companyName() != null && !request.companyName().isBlank() ? request.companyName() : saved.getDisplayName());
+            if (request.industry() != null && !request.industry().isBlank()) {
+                bp.setIndustry(request.industry());
+            }
+            if (request.websiteUrl() != null && !request.websiteUrl().isBlank()) {
+                bp.setWebsiteUrl(request.websiteUrl());
+            }
+            if (request.whatYouSell() != null && !request.whatYouSell().isBlank()) {
+                bp.setDescription(request.whatYouSell());
+            } else if (saved.getBio() != null) {
+                bp.setDescription(saved.getBio());
+            }
+            brandRepository.save(bp);
         }
 
         return UserResponse.fromEntity(saved);
