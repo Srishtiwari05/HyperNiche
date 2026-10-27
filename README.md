@@ -75,14 +75,13 @@ Create a **Web Service** from this repository with:
 - **Dockerfile Path:** `./Dockerfile`
 - **Health Check Path:** `/actuator/health`
 
-Set these environment variables in Render. Use your PostgreSQL provider's connection details; `DATABASE_URL` must be a JDBC URL:
+First create a **Render PostgreSQL** database in the same region as the web service. In its **Connect** details, use the internal host, database name, username, and password. Add these environment variables to the web service:
 
-- `DATABASE_URL`: `jdbc:postgresql://<host>:5432/<database>?sslmode=require`
-- `DATABASE_USER`
-- `DATABASE_PASSWORD`
-- `DATABASE_DRIVER`: `org.postgresql.Driver`
+- `DATABASE_URL`: `jdbc:postgresql://<internal-host>:5432/<database>`
+- `DATABASE_USER`: the PostgreSQL user shown in Render
+- `DATABASE_PASSWORD`: the PostgreSQL password shown in Render
 - `SUPABASE_URL`
 - `SUPABASE_JWT_SECRET`
 - `FRONTEND_URL`: your deployed frontend origin
 
-Render supplies `PORT`; the backend listens on it automatically. Do not use the default file-based H2 database for production because Render's container filesystem is ephemeral.
+The Render Docker image always activates the `render` profile, which requires the PostgreSQL settings above and cannot fall back to H2. Render supplies `PORT`; the backend listens on it automatically. Keep H2 for local development only. If the service has already run against a temporary database, its data will not transfer automatically; migrate or import it into PostgreSQL before switching the frontend to this backend.
