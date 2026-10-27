@@ -65,3 +65,24 @@ cd frontend
 npm run dev
 # Application available at: http://localhost:3000
 ```
+
+## Deploying the Backend to Render
+
+Create a **Web Service** from this repository with:
+
+- **Root Directory:** `backend`
+- **Runtime:** Docker
+- **Dockerfile Path:** `./Dockerfile`
+- **Health Check Path:** `/actuator/health`
+
+Set these environment variables in Render. Use your PostgreSQL provider's connection details; `DATABASE_URL` must be a JDBC URL:
+
+- `DATABASE_URL`: `jdbc:postgresql://<host>:5432/<database>?sslmode=require`
+- `DATABASE_USER`
+- `DATABASE_PASSWORD`
+- `DATABASE_DRIVER`: `org.postgresql.Driver`
+- `SUPABASE_URL`
+- `SUPABASE_JWT_SECRET`
+- `FRONTEND_URL`: your deployed frontend origin
+
+Render supplies `PORT`; the backend listens on it automatically. Do not use the default file-based H2 database for production because Render's container filesystem is ephemeral.
