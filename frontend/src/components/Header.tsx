@@ -69,7 +69,7 @@ export const Header: React.FC<HeaderProps> = ({
     <>
       <header className="sticky top-0 z-40 bg-[var(--header-bg)] backdrop-blur-md border-b border-[var(--border-primary)] transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-[76px] gap-6 sm:gap-8">
+          <div className="flex items-center justify-between h-[68px] sm:h-[76px] gap-3 sm:gap-8 min-w-0">
             
             {/* Logo & Role block (Logo on top, plain text role label under logo) */}
             <div className="flex flex-col items-start justify-center shrink-0">
@@ -194,8 +194,12 @@ export const Header: React.FC<HeaderProps> = ({
                       : 'hover:bg-[var(--border-primary)]/30 border border-transparent hover:border-[var(--border-primary)]'
                   }`}
                 >
-                  <div className="w-7 h-7 rounded-lg bg-[var(--accent-soft)] text-[var(--accent)] flex items-center justify-center font-bold text-xs border border-[var(--border-primary)]">
-                    {userProfile.name.charAt(0).toUpperCase()}
+                  <div className="w-7 h-7 rounded-lg bg-[var(--accent-soft)] text-[var(--accent)] flex items-center justify-center font-bold text-xs border border-[var(--border-primary)] overflow-hidden">
+                    {userProfile.avatarUrl ? (
+                      <img src={userProfile.avatarUrl} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      userProfile.name.charAt(0).toUpperCase()
+                    )}
                   </div>
                   <div className="hidden lg:flex flex-col text-left leading-tight">
                     <div className="flex items-center gap-1">
@@ -225,7 +229,7 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Mobile Navigation bar */}
-          <div className="flex md:hidden items-center justify-between py-2 border-t border-[var(--border-primary)] overflow-x-auto space-x-2 text-xs">
+          <div className="flex md:hidden items-center justify-between py-2 border-t border-[var(--border-primary)] overflow-x-auto space-x-2 text-xs no-scrollbar">
             <button
               onClick={() => setCurrentTab('browse')}
               className={`px-3 py-1 font-semibold rounded-lg whitespace-nowrap ${

@@ -17,7 +17,7 @@ export const CreatorCard: React.FC<CreatorCardProps> = ({ creator, onSendBrief, 
   const avatarBg = pastelBgList[colorIndex];
 
   return (
-    <div className="bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl p-5 hover:-translate-y-0.5 hover:shadow-xs transition-all duration-200 flex flex-col justify-between group">
+    <div className="bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl p-5 hover:-translate-y-0.5 hover:shadow-xs hover:border-[var(--accent)]/30 transition-all duration-200 flex flex-col justify-between group">
       <div>
         {/* Top Header: Avatar + Name + Verification + Niche */}
         <div className="flex items-start justify-between gap-3 mb-3.5">
@@ -26,10 +26,14 @@ export const CreatorCard: React.FC<CreatorCardProps> = ({ creator, onSendBrief, 
               type="button"
               onClick={() => onViewProfile && onViewProfile(creator)}
               style={{ backgroundColor: avatarBg }}
-              className="w-11 h-11 rounded-xl flex items-center justify-center font-bold text-base text-[#2B2622] border border-[var(--border-primary)] shrink-0 font-['Archivo'] hover:opacity-90 cursor-pointer transition-opacity"
+              className="w-11 h-11 rounded-xl flex items-center justify-center font-bold text-base text-[#2B2622] border border-[var(--border-primary)] shrink-0 font-['Archivo'] hover:opacity-90 cursor-pointer transition-opacity overflow-hidden"
               title="View profile"
             >
-              {creator.name.charAt(0).toUpperCase()}
+              {creator.avatarUrl ? (
+                <img src={creator.avatarUrl} alt="" className="w-full h-full object-cover" />
+              ) : (
+                creator.name.charAt(0).toUpperCase()
+              )}
             </button>
             <div>
               <div className="flex items-center gap-1.5 flex-wrap">

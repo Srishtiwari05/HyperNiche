@@ -20,7 +20,9 @@ public record CampaignResponse(
     LocalDate deadline,
     String status,
     Integer applicationsCount,
-    Instant createdAt
+    Instant createdAt,
+    String imageUrl,
+    String contentType
 ) {
     public static CampaignResponse fromEntity(Campaign c) {
         String name = c.getBrand() != null ? c.getBrand().getDisplayName() : "";
@@ -40,7 +42,9 @@ public record CampaignResponse(
             c.getDeadline(),
             c.getStatus(),
             c.getApplicationsCount(),
-            c.getCreatedAt()
+            c.getCreatedAt(),
+            c.getImageUrl(),
+            c.getContentType()
         );
     }
 }

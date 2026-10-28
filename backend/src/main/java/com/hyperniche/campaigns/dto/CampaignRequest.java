@@ -13,5 +13,7 @@ public record CampaignRequest(
     @NotBlank String platform,
     @NotNull @DecimalMin("1.00") BigDecimal budgetInr,
     String requirements,
-    LocalDate deadline
+    LocalDate deadline,
+    String imageUrl,
+    String contentType
 ) {}

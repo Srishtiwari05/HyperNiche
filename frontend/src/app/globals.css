@@ -186,10 +186,47 @@
   animation: aurora-drift-blush 20s ease-in-out infinite alternate;
 }
 
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.motion-fade-up {
+  animation: fade-up 0.45s ease both;
+}
+
+.skeleton-card {
+  background: linear-gradient(90deg, var(--bg-card-subtle) 0%, var(--bg-card) 50%, var(--bg-card-subtle) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .aurora-blob-mint,
   .aurora-blob-lavender,
-  .aurora-blob-blush {
+  .aurora-blob-blush,
+  .motion-fade-up,
+  .skeleton-card {
     animation: none !important;
   }
 }

@@ -56,8 +56,12 @@ public class UserService {
             user.setRole(roleStr);
         }
         user.setDisplayName(request.displayName());
-        user.setAvatarUrl(request.avatarUrl());
-        user.setBio(request.bio());
+        if (request.avatarUrl() != null && !request.avatarUrl().isBlank()) {
+            user.setAvatarUrl(request.avatarUrl());
+        }
+        if (request.bio() != null) {
+            user.setBio(request.bio());
+        }
 
         User saved = userRepository.save(user);
 

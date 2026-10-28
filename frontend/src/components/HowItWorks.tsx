@@ -80,7 +80,7 @@ export const HowItWorks: React.FC = () => {
           {steps.map((s) => (
             <div
               key={s.num}
-              className="bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl p-6 relative hover:-translate-y-0.5 hover:shadow-2xs transition-all flex flex-col justify-between"
+              className="bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl p-6 relative hover:-translate-y-0.5 hover:shadow-2xs hover:border-[var(--accent)]/25 transition-all flex flex-col justify-between motion-fade-up"
             >
               <div>
                 <div className="flex items-center justify-between mb-4">

@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { useMarketplace } from '../context/MarketplaceContext';
 import { Campaign } from '../types';
 import { CATEGORIES } from '../config/categories';
-import { X, Check, IndianRupee, AlertCircle, Calendar } from 'lucide-react';
+import { X, Check, AlertCircle, ImagePlus } from 'lucide-react';
+import { uploadMedia } from '../lib/storage';
+import { toIsoDate } from '../lib/utils';
 
 interface CreateCampaignModalProps {
   isOpen: boolean;
@@ -35,12 +37,14 @@ export const CreateCampaignModal: React.FC<CreateCampaignModalProps> = ({ isOpen
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(
     initialCampaign?.platforms?.length ? initialCampaign.platforms : ['Instagram Reels']
   );
-  const [deadline, setDeadline] = useState('');
+  const [deadline, setDeadline] = useState(toIsoDate(initialCampaign?.deadline || initialCampaign?.submissionDeadline) || '');
   const [contentType, setContentType] = useState(initialCampaign?.contentType ?? '1x 60s Reel + 2x Stories');
   const [description, setDescription] = useState(initialCampaign?.description ?? '');
   const [requirements, setRequirements] = useState(initialCampaign?.requirements ?? '');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState(initialCampaign?.imageUrl || '');
 
   if (!isOpen) return null;
 
@@ -85,24 +89,15 @@ export const CreateCampaignModal: React.FC<CreateCampaignModalProps> = ({ isOpen
       return;
     }
 
-    // Format deadline for readable display (e.g. "Apr 30, 2026")
-    let displayDeadline = deadline;
-    try {
-      const parts = deadline.split('-');
-      if (parts.length === 3) {
-        const d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
-        displayDeadline = d.toLocaleDateString('en-US', {
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric',
-        });
-      }
-    } catch {
-      displayDeadline = deadline;
-    }
+    const isoDeadline = toIsoDate(deadline) || deadline;
 
     setIsSubmitting(true);
     try {
+      let imageUrl = initialCampaign?.imageUrl || '';
+      if (imageFile) {
+        imageUrl = await uploadMedia(imageFile, 'campaigns');
+      }
+
       if (isEditing && initialCampaign) {
         await updateCampaign(initialCampaign.id, {
           title: title.trim(),
@@ -110,10 +105,11 @@ export const CreateCampaignModal: React.FC<CreateCampaignModalProps> = ({ isOpen
           budget: parsedBudget,
           platforms: selectedPlatforms,
           platform: selectedPlatforms.join(', '),
-          deadline: displayDeadline || initialCampaign.deadline,
+          deadline: isoDeadline || initialCampaign.deadline,
           contentType: contentType.trim(),
           description: description.trim(),
           requirements: requirements.trim() || undefined,
+          imageUrl,
         });
       } else {
         await createCampaign({
@@ -122,11 +118,12 @@ export const CreateCampaignModal: React.FC<CreateCampaignModalProps> = ({ isOpen
           budget: parsedBudget,
           platforms: selectedPlatforms,
           platform: selectedPlatforms.join(', '),
-          deadline: displayDeadline,
+          deadline: isoDeadline,
           contentType: contentType.trim(),
           description: description.trim(),
           requirements: requirements.trim() || undefined,
           status: 'open',
+          imageUrl,
         });
       }
       onClose();
@@ -283,6 +280,39 @@ export const CreateCampaignModal: React.FC<CreateCampaignModalProps> = ({ isOpen
                 );
               })}
             </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold mb-1 text-[var(--text-primary)]">
+              Campaign image
+            </label>
+            <label className="flex items-center gap-3 p-3 rounded-xl border border-dashed border-[var(--border-primary)] bg-[var(--input-bg)] cursor-pointer hover:border-[var(--accent)] transition-colors">
+              {imagePreview ? (
+                <img src={imagePreview} alt="Campaign preview" className="w-16 h-16 rounded-lg object-cover shrink-0" />
+              ) : (
+                <span className="w-16 h-16 rounded-lg bg-[var(--bg-card)] border border-[var(--border-primary)] flex items-center justify-center text-[var(--text-muted)] shrink-0">
+                  <ImagePlus className="w-5 h-5" />
+                </span>
+              )}
+              <div className="min-w-0">
+                <p className="text-xs font-semibold text-[var(--text-primary)]">
+                  {imagePreview ? 'Replace image' : 'Upload a cover image'}
+                </p>
+                <p className="text-[11px] text-[var(--text-muted)]">Stored permanently. JPG, PNG or WEBP up to 5 MB.</p>
+              </div>
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                className="sr-only"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  if (imagePreview && imagePreview.startsWith('blob:')) URL.revokeObjectURL(imagePreview);
+                  setImageFile(file);
+                  setImagePreview(URL.createObjectURL(file));
+                }}
+              />
+            </label>
           </div>
 
           {/* Row 5: Description & Guidelines */}

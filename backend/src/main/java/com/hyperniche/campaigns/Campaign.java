@@ -38,6 +38,12 @@ public class Campaign {
     @Column(name = "requirements", columnDefinition = "TEXT")
     private String requirements;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
+    @Column(name = "content_type")
+    private String contentType;
+
     @Column(name = "deadline")
     private LocalDate deadline;
 
@@ -76,6 +82,10 @@ public class Campaign {
     public void setBudgetInr(BigDecimal budgetInr) { this.budgetInr = budgetInr; }
     public String getRequirements() { return requirements; }
     public void setRequirements(String requirements) { this.requirements = requirements; }
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    public String getContentType() { return contentType; }
+    public void setContentType(String contentType) { this.contentType = contentType; }
     public LocalDate getDeadline() { return deadline; }
     public void setDeadline(LocalDate deadline) { this.deadline = deadline; }
     public String getStatus() { return status; }

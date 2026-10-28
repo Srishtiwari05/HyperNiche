@@ -31,7 +31,7 @@ public class CreatorController {
     public ResponseEntity<ApiResponse<Page<CreatorProfileDto>>> listCreators(
             @RequestParam(name = "niche", required = false) String niche,
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "12") int size
+            @RequestParam(name = "size", defaultValue = "50") int size
     ) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("followersCount").descending());
         Page<CreatorProfileDto> result = creatorService.listCreators(niche, pageRequest);

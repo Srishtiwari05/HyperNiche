@@ -1,11 +1,12 @@
 import React from 'react';
 import { Campaign } from '../types';
 import { VerificationBadge } from './VerificationBadge';
-import { Calendar, Layers, IndianRupee, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, CheckCircle2 } from 'lucide-react';
+import { formatDeadline } from '../lib/utils';
 
 interface CampaignCardProps {
   campaign: Campaign;
-  onApply: (campaign: Campaign) => void;
+  onApply?: (campaign: Campaign) => void;
   hasApplied?: boolean;
   onViewBusinessProfile?: (campaign: Campaign) => void;
 }
@@ -31,7 +32,13 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
   const isClosed = campaign.status === 'closed' || isExpired;
 
   return (
-    <div className="bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl p-5 hover:-translate-y-0.5 hover:shadow-xs transition-all duration-200 flex flex-col justify-between group">
+    <div className="bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl overflow-hidden hover:-translate-y-0.5 hover:shadow-xs hover:border-[var(--accent)]/30 transition-all duration-200 flex flex-col justify-between group">
+      {campaign.imageUrl && (
+        <div className="h-36 overflow-hidden bg-[var(--bg-card-subtle)]">
+          <img src={campaign.imageUrl} alt={campaign.title} className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500" />
+        </div>
+      )}
+      <div className="p-5 flex flex-col justify-between flex-1">
       <div>
         {/* Brand & Category row */}
         <div className="flex items-start justify-between gap-2 mb-3">
@@ -98,7 +105,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
           </div>
           <div className="flex items-center justify-between text-xs">
             <span className="text-[var(--text-muted)] font-medium">Deadline</span>
-            <span className="font-medium text-[var(--text-secondary)]">{campaign.deadline}</span>
+            <span className="font-medium text-[var(--text-secondary)]">{formatDeadline(campaign.deadline) || campaign.deadline}</span>
           </div>
         </div>
       </div>
@@ -123,7 +130,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>Applied</span>
           </span>
-        ) : (
+        ) : onApply ? (
           <button
             onClick={() => onApply(campaign)}
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--accent)] text-white text-xs font-bold hover:opacity-95 hover:-translate-y-0.5 transition-all shadow-2xs cursor-pointer"
@@ -131,7 +138,10 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
             <span>Apply</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
+        ) : (
+          <span className="text-[11px] font-semibold text-[var(--text-muted)]">Live on marketplace</span>
         )}
+      </div>
       </div>
     </div>
   );

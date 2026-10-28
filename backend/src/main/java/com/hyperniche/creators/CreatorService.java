@@ -50,6 +50,10 @@ public class CreatorService {
         profile.setTiktokHandle(dto.tiktokHandle());
         profile.setTwitterHandle(dto.twitterHandle());
         profile.setWebsiteUrl(dto.websiteUrl());
+        if (dto.avatarUrl() != null && !dto.avatarUrl().isBlank()) {
+            user.setAvatarUrl(dto.avatarUrl());
+            userRepository.save(user);
+        }
         if (dto.followersCount() != null) profile.setFollowersCount(dto.followersCount());
         if (dto.avgViews() != null) profile.setAvgViews(dto.avgViews());
         if (dto.engagementRate() != null) profile.setEngagementRate(dto.engagementRate());

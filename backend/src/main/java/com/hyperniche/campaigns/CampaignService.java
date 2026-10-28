@@ -59,6 +59,8 @@ public class CampaignService {
         campaign.setBudgetInr(request.budgetInr());
         campaign.setRequirements(request.requirements());
         campaign.setDeadline(request.deadline());
+        campaign.setImageUrl(request.imageUrl());
+        campaign.setContentType(request.contentType());
         campaign.setStatus(CampaignStatus.ACTIVE.name());
 
         Campaign saved = campaignRepository.save(campaign);
@@ -81,6 +83,12 @@ public class CampaignService {
         campaign.setBudgetInr(request.budgetInr());
         campaign.setRequirements(request.requirements());
         campaign.setDeadline(request.deadline());
+        if (request.imageUrl() != null && !request.imageUrl().isBlank()) {
+            campaign.setImageUrl(request.imageUrl());
+        }
+        if (request.contentType() != null && !request.contentType().isBlank()) {
+            campaign.setContentType(request.contentType());
+        }
 
         Campaign saved = campaignRepository.save(campaign);
         return CampaignResponse.fromEntity(saved);

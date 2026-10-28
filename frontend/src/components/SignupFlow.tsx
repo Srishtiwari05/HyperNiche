@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { useAuth, validatePassword } from '../context/AuthContext';
 import { UserRole } from '../types';
 import { CATEGORIES } from '../config/categories';
-import { ArrowLeft, ArrowRight, Building2, User, Sparkles, AlertCircle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Building2, User, Sparkles, AlertCircle, Camera } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
+import { uploadMedia } from '../lib/storage';
 
 const BUSINESS_SELL_OPTIONS = [
   'Clothing & Streetwear',
@@ -32,6 +33,7 @@ export const SignupFlow: React.FC = () => {
     signIn, 
     needsProfileCompletion, 
     completeProfileForCurrentUser,
+    updateUserProfile,
   } = useAuth();
 
   // Slide state: 1 to 4 (always starts on Step 1 "Who are you?")
@@ -55,6 +57,25 @@ export const SignupFlow: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const [saveFailed, setSaveFailed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState('');
+
+  const handleAvatarPick = (file?: File) => {
+    if (!file) return;
+    if (avatarPreview) URL.revokeObjectURL(avatarPreview);
+    setAvatarFile(file);
+    setAvatarPreview(URL.createObjectURL(file));
+  };
+
+  const persistAvatarAfterAuth = async () => {
+    if (!avatarFile) return;
+    try {
+      const url = await uploadMedia(avatarFile, 'avatars');
+      await updateUserProfile({ avatarUrl: url });
+    } catch (err) {
+      console.warn('Avatar upload note:', err);
+    }
+  };
 
   // Step indicator calculation:
   // Step 1: Step 1 of 4
@@ -145,7 +166,11 @@ export const SignupFlow: React.FC = () => {
           whatYouSell: businessWhatYouSell,
         };
 
-        await completeProfileForCurrentUser(role, payload);
+        let avatarUrl = '';
+        if (avatarFile) {
+          avatarUrl = await uploadMedia(avatarFile, 'avatars');
+        }
+        await completeProfileForCurrentUser(role, { ...payload, avatarUrl });
       } catch (err: any) {
         console.error('Save profile error:', err);
         setErrorMsg(err.message || "Couldn't save your profile, please try again");
@@ -198,6 +223,7 @@ export const SignupFlow: React.FC = () => {
         };
 
         await signUp(email, password, role, extra);
+        await persistAvatarAfterAuth();
       } else {
         await signIn(email, password);
       }
@@ -452,6 +478,27 @@ export const SignupFlow: React.FC = () => {
             )}
 
             <form onSubmit={handleStep3SubmitQuestions} className="space-y-4">
+              <div className="flex items-center gap-4">
+                <label className="relative w-16 h-16 rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-card)] overflow-hidden cursor-pointer shrink-0 group">
+                  {avatarPreview ? (
+                    <img src={avatarPreview} alt="Profile preview" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="w-full h-full flex items-center justify-center text-[var(--text-muted)]">
+                      <Camera className="w-5 h-5" />
+                    </span>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                    onChange={(e) => handleAvatarPick(e.target.files?.[0])}
+                  />
+                </label>
+                <div>
+                  <p className="text-xs font-semibold text-[var(--text-primary)]">Profile photo</p>
+                  <p className="text-[11px] text-[var(--text-muted)]">JPG, PNG or WEBP up to 5 MB. Stored in your account.</p>
+                </div>
+              </div>
               {role === 'creator' ? (
                 <>
                   {/* Q1: Instagram handle */}

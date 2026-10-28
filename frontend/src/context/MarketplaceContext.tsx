@@ -1,10 +1,11 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { api } from '../lib/api';
 import { Campaign, Application, Message, UserProfile, ReportItem, UserRole } from '../types';
 import { useAuth } from './AuthContext';
 import { FREE_APPLICATIONS_PER_MONTH, FREE_BUSINESS_DECISIONS_PER_MONTH } from '../config/marketplaceConfig';
 import { validateMessageSafety } from '../utils/moderationList';
+import { toIsoDate } from '../lib/utils';
 
 export interface ActiveConversation {
   campaignId: string;
@@ -17,57 +18,148 @@ export interface ActiveConversation {
   isInvitation?: boolean;
 }
 
+function pick(data: any, ...keys: string[]) {
+  for (const key of keys) {
+    if (data?.[key] !== undefined && data?.[key] !== null && data?.[key] !== '') {
+      return data[key];
+    }
+  }
+  return undefined;
+}
+
+function mapCampaignStatus(raw: string | undefined): Campaign['status'] {
+  const value = String(raw || 'ACTIVE').toLowerCase();
+  if (value === 'active' || value === 'open') return 'open';
+  if (value === 'completed' || value === 'closed' || value === 'paused') return 'closed';
+  if (value === 'removed') return 'removed';
+  return 'open';
+}
+
 export function normalizeCampaign(data: any): Campaign {
   const rawPlatforms = data.platforms || (data.platform ? (typeof data.platform === 'string' ? data.platform.split(',').map((s: string) => s.trim()) : [data.platform]) : null);
   const platforms = Array.isArray(rawPlatforms) && rawPlatforms.length > 0 ? rawPlatforms : ['Instagram Reels'];
+  const budgetRaw = pick(data, 'budget', 'budgetInr', 'budget_inr');
+  const status = mapCampaignStatus(pick(data, 'status'));
 
   return {
-    id: data.id || '',
-    businessId: data.businessId || data.brandId || '',
-    businessName: data.businessName || data.brandName || 'Brand Partner',
-    businessHandle: data.businessHandle || '@brandpartner',
-    businessIsVerified: Boolean(data.businessIsVerified || data.isVerified || data.verified),
-    title: data.title || 'Brand Deal Collaboration',
-    category: data.category || 'Lifestyle',
-    budget: typeof data.budget === 'number' && !isNaN(data.budget) ? data.budget : (typeof data.budgetInr === 'number' ? data.budgetInr : (Number(data.budget) || 100)),
+    id: String(pick(data, 'id') || ''),
+    businessId: String(pick(data, 'businessId', 'brandId', 'brand_id', 'business_id') || ''),
+    businessName: pick(data, 'businessName', 'brandName', 'business_name', 'brand_name') || 'Brand Partner',
+    businessHandle: pick(data, 'businessHandle', 'business_handle') || '@brandpartner',
+    businessIsVerified: Boolean(pick(data, 'businessIsVerified', 'isVerified', 'verified')),
+    title: pick(data, 'title') || 'Brand Deal Collaboration',
+    category: pick(data, 'category') || 'Lifestyle',
+    budget: typeof budgetRaw === 'number' && !isNaN(budgetRaw) ? budgetRaw : Number(budgetRaw) || 100,
+    budgetInr: typeof budgetRaw === 'number' ? budgetRaw : Number(budgetRaw) || 100,
+    brandId: pick(data, 'brandId', 'brand_id', 'businessId'),
+    brandName: pick(data, 'brandName', 'brand_name', 'businessName'),
+    brandAvatar: pick(data, 'brandAvatar', 'brand_avatar'),
     platforms,
-    deadline: data.deadline || data.submissionDeadline || '',
-    submissionDeadline: data.submissionDeadline || data.deadline || '',
-    contentType: data.contentType || 'Reels & Stories',
-    description: data.description || '',
-    requirements: data.requirements || data.creatorRequirements || '',
-    creatorRequirements: data.creatorRequirements || data.requirements || '',
-    status: data.status || 'open',
-    removed: Boolean(data.removed || data.status === 'removed'),
+    platform: platforms.join(', '),
+    deadline: String(pick(data, 'deadline', 'submissionDeadline', 'submission_deadline') || ''),
+    submissionDeadline: String(pick(data, 'submissionDeadline', 'deadline') || ''),
+    contentType: pick(data, 'contentType', 'content_type') || 'Reels & Stories',
+    description: pick(data, 'description') || '',
+    requirements: pick(data, 'requirements', 'creatorRequirements', 'creator_requirements') || '',
+    creatorRequirements: pick(data, 'creatorRequirements', 'requirements') || '',
+    status,
+    removed: Boolean(data.removed || status === 'removed'),
     isSample: Boolean(data.isSample),
-    applicantsCount: typeof data.applicantsCount === 'number' ? data.applicantsCount : (data.applicationsCount || 0),
-    createdAt: data.createdAt || new Date().toISOString(),
+    applicantsCount: typeof data.applicantsCount === 'number' ? data.applicantsCount : (data.applicationsCount || data.applications_count || 0),
+    applicationsCount: data.applicationsCount || data.applications_count || 0,
+    createdAt: String(pick(data, 'createdAt', 'created_at') || new Date().toISOString()),
+    imageUrl: pick(data, 'imageUrl', 'image_url') || '',
   };
+}
+
+function upsertById<T extends { id: string }>(prev: T[], item: T): T[] {
+  if (!item.id) return prev;
+  const idx = prev.findIndex((row) => row.id === item.id);
+  if (idx === -1) return [item, ...prev];
+  const next = [...prev];
+  next[idx] = { ...prev[idx], ...item };
+  return next;
+}
+
+function mergeById(primary: Campaign[], extra: Campaign[]): Campaign[] {
+  return extra.reduce((acc, row) => upsertById(acc, row), primary);
+}
+
+async function fetchCampaignsFromApi(params: { category?: string; platform?: string }): Promise<Campaign[]> {
+  const first = await api.getCampaigns({ ...params, page: 0, size: 100 });
+  const content = first?.content || (Array.isArray(first) ? first : []);
+  let rows = content.map(normalizeCampaign);
+  const totalPages = Math.min(Number(first?.totalPages) || 1, 20);
+  for (let page = 1; page < totalPages; page++) {
+    const next = await api.getCampaigns({ ...params, page, size: 100 });
+    rows = rows.concat((next?.content || []).map(normalizeCampaign));
+  }
+  return rows;
+}
+
+async function fetchCampaignsFromSupabase(): Promise<Campaign[]> {
+  const { data, error } = await supabase
+    .from('campaigns')
+    .select('*, users:brand_id(display_name, avatar_url, email)')
+    .order('created_at', { ascending: false })
+    .limit(1000);
+  if (error) {
+    const fallback = await supabase.from('campaigns').select('*').order('created_at', { ascending: false }).limit(1000);
+    if (fallback.error) throw fallback.error;
+    return (fallback.data || []).map(normalizeCampaign);
+  }
+  return (data || []).map((row: any) =>
+    normalizeCampaign({
+      ...row,
+      brandName: row.users?.display_name,
+      businessName: row.users?.display_name,
+      brandAvatar: row.users?.avatar_url,
+    })
+  );
+}
+
+function toCampaignRow(uid: string, data: Partial<Campaign>, id?: string) {
+  const row: Record<string, unknown> = {
+    brand_id: uid,
+    title: data.title,
+    description: data.description,
+    category: data.category,
+    platform: Array.isArray(data.platforms) ? data.platforms.join(', ') : (data.platform || 'Instagram Reels'),
+    budget_inr: data.budget,
+    requirements: data.requirements || '',
+    deadline: toIsoDate(data.deadline) || toIsoDate(data.submissionDeadline) || null,
+    status: 'ACTIVE',
+    image_url: data.imageUrl || null,
+    content_type: data.contentType || null,
+  };
+  if (id) row.id = id;
+  return row;
 }
 
 export function normalizeCreator(data: any): UserProfile {
   return {
-    id: data.id || data.userId || '',
+    id: String(pick(data, 'id', 'userId', 'user_id') || ''),
     role: 'creator',
     activeRole: 'creator',
     lastActiveRole: 'creator',
     roles: ['creator'],
-    name: data.name || data.displayName || 'Creator User',
-    handle: data.handle || data.instagramHandle || (data.displayName ? `@${data.displayName.toLowerCase().replace(/\s+/g, '')}` : '@creator'),
+    name: pick(data, 'name', 'displayName', 'display_name') || 'Creator User',
+    handle: pick(data, 'handle', 'instagramHandle', 'instagram_handle') || (data.displayName ? `@${data.displayName.toLowerCase().replace(/\s+/g, '')}` : '@creator'),
     followers: data.followers || (data.followersCount ? `${Math.round(data.followersCount / 1000)}K` : '10K-50K'),
-    niche: data.niche || 'Fashion',
+    niche: pick(data, 'niche') || 'Fashion',
     minRate: typeof data.minRate === 'number' ? data.minRate : (data.rateReelInr || 15000),
-    bio: data.bio || '',
-    city: data.city || 'Mumbai',
-    platform: data.platform || 'Instagram Reels',
-    contentType: data.contentType || 'Reels & Stories',
-    isVerified: Boolean(data.isVerified || data.verified),
-    verified: Boolean(data.isVerified || data.verified),
+    bio: pick(data, 'bio') || '',
+    city: pick(data, 'city') || 'Mumbai',
+    platform: pick(data, 'platform') || 'Instagram Reels',
+    contentType: pick(data, 'contentType', 'content_type') || 'Reels & Stories',
+    isVerified: Boolean(pick(data, 'isVerified', 'verified', 'is_verified')),
+    verified: Boolean(pick(data, 'isVerified', 'verified', 'is_verified')),
     letBrandsFindMe: data.letBrandsFindMe !== false,
-    email: data.email || '',
+    email: pick(data, 'email') || '',
+    avatarUrl: pick(data, 'avatarUrl', 'avatar_url') || '',
     isSample: Boolean(data.isSample),
-    createdAt: data.createdAt || new Date().toISOString(),
-    updatedAt: data.updatedAt || new Date().toISOString(),
+    createdAt: String(pick(data, 'createdAt', 'created_at') || new Date().toISOString()),
+    updatedAt: String(pick(data, 'updatedAt', 'updated_at') || new Date().toISOString()),
   };
 }
 
@@ -122,41 +214,42 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPlatform, setSelectedPlatform] = useState('All');
   const [selectedFollowers, setSelectedFollowers] = useState('All');
+  const filtersRef = useRef({ selectedCategory, selectedPlatform });
+  filtersRef.current = { selectedCategory, selectedPlatform };
 
-  // 1. Fetch real campaigns & creators from Backend API
+  const loadMarketplace = async (showSpinner = true) => {
+    const { selectedCategory: category, selectedPlatform: platform } = filtersRef.current;
+    const campParams: { category?: string; platform?: string } = {};
+    if (category && category !== 'All') campParams.category = category;
+    if (platform && platform !== 'All') campParams.platform = platform;
+    const creatorParams: { niche?: string; size?: number } = { size: 100 };
+    if (category && category !== 'All') creatorParams.niche = category;
+
+    if (showSpinner) {
+      setIsLoadingData(true);
+      setDataError(null);
+    }
+
+    const apiCamps = await fetchCampaignsFromApi(campParams).catch(() => [] as Campaign[]);
+    const sbCamps = await fetchCampaignsFromSupabase().catch(() => [] as Campaign[]);
+    const merged = mergeById(apiCamps, sbCamps);
+    setCampaigns(merged);
+
+    try {
+      const creatorRes: any = await api.getCreators(creatorParams);
+      setCreators((creatorRes?.content || creatorRes || []).map(normalizeCreator));
+    } catch {
+      const { data } = await supabase.from('creator_profiles').select('*, users(*)').limit(200);
+      if (Array.isArray(data)) {
+        setCreators(data.map((row: any) => normalizeCreator({ ...row.users, ...row })));
+      }
+    }
+
+    setIsLoadingData(false);
+  };
+
   useEffect(() => {
-    setIsLoadingData(true);
-    setDataError(null);
-
-    const campParams: any = {};
-    if (selectedCategory && selectedCategory !== 'All') {
-      campParams.category = selectedCategory;
-    }
-    if (selectedPlatform && selectedPlatform !== 'All') {
-      campParams.platform = selectedPlatform;
-    }
-
-    const creatorParams: any = {};
-    if (selectedCategory && selectedCategory !== 'All') {
-      creatorParams.niche = selectedCategory;
-    }
-
-    Promise.all([
-      api.getCampaigns(campParams),
-      api.getCreators(creatorParams),
-    ])
-      .then(([campRes, creatorRes]: [any, any]) => {
-        const loadedCamps = (campRes?.content || campRes || []).map(normalizeCampaign);
-        setCampaigns(loadedCamps);
-
-        const loadedCreators = (creatorRes?.content || creatorRes || []).map(normalizeCreator);
-        setCreators(loadedCreators);
-      })
-      .catch((err) => {
-        console.warn('API getCampaigns/Creators note:', err);
-        setDataError(err.message || 'Could not fetch marketplace data');
-      })
-      .finally(() => setIsLoadingData(false));
+    void loadMarketplace(true);
   }, [selectedCategory, selectedPlatform]);
 
   // 2. Fetch authenticated user applications and conversations
@@ -222,6 +315,15 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
         }
       })
       .catch((err) => console.warn('API getConversations note:', err));
+
+    api.getMyCampaigns()
+      .then((mine: any) => {
+        const list = Array.isArray(mine) ? mine : (mine?.content || []);
+        if (list.length) {
+          setCampaigns((prev) => list.reduce((acc: Campaign[], row: any) => upsertById(acc, normalizeCampaign(row)), prev));
+        }
+      })
+      .catch(() => {});
   }, [currentUser]);
 
   // 3. Supabase Realtime subscriptions
@@ -232,15 +334,14 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
         'postgres_changes',
         { event: '*', schema: 'public', table: 'campaigns' },
         (payload) => {
-          if (payload.eventType === 'INSERT') {
-            setCampaigns((prev) => [normalizeCampaign(payload.new), ...prev]);
-          } else if (payload.eventType === 'UPDATE') {
-            setCampaigns((prev) =>
-              prev.map((c) => (c.id === payload.new.id ? normalizeCampaign(payload.new) : c))
-            );
-          } else if (payload.eventType === 'DELETE') {
+          if (payload.eventType === 'DELETE') {
             setCampaigns((prev) => prev.filter((c) => c.id !== payload.old.id));
+            return;
           }
+          setCampaigns((prev) => upsertById(prev, normalizeCampaign(payload.new)));
+          void fetchCampaignsFromSupabase()
+            .then((rows) => setCampaigns((prev) => mergeById(prev, rows)))
+            .catch(() => {});
         }
       )
       .subscribe();
@@ -265,7 +366,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
             createdAt: payload.new.created_at || new Date().toISOString(),
             read: payload.new.is_read || false,
           };
-          setMessages((prev) => [...prev, newMsg]);
+          setMessages((prev) => (prev.some((m) => m.id === newMsg.id) ? prev : [...prev, newMsg]));
         }
       )
       .subscribe();
@@ -283,62 +384,65 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
     if (!userProfile) throw new Error('You must be logged in to post a campaign.');
 
     const currentUid = currentUser?.id || userProfile.id;
-    const newId = `camp_${Date.now()}`;
+    const isoDeadline = toIsoDate(data.deadline) || toIsoDate(data.submissionDeadline) || '2027-12-31';
+    const platformValue = Array.isArray(data.platforms)
+      ? data.platforms.join(', ')
+      : (data.platforms || data.platform || 'Instagram Reels');
 
-    const newCampaign: Campaign = {
-      ...data,
-      id: newId,
-      businessId: currentUid,
-      businessName: userProfile.name || 'Brand Business',
-      businessHandle: userProfile.handle || `@${userProfile.name?.toLowerCase().replace(/\s+/g, '') || 'brand'}`,
-      businessIsVerified: Boolean(userProfile.isVerified),
-      applicantsCount: 0,
-      status: 'open',
-      removed: false,
-      createdAt: new Date().toISOString(),
+    const payload = {
+      title: data.title,
+      description: data.description,
+      category: data.category,
+      platform: platformValue,
+      budgetInr: data.budget,
+      requirements: data.requirements,
+      deadline: isoDeadline,
+      imageUrl: data.imageUrl || null,
+      contentType: data.contentType || null,
     };
 
-    // Optimistic update
-    setCampaigns((prev) => [newCampaign, ...prev]);
+    await supabase.from('users').upsert({
+      id: currentUid,
+      email: userProfile.email,
+      role: 'BRAND',
+      display_name: userProfile.name,
+      avatar_url: userProfile.avatarUrl || null,
+    });
 
-    // Backend / Supabase sync
+    let created: any = null;
+    let apiErr: any = null;
     try {
-      const created = await api.createCampaign({
-        title: data.title,
-        description: data.description,
-        category: data.category,
-        platform: Array.isArray(data.platforms) ? data.platforms[0] : (data.platforms || 'Instagram Reels'),
-        budgetInr: data.budget,
-        requirements: data.requirements,
-        deadline: data.deadline || '2027-12-31',
-      });
-      if (created) {
-        setCampaigns((prev) => [normalizeCampaign(created), ...prev.filter((c) => c.id !== newId)]);
-      }
-    } catch {
-      // Backend unavailable — save directly to Supabase so it persists for all users
-      try {
-        const { data: sbRow, error: sbErr } = await supabase.from('campaigns').insert({
-          id: newId,
-          business_id: newCampaign.businessId,
-          business_name: newCampaign.businessName,
-          business_handle: newCampaign.businessHandle,
-          title: newCampaign.title,
-          description: newCampaign.description,
-          category: newCampaign.category,
-          platform: newCampaign.platforms[0] || 'Instagram Reels',
-          budget_inr: newCampaign.budget,
-          requirements: newCampaign.requirements || '',
-          deadline: newCampaign.deadline || '2027-12-31',
-          status: 'open',
-          created_at: newCampaign.createdAt,
-        }).select().maybeSingle();
-        if (!sbErr && sbRow) {
-          setCampaigns((prev) => [normalizeCampaign(sbRow), ...prev.filter((c) => c.id !== newId)]);
-        }
-        // If Supabase also fails, the optimistic local entry stays visible for this session
-      } catch { /* optimistic local state remains */ }
+      created = await api.createCampaign(payload);
+    } catch (err) {
+      apiErr = err;
     }
+
+    const { data: sbRow, error: sbErr } = await supabase
+      .from('campaigns')
+      .upsert(toCampaignRow(currentUid, { ...data, deadline: isoDeadline, platform: platformValue }, created?.id))
+      .select()
+      .maybeSingle();
+
+    if (sbRow || created) {
+      setCampaigns((prev) =>
+        upsertById(
+          prev,
+          normalizeCampaign({
+            ...data,
+            ...created,
+            ...sbRow,
+            businessName: userProfile.name,
+            businessHandle: userProfile.handle,
+            businessId: currentUid,
+            contentType: data.contentType,
+            imageUrl: data.imageUrl || created?.imageUrl,
+          })
+        )
+      );
+      return;
+    }
+
+    throw new Error(apiErr?.message || sbErr?.message || 'Could not publish campaign. Please try again.');
   };
 
   // UPDATE CAMPAIGN
@@ -349,13 +453,30 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
         title: data.title,
         description: data.description,
         category: data.category,
-        platform: Array.isArray(data.platforms) ? data.platforms[0] : (data.platforms || 'Instagram Reels'),
+        platform: Array.isArray(data.platforms) ? data.platforms.join(', ') : (data.platforms || 'Instagram Reels'),
         budgetInr: data.budget,
         requirements: data.requirements,
-        deadline: data.deadline,
+        deadline: toIsoDate(data.deadline),
+        imageUrl: data.imageUrl,
+        contentType: data.contentType,
       });
     } catch {
-      // Optimistic fallback
+      // still persist on Supabase so other accounts keep the edit
+    }
+    const patch: Record<string, unknown> = {};
+    if (data.title) patch.title = data.title;
+    if (data.description) patch.description = data.description;
+    if (data.category) patch.category = data.category;
+    if (data.platforms || data.platform) {
+      patch.platform = Array.isArray(data.platforms) ? data.platforms.join(', ') : data.platform;
+    }
+    if (data.budget != null) patch.budget_inr = data.budget;
+    if (data.requirements != null) patch.requirements = data.requirements;
+    if (data.deadline) patch.deadline = toIsoDate(data.deadline);
+    if (data.imageUrl) patch.image_url = data.imageUrl;
+    if (data.contentType) patch.content_type = data.contentType;
+    if (Object.keys(patch).length) {
+      await supabase.from('campaigns').update(patch).eq('id', campaignId);
     }
     setCampaigns((prev) =>
       prev.map((c) => (c.id === campaignId ? { ...c, ...data, updatedAt: new Date().toISOString() } : c))
@@ -368,8 +489,9 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
     try {
       await api.deleteCampaign(campaignId);
     } catch {
-      // Optimistic fallback
+      // still hide locally and in Supabase
     }
+    await supabase.from('campaigns').update({ status: 'removed' }).eq('id', campaignId);
     setCampaigns((prev) =>
       prev.map((c) => (c.id === campaignId ? { ...c, status: 'removed', removed: true } : c))
     );
@@ -378,6 +500,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
   // RESTORE CAMPAIGN
   const restoreCampaign = async (campaignId: string) => {
     if (!userProfile) throw new Error('You must be logged in to restore a campaign.');
+    await supabase.from('campaigns').update({ status: 'ACTIVE' }).eq('id', campaignId);
     setCampaigns((prev) =>
       prev.map((c) => (c.id === campaignId ? { ...c, status: 'open', removed: false } : c))
     );

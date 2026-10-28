@@ -36,7 +36,7 @@ public class CampaignController {
             @RequestParam(name = "category", required = false) String category,
             @RequestParam(name = "platform", required = false) String platform,
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "12") int size
+            @RequestParam(name = "size", defaultValue = "50") int size
     ) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<CampaignResponse> campaigns = campaignService.listActiveCampaigns(category, platform, pageRequest);

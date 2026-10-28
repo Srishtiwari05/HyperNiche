@@ -126,6 +126,7 @@ export interface Campaign {
   applicantsCount: number;
   applicationsCount?: number;
   createdAt: string;
+  imageUrl?: string;
 }
 
 export type ApplicationStatus = 'pending' | 'accepted' | 'rejected' | 'PENDING' | 'ACCEPTED' | 'DECLINED' | 'WITHDRAWN';

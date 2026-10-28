@@ -22,8 +22,10 @@ import {
   ArrowLeft, 
   ExternalLink,
   PlusCircle,
-  Briefcase
+  Briefcase,
+  Camera
 } from 'lucide-react';
+import { uploadMedia } from '../lib/storage';
 
 interface ProfilePageProps {
   viewingProfile?: UserProfile | null;
@@ -58,6 +60,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
   // Editable Form fields
   const [name, setName] = useState(profile?.name || '');
@@ -77,6 +80,19 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       setLetBrandsFindMe(profile.letBrandsFindMe ?? true);
     }
   }, [profile]);
+
+  const handleAvatarUpload = async (file?: File) => {
+    if (!file || !isOwnProfile) return;
+    setIsUploadingAvatar(true);
+    try {
+      const url = await uploadMedia(file, 'avatars');
+      await updateUserProfile({ avatarUrl: url });
+    } catch (err) {
+      console.warn('Avatar upload note:', err);
+    } finally {
+      setIsUploadingAvatar(false);
+    }
+  };
 
   const handleToggleBrandSearch = async (checked: boolean) => {
     setLetBrandsFindMe(checked);
@@ -236,8 +252,24 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             {/* Avatar & Identifiers */}
             <div className="flex items-end gap-4 sm:gap-6">
               {/* Large Avatar */}
-              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-[var(--bg-card)] border-4 border-[var(--bg-card)] shadow-lg flex items-center justify-center font-black text-3xl sm:text-4xl text-[#F06A4D] bg-[#FFE3D3] dark:bg-[#34241E] shrink-0 font-['Archivo']">
-                {profile.name.charAt(0).toUpperCase()}
+              <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-[#FFE3D3] dark:bg-[#34241E] border-4 border-[var(--bg-card)] shadow-lg flex items-center justify-center font-black text-3xl sm:text-4xl text-[#F06A4D] shrink-0 font-['Archivo'] overflow-hidden">
+                {profile.avatarUrl ? (
+                  <img src={profile.avatarUrl} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  profile.name.charAt(0).toUpperCase()
+                )}
+                {isOwnProfile && (
+                  <label className="absolute bottom-1 right-1 w-8 h-8 rounded-lg bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] flex items-center justify-center cursor-pointer shadow-xs">
+                    <Camera className="w-4 h-4" />
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      className="sr-only"
+                      disabled={isUploadingAvatar}
+                      onChange={(e) => handleAvatarUpload(e.target.files?.[0])}
+                    />
+                  </label>
+                )}
               </div>
 
               <div className="mb-1">

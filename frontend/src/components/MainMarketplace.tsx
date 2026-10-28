@@ -542,16 +542,16 @@ export const MainMarketplace: React.FC<MainMarketplaceProps> = ({
 
         {/* Loading State */}
         {isLoadingData ? (
-          <div className="py-20 flex flex-col items-center justify-center gap-3 bg-[var(--bg-card)]/50 border border-[var(--border-primary)] rounded-2xl">
-            <div className="w-8 h-8 rounded-full border-2 border-[var(--accent)] border-t-transparent animate-spin" />
-            <span className="text-xs font-semibold text-[var(--text-secondary)] font-['Archivo']">
-              Loading {role === 'business' ? 'creators' : 'campaigns'} from database...
-            </span>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {[0, 1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="h-56 rounded-xl border border-[var(--border-primary)] skeleton-card" />
+            ))}
           </div>
         ) : (
           /* Content Grid: Creators for Business / Campaigns for Creator */
           role === 'business' ? (
-          filteredCreators.length === 0 ? (
+          <div className="space-y-10">
+          {filteredCreators.length === 0 ? (
             <div className="text-center py-20 px-4 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-2xl">
               <p className="text-base font-bold text-[var(--text-primary)] font-['Archivo']">
                 {hasActiveFilters ? 'No creators found' : 'No creators yet.'}
@@ -581,7 +581,22 @@ export const MainMarketplace: React.FC<MainMarketplaceProps> = ({
                 />
               ))}
             </div>
-          )
+          )}
+          {filteredCampaigns.length > 0 && (
+            <div>
+              <h3 className="text-base font-bold font-['Archivo'] mb-4">Live campaigns on Hyperniche</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                {filteredCampaigns.map((camp) => (
+                  <CampaignCard
+                    key={camp.id}
+                    campaign={camp}
+                    onViewBusinessProfile={onViewBusinessProfile}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+          </div>
         ) : (
           filteredCampaigns.length === 0 ? (
             <div className="text-center py-20 px-4 bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-2xl">

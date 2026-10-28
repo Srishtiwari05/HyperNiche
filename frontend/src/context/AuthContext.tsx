@@ -82,6 +82,7 @@ export interface AuthContextType {
       name?: string;
       websiteOrInstagram?: string;
       whatYouSell?: string;
+      avatarUrl?: string;
     }
   ) => Promise<void>;
   // exploreAsGuest removed — no guest mode
@@ -90,6 +91,16 @@ export interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const LOCAL_STORAGE_PROFILE_KEY = 'hyperniche_user_profile';
+
+function toAppRole(raw?: string | null): UserRole {
+  const value = String(raw || '').toLowerCase();
+  if (value.includes('biz') || value === 'brand' || value === 'business') return 'business';
+  return 'creator';
+}
+
+function toDbRole(role?: string | null): 'BRAND' | 'CREATOR' {
+  return toAppRole(role) === 'business' ? 'BRAND' : 'CREATOR';
+}
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
@@ -103,6 +114,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     setAuthError(null);
     setAuthCycle((c) => c + 1);
+  };
+
+  const persistAccountRow = async (user: AuthUser, profile: UserProfile) => {
+    try {
+      const dbRole = toDbRole(profile.role);
+      await supabase.from('users').upsert({
+        id: user.id,
+        email: user.email || profile.email,
+        role: dbRole,
+        display_name: profile.name,
+        avatar_url: profile.avatarUrl || null,
+        bio: profile.bio || '',
+        updated_at: new Date().toISOString(),
+        profile_json: JSON.stringify(profile),
+      });
+      await api.syncUser({
+        id: user.id,
+        email: user.email || profile.email,
+        role: dbRole,
+        displayName: profile.name,
+        avatarUrl: profile.avatarUrl || '',
+        bio: profile.bio || '',
+        handle: profile.handle,
+        niche: profile.niche,
+        websiteUrl: profile.websiteOrInstagram || '',
+        companyName: profile.name,
+        whatYouSell: profile.whatYouSell || '',
+      }).catch(() => null);
+    } catch {
+      // login still works if a write is delayed
+    }
   };
 
   const saveProfileLocally = (profile: UserProfile | null) => {
@@ -148,8 +190,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // the full profile (handle, niche, creatorProfile, businessProfile, etc.)
         const cached = getProfileLocally();
         const isSameUser = cached && (cached.id === user.id || cached.email === (dbUser.email || user.email));
-        const activeRole = (dbUser.role?.toLowerCase() || cached?.role || 'creator') as UserRole;
         const base = isSameUser ? cached! : {};
+        const activeRole = toAppRole(dbUser.role || (base as UserProfile).role || cached?.role);
 
         // Parse profile_json column if it exists (future-proof)
         let fromDb: Partial<UserProfile> = {};
@@ -168,6 +210,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           email: dbUser.email || user.email || '',
           name: dbUser.display_name || (base as UserProfile).name || user.email?.split('@')[0] || 'User',
           handle: (base as UserProfile).handle || `@${(dbUser.display_name || user.email?.split('@')[0] || 'user').toLowerCase().replace(/\s+/g, '')}`,
+          avatarUrl: dbUser.avatar_url || fromDb.avatarUrl || (base as UserProfile).avatarUrl || '',
           isVerified: Boolean(dbUser.is_verified),
           verified: Boolean(dbUser.is_verified),
           createdAt: dbUser.created_at || new Date().toISOString(),
@@ -177,6 +220,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         saveProfileLocally(profile);
         setNeedsProfileCompletion(false);
         setAuthError(null);
+        void persistAccountRow(user, profile);
         return;
       }
 
@@ -190,8 +234,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       // 3. Fallback: build a complete profile from user metadata and email
-      const rawRole = (user.user_metadata?.role || 'creator').toLowerCase();
-      const activeRole: UserRole = rawRole.includes('biz') || rawRole.includes('business') || rawRole.includes('brand') ? 'business' : 'creator';
+      const activeRole: UserRole = toAppRole(user.user_metadata?.role);
       const displayName = user.user_metadata?.displayName || user.user_metadata?.name || user.email?.split('@')[0] || 'User';
       const cleanHandle = `@${displayName.toLowerCase().replace(/[^a-z0-9_]/g, '') || 'user'}`;
 
@@ -241,6 +284,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       saveProfileLocally(fallbackProfile);
       setNeedsProfileCompletion(false);
       setAuthError(null);
+      void persistAccountRow(user, fallbackProfile);
     } catch (err: any) {
       console.warn('Error fetching Supabase user profile:', err);
       const cached = getProfileLocally();
@@ -248,8 +292,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUserProfile(cached);
         setNeedsProfileCompletion(false);
       } else {
-        const rawRole = (user.user_metadata?.role || 'creator').toLowerCase();
-        const activeRole: UserRole = rawRole.includes('biz') || rawRole.includes('business') || rawRole.includes('brand') ? 'business' : 'creator';
+        const activeRole: UserRole = toAppRole(user.user_metadata?.role);
         const displayName = user.user_metadata?.displayName || user.email?.split('@')[0] || 'User';
         const cleanHandle = `@${displayName.toLowerCase().replace(/[^a-z0-9_]/g, '') || 'user'}`;
         const fallbackProfile: UserProfile = {
@@ -414,7 +457,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (currentUser) {
       try {
         await supabase.from('users').update({
-          role: targetRole.toUpperCase(),
+          role: toDbRole(targetRole),
           updated_at: updated.updatedAt,
         }).eq('id', currentUser.id);
       } catch (err) {
@@ -483,7 +526,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await supabase.from('users').upsert({
           id: currentUser.id,
           email: currentUser.email,
-          role: targetRole.toUpperCase(),
+          role: toDbRole(targetRole),
           display_name: updated.name,
           updated_at: updated.updatedAt,
           profile_json: JSON.stringify(updated),
@@ -503,6 +546,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       name?: string;
       websiteOrInstagram?: string;
       whatYouSell?: string;
+      avatarUrl?: string;
     }
   ) => {
     if (!currentUser) {
@@ -529,11 +573,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       niche: data.niche || 'Fashion',
       websiteOrInstagram: data.websiteOrInstagram || '',
       whatYouSell: data.whatYouSell || '',
-      letBrandsFindMe: true,
-      isVerified: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+        letBrandsFindMe: true,
+        isVerified: false,
+        avatarUrl: data.avatarUrl || '',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
 
     if (targetRole === 'business') {
       newProfile.businessProfile = {
@@ -558,27 +603,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await api.syncUser({
         id: uid,
         email: userEmail,
-        role: targetRole.toUpperCase(),
+        role: toDbRole(targetRole),
         displayName: newProfile.name,
         handle: newProfile.handle,
         niche: newProfile.niche,
         followersCount: followersCount || 10000,
         websiteUrl: newProfile.websiteOrInstagram || '',
         bio: newProfile.bio || '',
+        avatarUrl: newProfile.avatarUrl || '',
         companyName: newProfile.name,
         industry: newProfile.whatYouSell || newProfile.niche || '',
         whatYouSell: newProfile.whatYouSell || '',
       }).catch(() => null);
 
-      await supabase.from('users').upsert({
-        id: uid,
-        email: userEmail,
-        role: targetRole.toUpperCase(),
-        display_name: newProfile.name,
-        updated_at: newProfile.updatedAt,
-        // Store full profile so re-login restores everything
-        profile_json: JSON.stringify(newProfile),
-      });
+        await supabase.from('users').upsert({
+          id: uid,
+          email: userEmail,
+          role: toDbRole(targetRole),
+          display_name: newProfile.name,
+          avatar_url: newProfile.avatarUrl || null,
+          bio: newProfile.bio || '',
+          updated_at: newProfile.updatedAt,
+          profile_json: JSON.stringify(newProfile),
+        });
 
       setUserProfile(newProfile as UserProfile);
       saveProfileLocally(newProfile as UserProfile);
@@ -615,7 +662,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         password,
         options: {
           data: {
-            role: role.toUpperCase(),
+            role: toDbRole(role),
             displayName: extra.name || (role === 'business' ? 'Business Partner' : 'Creator User'),
           },
         },
@@ -634,7 +681,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         uid: uid,
         email: email.trim(),
         user_metadata: {
-          role: role.toUpperCase(),
+          role: toDbRole(role),
           displayName: extra.name || (role === 'business' ? 'Business Partner' : 'Creator User'),
         },
       };
@@ -662,6 +709,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         letBrandsFindMe: true,
         isVerified: false,
         verified: false,
+        avatarUrl: extra.avatarUrl || '',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -693,13 +741,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await api.syncUser({
           id: uid,
           email: email.trim(),
-          role: role.toUpperCase(),
+          role: toDbRole(role),
           displayName: newProfile.name,
           handle: newProfile.handle,
           niche: newProfile.niche,
           followersCount: followersCount || 10000,
           websiteUrl: newProfile.websiteOrInstagram || '',
           bio: newProfile.bio || '',
+          avatarUrl: newProfile.avatarUrl || '',
           companyName: newProfile.name,
           industry: newProfile.whatYouSell || newProfile.niche || '',
           whatYouSell: newProfile.whatYouSell || '',
@@ -708,10 +757,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await supabase.from('users').upsert({
           id: uid,
           email: email.trim(),
-          role: role.toUpperCase(),
+          role: toDbRole(role),
           display_name: newProfile.name,
+          avatar_url: newProfile.avatarUrl || null,
+          bio: newProfile.bio || '',
           updated_at: newProfile.updatedAt,
-          // Store full profile so re-login restores everything
           profile_json: JSON.stringify(newProfile),
         });
       } catch {
@@ -789,9 +839,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         await supabase.from('users').update({
           display_name: updated.name,
+          avatar_url: updated.avatarUrl || null,
+          bio: updated.bio || '',
           updated_at: updated.updatedAt,
           profile_json: JSON.stringify(updated),
         }).eq('id', currentUser.id);
+        await api.syncUser({
+          id: currentUser.id,
+          email: updated.email,
+          role: toDbRole(updated.role),
+          displayName: updated.name,
+          avatarUrl: updated.avatarUrl || '',
+          bio: updated.bio || '',
+          handle: updated.handle,
+          niche: updated.niche,
+          websiteUrl: updated.websiteOrInstagram || '',
+          companyName: updated.name,
+          whatYouSell: updated.whatYouSell || '',
+        }).catch(() => null);
       } catch (err) {
         console.warn('Supabase profile update note:', err);
       }
