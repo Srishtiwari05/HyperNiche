@@ -249,8 +249,9 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
   };
 
   useEffect(() => {
+    if (isAuthLoading) return;
     void loadMarketplace(true);
-  }, [selectedCategory, selectedPlatform]);
+  }, [selectedCategory, selectedPlatform, currentUser?.id, isAuthLoading]);
 
   // 2. Fetch authenticated user applications and conversations
   useEffect(() => {
@@ -328,26 +329,30 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   // 3. Supabase Realtime subscriptions
   useEffect(() => {
+    if (isAuthLoading) return;
+
     const campaignChannel = supabase
-      .channel('public:campaigns')
+      .channel(`public:campaigns:${currentUser?.id ?? 'guest'}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'campaigns' },
-        (payload) => {
+        async (payload) => {
           if (payload.eventType === 'DELETE') {
             setCampaigns((prev) => prev.filter((c) => c.id !== payload.old.id));
             return;
           }
-          setCampaigns((prev) => upsertById(prev, normalizeCampaign(payload.new)));
-          void fetchCampaignsFromSupabase()
-            .then((rows) => setCampaigns((prev) => mergeById(prev, rows)))
-            .catch(() => {});
+
+          const nextRow = payload.new as Record<string, any> | undefined;
+          if (nextRow) {
+            setCampaigns((prev) => upsertById(prev, normalizeCampaign(nextRow)));
+          }
+          await loadMarketplace(false).catch(() => {});
         }
       )
       .subscribe();
 
     const messageChannel = supabase
-      .channel('public:messages')
+      .channel(`public:messages:${currentUser?.id ?? 'guest'}`)
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'messages' },
@@ -375,7 +380,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
       supabase.removeChannel(campaignChannel);
       supabase.removeChannel(messageChannel);
     };
-  }, []);
+  }, [currentUser?.id, isAuthLoading]);
 
   // CREATE CAMPAIGN
   const createCampaign = async (
@@ -417,28 +422,26 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
       apiErr = err;
     }
 
-    const { data: sbRow, error: sbErr } = await supabase
+    const { data: sbRows, error: sbErr } = await supabase
       .from('campaigns')
       .upsert(toCampaignRow(currentUid, { ...data, deadline: isoDeadline, platform: platformValue }, created?.id))
-      .select()
-      .maybeSingle();
+      .select();
+
+    const sbRow = Array.isArray(sbRows) ? sbRows[0] : sbRows;
 
     if (sbRow || created) {
-      setCampaigns((prev) =>
-        upsertById(
-          prev,
-          normalizeCampaign({
-            ...data,
-            ...created,
-            ...sbRow,
-            businessName: userProfile.name,
-            businessHandle: userProfile.handle,
-            businessId: currentUid,
-            contentType: data.contentType,
-            imageUrl: data.imageUrl || created?.imageUrl,
-          })
-        )
-      );
+      const nextCampaign = normalizeCampaign({
+        ...data,
+        ...created,
+        ...sbRow,
+        businessName: userProfile.name,
+        businessHandle: userProfile.handle,
+        businessId: currentUid,
+        contentType: data.contentType,
+        imageUrl: data.imageUrl || created?.imageUrl,
+      });
+      setCampaigns((prev) => upsertById(prev, nextCampaign));
+      await loadMarketplace(false).catch(() => {});
       return;
     }
 
@@ -478,6 +481,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
     if (Object.keys(patch).length) {
       await supabase.from('campaigns').update(patch).eq('id', campaignId);
     }
+    await loadMarketplace(false).catch(() => {});
     setCampaigns((prev) =>
       prev.map((c) => (c.id === campaignId ? { ...c, ...data, updatedAt: new Date().toISOString() } : c))
     );
@@ -492,6 +496,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
       // still hide locally and in Supabase
     }
     await supabase.from('campaigns').update({ status: 'removed' }).eq('id', campaignId);
+    await loadMarketplace(false).catch(() => {});
     setCampaigns((prev) =>
       prev.map((c) => (c.id === campaignId ? { ...c, status: 'removed', removed: true } : c))
     );
@@ -501,6 +506,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const restoreCampaign = async (campaignId: string) => {
     if (!userProfile) throw new Error('You must be logged in to restore a campaign.');
     await supabase.from('campaigns').update({ status: 'ACTIVE' }).eq('id', campaignId);
+    await loadMarketplace(false).catch(() => {});
     setCampaigns((prev) =>
       prev.map((c) => (c.id === campaignId ? { ...c, status: 'open', removed: false } : c))
     );

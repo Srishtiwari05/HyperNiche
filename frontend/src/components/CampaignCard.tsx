@@ -32,13 +32,13 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
   const isClosed = campaign.status === 'closed' || isExpired;
 
   return (
-    <div className="bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-xl overflow-hidden hover:-translate-y-0.5 hover:shadow-xs hover:border-[var(--accent)]/30 transition-all duration-200 flex flex-col justify-between group">
+    <div className="bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-2xl overflow-hidden hover:-translate-y-0.5 hover:shadow-[0_16px_38px_rgba(32,24,18,0.08)] hover:border-[var(--accent)]/30 transition-all duration-200 flex flex-col justify-between group min-h-[320px] sm:min-h-[360px]">
       {campaign.imageUrl && (
         <div className="h-36 overflow-hidden bg-[var(--bg-card-subtle)]">
           <img src={campaign.imageUrl} alt={campaign.title} className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500" />
         </div>
       )}
-      <div className="p-5 flex flex-col justify-between flex-1">
+      <div className="p-4 sm:p-5 flex flex-col justify-between flex-1">
       <div>
         {/* Brand & Category row */}
         <div className="flex items-start justify-between gap-2 mb-3">
@@ -111,7 +111,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
       </div>
 
       {/* Pay in INR & Apply button */}
-      <div className="flex items-center justify-between pt-1">
+      <div className="flex items-center justify-between gap-3 pt-1">
         <div>
           <span className="block text-[10px] font-semibold text-[var(--text-muted)]">
             Fixed compensation

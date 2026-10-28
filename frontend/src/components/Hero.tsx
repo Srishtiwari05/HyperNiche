@@ -22,7 +22,7 @@ export const Hero: React.FC<HeroProps> = ({
   const isBusiness = role === 'business';
 
   return (
-    <section className="relative overflow-hidden pt-8 pb-10 sm:pt-14 sm:pb-16 border-b border-[var(--border-primary)] bg-[var(--bg-primary)] transition-colors">
+    <section className="relative overflow-hidden pt-6 pb-8 sm:pt-10 sm:pb-12 border-b border-[var(--border-primary)] bg-[var(--bg-primary)] transition-colors">
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
         <div className="aurora-blob-mint absolute -top-24 -left-16 w-[28rem] h-[28rem] rounded-full blur-[90px] opacity-[0.18] dark:opacity-[0.08] bg-[#D9F2E6]" />
         <div className="aurora-blob-blush absolute -bottom-20 right-0 w-[26rem] h-[26rem] rounded-full blur-[90px] opacity-[0.16] dark:opacity-[0.08] bg-[#FFE3D3]" />
@@ -36,13 +36,13 @@ export const Hero: React.FC<HeroProps> = ({
               <span>{isBusiness ? 'Hire creators who already know your niche' : 'Find paid deals that match your audience'}</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-[48px] lg:leading-[1.12] font-black text-[var(--text-primary)] tracking-tight font-['Archivo']">
+            <h1 className="text-3xl sm:text-4xl lg:text-[48px] lg:leading-[1.08] font-black text-[var(--text-primary)] tracking-[-0.04em] font-['Archivo']">
               {isBusiness
                 ? 'Get your product in front of the right audience.'
                 : 'Turn your audience into income.'}
             </h1>
 
-            <p className="mt-4 text-base sm:text-lg text-[var(--text-secondary)] max-w-2xl leading-relaxed">
+            <p className="mt-4 text-base sm:text-lg text-[var(--text-secondary)] max-w-xl leading-relaxed">
               {isBusiness
                 ? 'Post a brief, review pitches, and work directly with verified Indian creators. No agency markup. Clear INR rates.'
                 : 'Browse live brand briefs with budgets in INR, pitch once, and get paid when the work is done.'}
