@@ -33,9 +33,12 @@ public class UserService {
 
     @Transactional
     public UserResponse syncUser(UUID authenticatedUserId, UserSyncRequest request) {
-        UUID targetId = authenticatedUserId != null ? authenticatedUserId : request.id();
+        UUID targetId = authenticatedUserId;
         if (targetId == null) {
             throw new IllegalArgumentException("User ID is required for sync");
+        }
+        if (request.id() != null && !request.id().equals(targetId)) {
+            throw new IllegalArgumentException("User ID does not match authenticated session");
         }
 
         User user = userRepository.findById(targetId).orElseGet(() -> {

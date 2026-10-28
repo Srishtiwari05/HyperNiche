@@ -4,15 +4,9 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v
 
 export async function fetchWithAuth<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   let token: string | undefined;
-  let userId: string | undefined;
-  let userRole: string | undefined;
-  let userEmail: string | undefined;
   try {
     const { data: { session } } = await supabase.auth.getSession();
     token = session?.access_token;
-    userId = session?.user?.id;
-    userRole = session?.user?.user_metadata?.role || session?.user?.app_metadata?.role;
-    userEmail = session?.user?.email;
   } catch {
     // Continue without session if supabase is uninitialized
   }
@@ -22,12 +16,6 @@ export async function fetchWithAuth<T>(endpoint: string, options: RequestInit = 
 
   if (token) {
     headers.set("Authorization", `Bearer ${token}`);
-  }
-  // Fallback identity headers — backend reads these when JWT secret is unset/placeholder
-  if (userId) {
-    headers.set("X-User-Id", userId);
-    if (userRole) headers.set("X-User-Role", userRole.toUpperCase());
-    if (userEmail) headers.set("X-User-Email", userEmail);
   }
 
   const res = await fetch(`${API_BASE}${endpoint}`, {

@@ -19,6 +19,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Map;
 import java.util.UUID;
 
@@ -27,6 +28,9 @@ public class SupabaseJwtAuthFilter extends OncePerRequestFilter {
 
     @Value("${supabase.jwt.secret:}")
     private String jwtSecret;
+
+    @Value("${supabase.jwt.issuer:}")
+    private String jwtIssuer;
 
     @Override
     protected void doFilterInternal(
@@ -42,22 +46,6 @@ public class SupabaseJwtAuthFilter extends OncePerRequestFilter {
                 principal = parseToken(token);
             } catch (Exception ex) {
                 logger.warn("Could not authenticate JWT: " + ex.getMessage());
-            }
-        }
-
-        if (principal == null) {
-            String userIdHeader = request.getHeader("X-User-Id");
-            if (StringUtils.hasText(userIdHeader)) {
-                try {
-                    UUID userId = UUID.fromString(userIdHeader.trim());
-                    String userRole = request.getHeader("X-User-Role");
-                    String userEmail = request.getHeader("X-User-Email");
-                    principal = new UserPrincipal(
-                            userId,
-                            StringUtils.hasText(userEmail) ? userEmail : "user@hyperniche.com",
-                            StringUtils.hasText(userRole) ? userRole : "CREATOR"
-                    );
-                } catch (Exception ignored) {}
             }
         }
 
@@ -81,52 +69,50 @@ public class SupabaseJwtAuthFilter extends OncePerRequestFilter {
 
     @SuppressWarnings("unchecked")
     private UserPrincipal parseToken(String token) {
+        if (!StringUtils.hasText(jwtSecret) || jwtSecret.contains("placeholder")) {
+            throw new IllegalArgumentException("Supabase JWT secret is not configured");
+        }
+
+        Claims claims;
+        byte[] keyBytes = resolveJwtKey(jwtSecret);
         try {
-            if (StringUtils.hasText(jwtSecret) && !jwtSecret.contains("placeholder")) {
-                Claims claims = null;
-                try {
-                    byte[] decoded = java.util.Base64.getDecoder().decode(jwtSecret.trim());
-                    claims = Jwts.parser().verifyWith(Keys.hmacShaKeyFor(decoded)).build().parseSignedClaims(token).getPayload();
-                } catch (Exception ex) {
-                    claims = Jwts.parser().verifyWith(Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8))).build().parseSignedClaims(token).getPayload();
-                }
-
-                String sub = claims.getSubject();
-                if (sub != null) {
-                    UUID userId = UUID.fromString(sub);
-                    String email = claims.get("email", String.class);
-                    String role = "CREATOR";
-                    Map<String, Object> appMetadata = claims.get("app_metadata", Map.class);
-                    if (appMetadata != null && appMetadata.containsKey("role")) {
-                        role = (String) appMetadata.get("role");
-                    } else if (claims.containsKey("role")) {
-                        role = claims.get("role", String.class);
-                    }
-                    return new UserPrincipal(userId, email, role);
-                }
+            var parser = Jwts.parser().verifyWith(Keys.hmacShaKeyFor(keyBytes));
+            if (StringUtils.hasText(jwtIssuer)) {
+                parser.requireIssuer(jwtIssuer);
             }
-        } catch (Exception ignored) {}
+            claims = parser.build().parseSignedClaims(token).getPayload();
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Supabase JWT verification failed", ex);
+        }
 
-        // Fallback: parse unverified payload if signature fails or jwtSecret is placeholder
+        String sub = claims.getSubject();
+        if (!StringUtils.hasText(sub)) {
+            throw new IllegalArgumentException("Supabase JWT missing subject claim");
+        }
+
+        UUID userId = UUID.fromString(sub);
+        String email = claims.get("email", String.class);
+        if (!StringUtils.hasText(email)) {
+            email = "user@hyperniche.com";
+        }
+
+        String role = "CREATOR";
+        Map<String, Object> appMetadata = claims.get("app_metadata", Map.class);
+        if (appMetadata != null && appMetadata.containsKey("role")) {
+            role = String.valueOf(appMetadata.get("role"));
+        } else if (claims.containsKey("role")) {
+            role = claims.get("role", String.class);
+        }
+
+        return new UserPrincipal(userId, email, role);
+    }
+
+    private byte[] resolveJwtKey(String secret) {
+        String trimmed = secret.trim();
         try {
-            String[] parts = token.split("\\.");
-            if (parts.length >= 2) {
-                byte[] decodedBytes = java.util.Base64.getUrlDecoder().decode(parts[1]);
-                com.fasterxml.jackson.databind.JsonNode root = new com.fasterxml.jackson.databind.ObjectMapper().readTree(decodedBytes);
-                if (root.has("sub")) {
-                    UUID userId = UUID.fromString(root.get("sub").asText());
-                    String email = root.has("email") ? root.get("email").asText() : "user@hyperniche.com";
-                    String role = "CREATOR";
-                    if (root.has("app_metadata") && root.get("app_metadata").has("role")) {
-                        role = root.get("app_metadata").get("role").asText();
-                    } else if (root.has("role")) {
-                        role = root.get("role").asText();
-                    }
-                    return new UserPrincipal(userId, email, role);
-                }
-            }
-        } catch (Exception ignored) {}
-
-        return null;
+            return Base64.getDecoder().decode(trimmed);
+        } catch (IllegalArgumentException ignored) {
+            return trimmed.getBytes(StandardCharsets.UTF_8);
+        }
     }
 }

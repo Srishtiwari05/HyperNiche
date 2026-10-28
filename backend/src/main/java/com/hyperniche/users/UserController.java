@@ -40,8 +40,14 @@ public class UserController {
             @AuthenticationPrincipal UserPrincipal principal,
             @Valid @RequestBody UserSyncRequest request
     ) {
-        UUID authenticatedId = principal != null ? principal.getId() : request.id();
-        UserResponse response = userService.syncUser(authenticatedId, request);
+        if (principal == null) {
+            return ResponseEntity.status(401).body(ApiResponse.error("Unauthorized"));
+        }
+        if (request.id() != null && !request.id().equals(principal.getId())) {
+            return ResponseEntity.status(403).body(ApiResponse.error("User ID does not match authenticated session"));
+        }
+
+        UserResponse response = userService.syncUser(principal.getId(), request);
         return ResponseEntity.ok(ApiResponse.success("User synchronized successfully", response));
     }
 }
