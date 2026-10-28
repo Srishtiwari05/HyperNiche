@@ -191,7 +191,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // 3. Fallback: build a complete profile from user metadata and email
       const rawRole = (user.user_metadata?.role || 'creator').toLowerCase();
-      const activeRole: UserRole = rawRole.includes('biz') || rawRole.includes('business') ? 'business' : 'creator';
+      const activeRole: UserRole = rawRole.includes('biz') || rawRole.includes('business') || rawRole.includes('brand') ? 'business' : 'creator';
       const displayName = user.user_metadata?.displayName || user.user_metadata?.name || user.email?.split('@')[0] || 'User';
       const cleanHandle = `@${displayName.toLowerCase().replace(/[^a-z0-9_]/g, '') || 'user'}`;
 
@@ -249,7 +249,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setNeedsProfileCompletion(false);
       } else {
         const rawRole = (user.user_metadata?.role || 'creator').toLowerCase();
-        const activeRole: UserRole = rawRole.includes('biz') || rawRole.includes('business') ? 'business' : 'creator';
+        const activeRole: UserRole = rawRole.includes('biz') || rawRole.includes('business') || rawRole.includes('brand') ? 'business' : 'creator';
         const displayName = user.user_metadata?.displayName || user.email?.split('@')[0] || 'User';
         const cleanHandle = `@${displayName.toLowerCase().replace(/[^a-z0-9_]/g, '') || 'user'}`;
         const fallbackProfile: UserProfile = {
@@ -288,12 +288,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (isMounted) {
         setIsLoading(false);
       }
-    }, 1500);
+    }, 5000);
 
-    // Initial check with 1.5s timeout fallback
+    // Initial check with 5s timeout fallback
     const sessionPromise = supabase.auth.getSession();
     const timeoutPromise = new Promise<{ data: { session: null } }>((resolve) =>
-      setTimeout(() => resolve({ data: { session: null } }), 1500)
+      setTimeout(() => resolve({ data: { session: null } }), 5000)
     );
 
     Promise.race([sessionPromise, timeoutPromise]).then(({ data: { session } }) => {

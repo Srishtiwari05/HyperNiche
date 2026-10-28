@@ -14,7 +14,10 @@ import java.util.UUID;
 @Repository
 public interface CampaignRepository extends JpaRepository<Campaign, UUID> {
 
-    @Query("SELECT c FROM Campaign c JOIN FETCH c.brand b WHERE c.status = 'ACTIVE' " +
+    @Query(value = "SELECT c FROM Campaign c JOIN FETCH c.brand b WHERE c.status = 'ACTIVE' " +
+           "AND (:category IS NULL OR LOWER(c.category) = LOWER(:category)) " +
+           "AND (:platform IS NULL OR LOWER(c.platform) = LOWER(:platform))",
+           countQuery = "SELECT count(c) FROM Campaign c WHERE c.status = 'ACTIVE' " +
            "AND (:category IS NULL OR LOWER(c.category) = LOWER(:category)) " +
            "AND (:platform IS NULL OR LOWER(c.platform) = LOWER(:platform))")
     Page<Campaign> findActiveCampaigns(

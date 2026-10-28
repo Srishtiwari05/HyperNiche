@@ -13,6 +13,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.nio.charset.StandardCharsets;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.PublicKey;
+import java.security.spec.ECGenParameterSpec;
 import java.util.Map;
 import java.util.UUID;
 
@@ -77,5 +81,41 @@ class SupabaseJwtAuthFilterTest {
         UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
         assertEquals(tokenUserId, principal.getId());
         assertEquals("real@example.com", principal.getEmail());
+    }
+
+    @Test
+    void shouldVerifyEs256TokenUsingCachedEcKey() throws Exception {
+        KeyPairGenerator kpg = KeyPairGenerator.getInstance("EC");
+        kpg.initialize(new ECGenParameterSpec("secp256r1"));
+        KeyPair kp = kpg.generateKeyPair();
+
+        @SuppressWarnings("unchecked")
+        Map<String, PublicKey> keyCache = (Map<String, PublicKey>)
+                ReflectionTestUtils.getField(filter, "keyCache");
+        assertNotNull(keyCache);
+        keyCache.put("test-kid", kp.getPublic());
+
+        UUID tokenUserId = UUID.randomUUID();
+        String token = Jwts.builder()
+                .header().keyId("test-kid").and()
+                .subject(tokenUserId.toString())
+                .issuer("https://example.supabase.co")
+                .claim("email", "ec-user@example.com")
+                .claim("user_metadata", Map.of("role", "BUSINESS"))
+                .signWith(kp.getPrivate(), Jwts.SIG.ES256)
+                .compact();
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("Authorization", "Bearer " + token);
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        filter.doFilter(request, response, (req, res) -> {});
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        assertNotNull(authentication);
+        UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+        assertEquals(tokenUserId, principal.getId());
+        assertEquals("ec-user@example.com", principal.getEmail());
+        assertEquals("BRAND", principal.getRole());
     }
 }

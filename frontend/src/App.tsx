@@ -34,7 +34,7 @@ const MainAppContent: React.FC = () => {
   // Navigation tab: 'browse' | 'my-campaigns' | 'applications' | 'messages' | 'profile'
   const [currentTab, setCurrentTab] = useState<
     'browse' | 'my-campaigns' | 'applications' | 'messages' | 'profile'
-  >('profile');
+  >('browse');
 
   // Currently viewed user profile (null = own profile)
   const [viewingUserProfile, setViewingUserProfile] = useState<UserProfile | null>(null);

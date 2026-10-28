@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS users (
     display_name VARCHAR(150) NOT NULL,
     avatar_url TEXT,
     bio TEXT,
+    profile_json TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -173,14 +174,17 @@ ALTER TABLE payment_transactions ENABLE ROW LEVEL SECURITY;
 
 -- Users policies
 CREATE POLICY "Public users can view profiles" ON users FOR SELECT USING (true);
+CREATE POLICY "Users can insert their own profile" ON users FOR INSERT WITH CHECK (auth.uid() = id);
 CREATE POLICY "Users can update their own profile" ON users FOR UPDATE USING (auth.uid() = id);
 
 -- Creator profiles
 CREATE POLICY "Public can view creator profiles" ON creator_profiles FOR SELECT USING (true);
+CREATE POLICY "Creators can insert own profile" ON creator_profiles FOR INSERT WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Creators can update own profile" ON creator_profiles FOR UPDATE USING (auth.uid() = user_id);
 
 -- Brand profiles
 CREATE POLICY "Public can view brand profiles" ON brand_profiles FOR SELECT USING (true);
+CREATE POLICY "Brands can insert own profile" ON brand_profiles FOR INSERT WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Brands can update own profile" ON brand_profiles FOR UPDATE USING (auth.uid() = user_id);
 
 -- Campaigns

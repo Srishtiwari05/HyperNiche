@@ -49,7 +49,11 @@ public class UserService {
 
         user.setEmail(request.email());
         if (request.role() != null && !request.role().isBlank()) {
-            user.setRole(request.role().toUpperCase());
+            String roleStr = request.role().toUpperCase();
+            if ("BUSINESS".equals(roleStr)) {
+                roleStr = "BRAND";
+            }
+            user.setRole(roleStr);
         }
         user.setDisplayName(request.displayName());
         user.setAvatarUrl(request.avatarUrl());

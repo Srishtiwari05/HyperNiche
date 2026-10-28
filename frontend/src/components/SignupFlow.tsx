@@ -148,7 +148,7 @@ export const SignupFlow: React.FC = () => {
         await completeProfileForCurrentUser(role, payload);
       } catch (err: any) {
         console.error('Save profile error:', err);
-        setErrorMsg("Couldn't save your profile, please try again");
+        setErrorMsg(err.message || "Couldn't save your profile, please try again");
         setSaveFailed(true);
       } finally {
         setIsSubmitting(false);
@@ -203,9 +203,9 @@ export const SignupFlow: React.FC = () => {
       }
     } catch (err: any) {
       if (accountType === 'existing') {
-        setErrorMsg('Email or password is incorrect');
+        setErrorMsg(err.message || 'Email or password is incorrect');
       } else {
-        setErrorMsg("Couldn't save your profile, please try again");
+        setErrorMsg(err.message || "Couldn't save your profile, please try again");
         setSaveFailed(true);
       }
     } finally {

@@ -27,9 +27,10 @@ spring:
         format_sql: false
 
 supabase:
+  url: ${SUPABASE_URL:https://dlmedpigamprmcbloxvk.supabase.co}
   jwt:
     secret: ${SUPABASE_JWT_SECRET:your-supabase-jwt-secret-placeholder}
-    issuer: ${SUPABASE_URL:https://xyzcompany.supabase.co}/auth/v1
+    issuer: ${SUPABASE_URL:https://dlmedpigamprmcbloxvk.supabase.co}/auth/v1
 
 springdoc:
   swagger-ui:
