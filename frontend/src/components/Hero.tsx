@@ -23,6 +23,10 @@ const creatorShowcase = [
   { name: 'Ari', value: '875K subscribers', tone: 'bg-[#FFB59F]' },
   { name: 'Maya', value: '1.2M views / week', tone: 'bg-[#C9E7CD]' },
   { name: 'Noah', value: '430 brand collabs', tone: 'bg-[#D9D3FF]' },
+   { name: 'Sophia', value: '2.3M followers', tone: 'bg-[#F5DDA7]' },
+  { name: 'Ari', value: '875K subscribers', tone: 'bg-[#FFB59F]' },
+  { name: 'Maya', value: '1.2M views / week', tone: 'bg-[#C9E7CD]' },
+  { name: 'Noah', value: '430 brand collabs', tone: 'bg-[#D9D3FF]' },
 ];
 
 export const Hero: React.FC<HeroProps> = ({
@@ -71,11 +75,11 @@ export const Hero: React.FC<HeroProps> = ({
               <span>{isBusiness ? 'Hire proven creators' : 'Find paid deals that match your niche'}</span>
             </div>
 
-            <h1 className="max-w-[920px] text-[clamp(4rem,8vw,11rem)] leading-[0.8] tracking-[-0.075em] text-[#f1efe9] font-black font-['Archivo']">
+            <h1 className="max-w-[920px] text-[clamp(4rem,8vw,11rem)] leading-[0.8] tracking-[-0.075em] text-[var(--text-primary)] font-black font-['Archivo']">
               {isBusiness ? (
                 <>
                   Get your product in front of the{' '}
-                  <span className="inline-block rounded-[26px] bg-[#f1efe9] px-2 py-1 text-[#0c0d0f] shadow-[0_14px_30px_rgba(241,239,233,0.12)]">
+                  <span className="inline-block rounded-[26px] bg-[var(--bg-card)] px-2 py-1 text-[var(--text-primary)] shadow-[0_14px_30px_rgba(43,38,34,0.08)]">
                     right audience
                   </span>
                   .
@@ -83,14 +87,14 @@ export const Hero: React.FC<HeroProps> = ({
               ) : (
                 <>
                   Turn your audience into{' '}
-                  <span className="inline-block rounded-[26px] bg-[#f1efe9] px-2 py-1 text-[#0c0d0f] shadow-[0_14px_30px_rgba(241,239,233,0.12)]">
+                  <span className="inline-block rounded-[26px] bg-[var(--bg-card)] px-2 py-1 text-[var(--text-primary)] shadow-[0_14px_30px_rgba(43,38,34,0.08)]">
                     income.
                   </span>
                 </>
               )}
             </h1>
 
-            <p className="mt-5 max-w-[780px] text-base leading-relaxed text-[#d9d4ce] sm:text-2xl sm:leading-[1.2]">
+            <p className="mt-5 max-w-[780px] text-base leading-relaxed text-[var(--text-secondary)] sm:text-2xl sm:leading-[1.2]">
               {isBusiness
                 ? 'Post a brief, review pitches, and work directly with trusted creators. No agency markup, clear budgets, and faster timelines.'
                 : 'Browse live brand briefs with real budgets, pitch once, and get paid when the work is done.'}
