@@ -67,6 +67,7 @@ export const api = {
   // Applications
   applyToCampaign: (data: any) => fetchWithAuth<any>("/applications", { method: "POST", body: JSON.stringify(data) }),
   getMyApplications: () => fetchWithAuth<any[]>("/applications/my"),
+  getBrandApplications: () => fetchWithAuth<any[]>("/applications/brand"),
   getCampaignApplications: (campaignId: string) => fetchWithAuth<any[]>(`/applications/campaign/${campaignId}`),
   updateApplicationStatus: (id: string, status: string) =>
     fetchWithAuth<any>(`/applications/${id}/status`, { method: "PATCH", body: JSON.stringify({ status }) }),

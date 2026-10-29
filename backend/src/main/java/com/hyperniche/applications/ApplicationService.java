@@ -82,6 +82,13 @@ public class ApplicationService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<ApplicationResponse> getBrandApplications(UUID brandId) {
+        return applicationRepository.findByCampaignBrandIdOrderByCreatedAtDesc(brandId).stream()
+                .map(ApplicationResponse::fromEntity)
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     public ApplicationResponse updateApplicationStatus(UUID brandId, UUID applicationId, String status) {
         Application application = applicationRepository.findById(applicationId)

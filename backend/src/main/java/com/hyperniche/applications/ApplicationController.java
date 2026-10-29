@@ -60,6 +60,16 @@ public class ApplicationController {
         return ResponseEntity.ok(ApiResponse.success(list));
     }
 
+    @GetMapping("/brand")
+    @PreAuthorize("hasRole('BRAND')")
+    @Operation(summary = "Get all applications for the authenticated brand across their campaigns")
+    public ResponseEntity<ApiResponse<List<ApplicationResponse>>> getBrandApplications(
+            @AuthenticationPrincipal UserPrincipal principal
+    ) {
+        List<ApplicationResponse> list = applicationService.getBrandApplications(principal.getId());
+        return ResponseEntity.ok(ApiResponse.success(list));
+    }
+
     @PatchMapping("/{id}/status")
     @PreAuthorize("hasRole('BRAND')")
     @Operation(summary = "Update application status (ACCEPTED, DECLINED)")

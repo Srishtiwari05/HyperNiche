@@ -85,6 +85,31 @@ function mergeById(primary: Campaign[], extra: Campaign[]): Campaign[] {
   return extra.reduce((acc, row) => upsertById(acc, row), primary);
 }
 
+function mapApplicationFromApi(data: any): Application {
+  const creatorName = data.creatorName || data.creator?.displayName || 'Creator';
+  const creatorHandle = data.creatorHandle || (creatorName ? `@${creatorName.toLowerCase().replace(/\s+/g, '')}` : '@creator');
+
+  return {
+    id: data.id,
+    campaignId: data.campaignId,
+    campaignTitle: data.campaignTitle || 'Campaign',
+    businessId: data.brandId || data.businessId || '',
+    creatorId: data.creatorId,
+    creatorName,
+    creatorHandle,
+    creatorFollowers: data.creatorFollowers || '10K-50K',
+    creatorNiche: data.creatorNiche || 'Lifestyle',
+    creatorAvatar: data.creatorAvatar || data.creator?.avatarUrl,
+    creatorIsVerified: Boolean(data.creatorIsVerified ?? data.creator?.isVerified),
+    pitch: data.pitch || '',
+    proposedRate: Number(data.proposedRateInr ?? data.proposedRate ?? 0),
+    proposedRateInr: Number(data.proposedRateInr ?? data.proposedRate ?? 0),
+    status: (data.status || 'pending').toLowerCase(),
+    createdAt: data.createdAt || new Date().toISOString(),
+    updatedAt: data.updatedAt || data.createdAt || new Date().toISOString(),
+  };
+}
+
 async function fetchCampaignsFromApi(params: { category?: string; platform?: string }): Promise<Campaign[]> {
   const first = await api.getCampaigns({ ...params, page: 0, size: 100 });
   const content = first?.content || (Array.isArray(first) ? first : []);
@@ -230,10 +255,14 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
       setDataError(null);
     }
 
-    const apiCamps = await fetchCampaignsFromApi(campParams).catch(() => [] as Campaign[]);
-    const sbCamps = await fetchCampaignsFromSupabase().catch(() => [] as Campaign[]);
-    const merged = mergeById(apiCamps, sbCamps);
-    setCampaigns(merged);
+    try {
+      const apiCamps = await fetchCampaignsFromApi(campParams);
+      const sbCamps = await fetchCampaignsFromSupabase().catch(() => [] as Campaign[]);
+      const merged = mergeById(apiCamps, sbCamps);
+      setCampaigns(merged);
+    } catch {
+      setCampaigns([]);
+    }
 
     try {
       const creatorRes: any = await api.getCreators(creatorParams);
@@ -257,29 +286,25 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
   useEffect(() => {
     if (!currentUser) return;
 
-    api.getMyApplications()
-      .then((res: any[]) => {
-        if (Array.isArray(res)) {
-          setApplications(res.map((a: any) => ({
-            id: a.id,
-            campaignId: a.campaignId,
-            campaignTitle: a.campaignTitle,
-            businessId: a.brandId || '',
-            creatorId: a.creatorId,
-            creatorName: a.creatorName || 'Creator',
-            creatorHandle: `@${(a.creatorName || 'creator').toLowerCase().replace(/\s+/g, '')}`,
-            creatorFollowers: '10K-50K',
-            creatorNiche: 'Lifestyle',
-            creatorIsVerified: true,
-            pitch: a.pitch,
-            proposedRate: a.proposedRateInr,
-            status: (a.status || 'pending').toLowerCase(),
-            createdAt: a.createdAt || new Date().toISOString(),
-            updatedAt: a.updatedAt || a.createdAt || new Date().toISOString(),
-          })));
-        }
-      })
-      .catch((err) => console.warn('API getMyApplications note:', err));
+    const isBrand = userProfile?.role === 'business' || userProfile?.role === 'BRAND';
+
+    if (isBrand) {
+      api.getBrandApplications()
+        .then((res: any[]) => {
+          if (Array.isArray(res)) {
+            setApplications(res.map(mapApplicationFromApi));
+          }
+        })
+        .catch((err) => console.warn('API getBrandApplications note:', err));
+    } else {
+      api.getMyApplications()
+        .then((res: any[]) => {
+          if (Array.isArray(res)) {
+            setApplications(res.map(mapApplicationFromApi));
+          }
+        })
+        .catch((err) => console.warn('API getMyApplications note:', err));
+    }
 
     api.getConversations()
       .then((convs: any[]) => {
@@ -325,7 +350,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
         }
       })
       .catch(() => {});
-  }, [currentUser]);
+  }, [currentUser, userProfile?.role]);
 
   // 3. Supabase Realtime subscriptions
   useEffect(() => {
@@ -695,12 +720,13 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
     if (!businessId) throw new Error('Business identifier missing');
 
     const nowIso = new Date().toISOString();
+    const normalizedStatus = newStatus === 'accepted' ? 'accepted' : 'rejected';
 
     setApplications((prev) =>
-      prev.map((a) => (a.id === applicationId ? { ...a, status: newStatus, decidedAt: nowIso, updatedAt: nowIso } : a))
+      prev.map((a) => (a.id === applicationId ? { ...a, status: normalizedStatus, decidedAt: nowIso, updatedAt: nowIso } : a))
     );
 
-    if (newStatus === 'accepted' && targetApp) {
+    if (normalizedStatus === 'accepted' && targetApp) {
       const convId = `${targetApp.campaignId}_${targetApp.creatorId}`;
       const hasExistingMsg = messages.some((m) => m.conversationId === convId);
 
@@ -725,7 +751,11 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }
 
     try {
-      await api.updateApplicationStatus(applicationId, newStatus.toUpperCase());
+      await api.updateApplicationStatus(applicationId, normalizedStatus.toUpperCase());
+      setApplications((prev) => prev.map((a) => {
+        if (a.id !== applicationId) return a;
+        return { ...a, status: normalizedStatus, decidedAt: nowIso, updatedAt: nowIso };
+      }));
     } catch {
       // ignore
     }

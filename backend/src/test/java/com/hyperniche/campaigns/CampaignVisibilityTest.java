@@ -1,5 +1,8 @@
 package com.hyperniche.campaigns;
 
+import com.hyperniche.applications.Application;
+import com.hyperniche.applications.ApplicationRepository;
+import com.hyperniche.applications.ApplicationStatus;
 import com.hyperniche.users.User;
 import com.hyperniche.users.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -13,6 +16,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
@@ -25,6 +29,9 @@ class CampaignVisibilityTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ApplicationRepository applicationRepository;
 
     @Test
     void activeCampaignsRemainVisibleAcrossBrandAccounts() {
@@ -62,4 +69,36 @@ class CampaignVisibilityTest {
         assertTrue(campaigns.stream().anyMatch(c -> c.getTitle().equals("Spring drops")));
         assertTrue(campaigns.stream().anyMatch(c -> c.getTitle().equals("Creator market test")));
     }
+
+    @Test
+    void brandCanFetchApplicationsAcrossTheirCampaigns() {
+        User brand = new User(UUID.randomUUID(), "brand@example.com", "BRAND", "Brand", "", "");
+        User creator = new User(UUID.randomUUID(), "creator@example.com", "CREATOR", "Creator", "", "");
+        userRepository.save(brand);
+        userRepository.save(creator);
+
+        Campaign campaign = new Campaign();
+        campaign.setBrand(brand);
+        campaign.setTitle("Spring drops");
+        campaign.setDescription("A creator campaign for the spring collection");
+        campaign.setCategory("Fashion");
+        campaign.setPlatform("Instagram Reels");
+        campaign.setBudgetInr(new BigDecimal("25000"));
+        campaign.setDeadline(LocalDate.now().plusDays(14));
+        campaign.setStatus(CampaignStatus.ACTIVE.name());
+        campaign = campaignRepository.save(campaign);
+
+        Application app = new Application();
+        app.setCampaign(campaign);
+        app.setCreator(creator);
+        app.setPitch("I can create three product reels for your launch.");
+        app.setProposedRateInr(new BigDecimal("18000"));
+        app.setStatus(ApplicationStatus.PENDING.name());
+
+        applicationRepository.save(app);
+
+        assertEquals(1, applicationRepository.findByCampaignBrandIdOrderByCreatedAtDesc(brand.getId()).size());
+        assertEquals("Spring drops", applicationRepository.findByCampaignBrandIdOrderByCreatedAtDesc(brand.getId()).get(0).getCampaign().getTitle());
+    }
 }
+

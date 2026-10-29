@@ -11,5 +11,6 @@ import java.util.UUID;
 public interface ApplicationRepository extends JpaRepository<Application, UUID> {
     List<Application> findByCreatorIdOrderByCreatedAtDesc(UUID creatorId);
     List<Application> findByCampaignIdOrderByCreatedAtDesc(UUID campaignId);
+    List<Application> findByCampaignBrandIdOrderByCreatedAtDesc(UUID brandId);
     Optional<Application> findByCampaignIdAndCreatorId(UUID campaignId, UUID creatorId);
 }
