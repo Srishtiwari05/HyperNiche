@@ -37,11 +37,11 @@ export const Hero: React.FC<HeroProps> = ({
   const isBusiness = role === 'business';
 
   return (
-    <section className="relative overflow-hidden border-b border-[var(--border-primary)] bg-[var(--bg-primary)] pb-10 pt-6 transition-colors sm:pt-8 lg:pb-14">
+    <section className="relative overflow-hidden border-b border-[var(--border-primary)] bg-[#efeae4] pb-10 pt-6 transition-colors sm:pt-8 lg:pb-14">
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-        <div className="hero-orb hero-orb--mint absolute -left-20 -top-24 h-[28rem] w-[28rem] rounded-full bg-[#CDE9D9] opacity-30 blur-[100px]" />
-        <div className="hero-orb hero-orb--blush absolute -bottom-24 right-0 h-[26rem] w-[26rem] rounded-full bg-[#FFDCCF] opacity-30 blur-[110px]" />
-        <div className="hero-orb hero-orb--lavender absolute left-1/2 top-14 h-[22rem] w-[22rem] -translate-x-1/2 rounded-full bg-[#E7DEFF] opacity-20 blur-[90px]" />
+        <div className="hero-orb hero-orb--mint absolute -left-20 -top-24 h-[28rem] w-[28rem] rounded-full bg-[#dfe6df] opacity-30 blur-[100px]" />
+        <div className="hero-orb hero-orb--blush absolute -bottom-24 right-0 h-[26rem] w-[26rem] rounded-full bg-[#f1d9d2] opacity-30 blur-[110px]" />
+        <div className="hero-orb hero-orb--lavender absolute left-1/2 top-14 h-[22rem] w-[22rem] -translate-x-1/2 rounded-full bg-[#e7deea] opacity-20 blur-[90px]" />
       </div>
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -66,31 +66,34 @@ export const Hero: React.FC<HeroProps> = ({
 
         <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-12">
           <div className="motion-fade-up lg:col-span-7">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] bg-[var(--bg-card)]/80 px-3 py-1.5 text-[11px] font-semibold tracking-[0.12em] text-[var(--text-secondary)] uppercase shadow-[0_8px_18px_rgba(43,38,34,0.04)]">
-              <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#1a1c1d]/10 bg-[#f8f5f1]/80 px-3 py-1.5 text-[11px] font-semibold tracking-[0.12em] text-[#2d2c2a] uppercase shadow-[0_8px_18px_rgba(43,38,34,0.04)]">
+              <span className="h-2 w-2 rounded-full bg-[#ef5d5d]" />
               <span>{isBusiness ? 'Hire proven creators' : 'Find paid deals that match your niche'}</span>
             </div>
 
-            <h1 className="max-w-[920px] text-[clamp(4rem,8vw,11rem)] leading-[0.8] tracking-[-0.075em] text-[#f1efe9] font-black font-['Archivo']">
+            <h1 className="max-w-[920px] text-[clamp(4rem,8vw,11rem)] leading-[0.72] tracking-[-0.09em] font-black font-['Archivo']">
               {isBusiness ? (
                 <>
-                  Get your product in front of the{' '}
-                  <span className="inline-block rounded-[26px] bg-[#f1efe9] px-2 py-1 text-[#0c0d0f] shadow-[0_14px_30px_rgba(241,239,233,0.12)]">
+                  <span className="block text-[#e5e0de]">Get your product</span>
+                  <span className="block text-[#e5e0de]">in front of the</span>
+                  <span className="mt-1 inline-flex rounded-[30px] bg-[#111214] px-4 py-1 text-[#f2f0ea] shadow-[0_18px_36px_rgba(17,18,20,0.12)]">
                     right audience
                   </span>
-                  .
+                  <span className="block text-[#e5e0de]">.</span>
                 </>
               ) : (
                 <>
-                  Turn your audience into{' '}
-                  <span className="inline-block rounded-[26px] bg-[#f1efe9] px-2 py-1 text-[#0c0d0f] shadow-[0_14px_30px_rgba(241,239,233,0.12)]">
+                  <span className="block text-[#e5e0de]">Turn your</span>
+                  <span className="block text-[#e5e0de]">audience</span>
+                  <span className="block text-[#e5e0de]">into</span>
+                  <span className="mt-2 inline-flex rounded-[30px] bg-[#111214] px-4 py-1 text-[#f2f0ea] shadow-[0_18px_36px_rgba(17,18,20,0.12)]">
                     income.
                   </span>
                 </>
               )}
             </h1>
 
-            <p className="mt-5 max-w-[780px] text-base leading-relaxed text-[#d9d4ce] sm:text-2xl sm:leading-[1.2]">
+            <p className="mt-5 max-w-[780px] text-base leading-relaxed text-[#3d3a38] sm:text-[2.2rem] sm:leading-[1.15]">
               {isBusiness
                 ? 'Post a brief, review pitches, and work directly with trusted creators. No agency markup, clear budgets, and faster timelines.'
                 : 'Browse live brand briefs with real budgets, pitch once, and get paid when the work is done.'}
