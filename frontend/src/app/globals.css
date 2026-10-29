@@ -129,8 +129,20 @@
     max-width: 100%;
   }
 
-  button, input, select, textarea {
+  button, a, [role="button"], input, select, textarea {
     font-family: inherit !important;
+    transition: transform 0.18s ease, opacity 0.18s ease, box-shadow 0.22s ease, background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, filter 0.18s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button:active, a:active, [role="button"]:active {
+    transform: translateY(0) scale(0.985);
+  }
+
+  button:focus-visible, a:focus-visible, [role="button"]:focus-visible,
+  input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 2px solid rgba(240, 106, 77, 0.75);
+    outline-offset: 2px;
   }
 
   h1, h2, h3, h4, h5, h6, nav, header, [class*="font-['Archivo']"] {
