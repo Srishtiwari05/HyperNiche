@@ -104,11 +104,19 @@
     -moz-osx-font-smoothing: grayscale;
     transition: background-color 0.15s ease, color 0.15s ease;
     overflow-x: hidden;
+    scroll-behavior: smooth;
   }
 
   body {
     min-height: 100vh;
     text-rendering: optimizeLegibility;
+    transform: translateZ(0);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  img {
+    content-visibility: auto;
+    contain-intrinsic-size: 280px 180px;
   }
 
   *, ::before, ::after {
@@ -172,6 +180,8 @@
 
 .hero-orb {
   animation: drift-slow 18s ease-in-out infinite alternate;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
 }
 
 .hero-orb--mint {
@@ -188,11 +198,15 @@
 
 .hero-marquee-track {
   width: max-content;
-  animation: marquee-scroll 26s linear infinite;
+  animation: marquee-scroll 30s linear infinite;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
 }
 
 .hero-card-float {
-  animation: float-card 6s ease-in-out infinite;
+  animation: float-card 7.5s ease-in-out infinite;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
 }
 
 .hero-card-float:nth-child(2n) {
@@ -205,6 +219,7 @@
 
 .hero-surface {
   box-shadow: 0 18px 40px rgba(43, 38, 34, 0.08);
+  will-change: transform;
 }
 
 /* Custom scrollbar */
@@ -311,6 +326,16 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
   .aurora-blob-mint,
   .aurora-blob-lavender,
   .aurora-blob-blush,

@@ -35,7 +35,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
     <div className="bg-[var(--bg-card)] border border-[var(--border-primary)] rounded-2xl overflow-hidden hover:-translate-y-0.5 hover:shadow-[0_16px_38px_rgba(32,24,18,0.08)] hover:border-[var(--accent)]/30 transition-all duration-200 flex flex-col justify-between group min-h-[320px] sm:min-h-[360px]">
       {campaign.imageUrl && (
         <div className="h-36 overflow-hidden bg-[var(--bg-card-subtle)]">
-          <img src={campaign.imageUrl} alt={campaign.title} className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500" />
+          <img src={campaign.imageUrl} alt={campaign.title} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500" />
         </div>
       )}
       <div className="p-4 sm:p-5 flex flex-col justify-between flex-1">

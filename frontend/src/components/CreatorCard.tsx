@@ -30,7 +30,7 @@ export const CreatorCard: React.FC<CreatorCardProps> = ({ creator, onSendBrief, 
               title="View profile"
             >
               {creator.avatarUrl ? (
-                <img src={creator.avatarUrl} alt="" className="w-full h-full object-cover" />
+                <img src={creator.avatarUrl} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
               ) : (
                 creator.name.charAt(0).toUpperCase()
               )}

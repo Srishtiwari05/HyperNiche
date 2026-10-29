@@ -190,7 +190,7 @@ export const Header: React.FC<HeaderProps> = ({
                 >
                   <div className="w-7 h-7 rounded-lg bg-[var(--accent-soft)] text-[var(--accent)] flex items-center justify-center font-bold text-xs border border-[var(--border-primary)] overflow-hidden">
                     {userProfile.avatarUrl ? (
-                      <img src={userProfile.avatarUrl} alt="" className="w-full h-full object-cover" />
+                      <img src={userProfile.avatarUrl} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                     ) : (
                       userProfile.name.charAt(0).toUpperCase()
                     )}

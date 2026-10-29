@@ -22,7 +22,7 @@ export function CreatorCard({ creator }: CreatorCardProps) {
         <CardHeader className="flex flex-row items-center gap-4 pb-3">
           <div className="h-12 w-12 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center font-bold text-lg text-indigo-400 overflow-hidden">
             {creator.avatarUrl ? (
-              <img src={creator.avatarUrl} alt={creator.displayName} className="h-full w-full object-cover" />
+              <img src={creator.avatarUrl} alt={creator.displayName} loading="lazy" decoding="async" className="h-full w-full object-cover" />
             ) : (
               creator.displayName?.charAt(0) || "C"
             )}

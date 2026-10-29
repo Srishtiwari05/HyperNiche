@@ -254,7 +254,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               {/* Large Avatar */}
               <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-[#FFE3D3] dark:bg-[#34241E] border-4 border-[var(--bg-card)] shadow-lg flex items-center justify-center font-black text-3xl sm:text-4xl text-[#F06A4D] shrink-0 font-['Archivo'] overflow-hidden">
                 {profile.avatarUrl ? (
-                  <img src={profile.avatarUrl} alt="" className="w-full h-full object-cover" />
+                  <img src={profile.avatarUrl} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                 ) : (
                   profile.name.charAt(0).toUpperCase()
                 )}

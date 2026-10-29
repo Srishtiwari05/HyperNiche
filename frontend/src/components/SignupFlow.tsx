@@ -480,7 +480,7 @@ export const SignupFlow: React.FC = () => {
               <div className="flex items-center gap-4">
                 <label className="relative w-16 h-16 rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-card)] overflow-hidden cursor-pointer shrink-0 group">
                   {avatarPreview ? (
-                    <img src={avatarPreview} alt="Profile preview" className="w-full h-full object-cover" />
+                    <img src={avatarPreview} alt="Profile preview" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                   ) : (
                     <span className="w-full h-full flex items-center justify-center text-[var(--text-muted)]">
                       <Camera className="w-5 h-5" />

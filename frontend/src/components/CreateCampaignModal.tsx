@@ -288,7 +288,7 @@ export const CreateCampaignModal: React.FC<CreateCampaignModalProps> = ({ isOpen
             </label>
             <label className="flex items-center gap-3 p-3 rounded-xl border border-dashed border-[var(--border-primary)] bg-[var(--input-bg)] cursor-pointer hover:border-[var(--accent)] transition-colors">
               {imagePreview ? (
-                <img src={imagePreview} alt="Campaign preview" className="w-16 h-16 rounded-lg object-cover shrink-0" />
+                <img src={imagePreview} alt="Campaign preview" loading="lazy" decoding="async" className="w-16 h-16 rounded-lg object-cover shrink-0" />
               ) : (
                 <span className="w-16 h-16 rounded-lg bg-[var(--bg-card)] border border-[var(--border-primary)] flex items-center justify-center text-[var(--text-muted)] shrink-0">
                   <ImagePlus className="w-5 h-5" />
