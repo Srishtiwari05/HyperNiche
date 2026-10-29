@@ -262,27 +262,26 @@ export const SignupFlow: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#0b0d0f] text-[var(--text-primary)] flex flex-col justify-between transition-colors relative overflow-hidden">
       
-    {/* Soft Northern Lights / Aurora Background on First "Who are you?" Page */}
     {step === 1 && (
       <div
         className="fixed inset-0 pointer-events-none select-none overflow-hidden z-0"
         aria-hidden="true"
       >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.02),transparent_50%)]" />
-        <div className="aurora-blob-mint absolute -top-20 -left-20 w-[34rem] h-[34rem] rounded-full blur-[95px] opacity-[0.08] bg-[#D9F2E6]" />
-        <div className="aurora-blob-lavender absolute top-1/4 -right-24 w-[36rem] h-[36rem] rounded-full blur-[105px] opacity-[0.08] bg-[#E6DCFF]" />
-        <div className="aurora-blob-blush absolute -bottom-24 left-1/3 w-[32rem] h-[32rem] rounded-full blur-[100px] opacity-[0.08] bg-[#FFDBE6]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.02),transparent_50%)] backdrop-blur-[2px]" />
+        <div className="absolute left-1/2 top-1/2 h-[28rem] w-[28rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/[0.02] blur-3xl" />
+        <div className="absolute left-8 top-28 h-14 w-14 rounded-full bg-[#3a2d2c]/70 blur-[2px]" />
+        <div className="absolute right-10 top-40 h-10 w-10 rounded-full bg-[#2d3a32]/60 blur-[2px]" />
+        <div className="absolute left-1/4 bottom-20 h-16 w-16 rounded-full bg-[#2f2a2d]/60 blur-[2px]" />
       </div>
     )}
 
-    {/* Top Header with Brand & Theme Toggle */}
-    <div className="w-full border-b border-[#f35050] bg-[#0d0f12]/95 backdrop-blur-xs relative z-10">
-        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <span className="text-xl font-black tracking-[-0.05em] text-[#f5f3ee] font-['Archivo']">
+    <div className="w-full border-b border-[#f35050] bg-[#0d0f12]/90 backdrop-blur-[2px] relative z-10">
+        <div className="max-w-[1300px] mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="text-[1.7rem] font-black tracking-[-0.06em] text-[#f5f3ee] font-['Archivo']">
               Hyperniche<span className="text-[#ff5d5d]">.</span>
             </span>
-            <span className="text-[11px] font-medium text-[#c8c3bd] hidden sm:inline">
+            <span className="text-[11px] font-medium text-[#d9d4ce] hidden sm:inline">
               Creator marketplace
             </span>
           </div>
@@ -295,10 +294,8 @@ export const SignupFlow: React.FC = () => {
         <div className="w-full bg-[#f35050] h-[3px] overflow-hidden" />
       </div>
 
-      {/* Main Flow Container */}
-      <main className="flex-1 max-w-[1040px] w-full mx-auto px-4 py-10 sm:py-14 flex flex-col justify-center relative z-10">
+      <main className="flex-1 max-w-[1200px] w-full mx-auto px-4 py-8 sm:py-12 flex flex-col justify-center relative z-10">
         
-        {/* Navigation & Step Indicator */}
         <div className="flex items-center justify-between mb-8 sm:mb-10 text-[#d9d4ce]">
           {step > 1 ? (
             <button
@@ -320,23 +317,21 @@ export const SignupFlow: React.FC = () => {
           </span>
         </div>
 
-        {/* SLIDE 1: Who are you? */}
         {step === 1 && (
           <div className="animate-in fade-in slide-in-from-right-4 duration-200 relative w-full">
-            <div className="pointer-events-none absolute inset-[-8%] -z-10 overflow-hidden rounded-[40px]" aria-hidden="true">
-              <div className="absolute left-1/2 top-10 h-32 w-32 -translate-x-1/2 rounded-full border border-[#f35050]/15 bg-[#f35050]/5 blur-3xl" />
-              <div className="absolute left-8 top-24 h-14 w-14 rotate-12 rounded-full border border-[#f35050]/25 bg-[#f35050]/10" />
-              <div className="absolute right-8 top-20 h-10 w-10 rotate-45 rounded-full border border-[#f35050]/20 bg-[#f35050]/5" />
-              <div className="absolute left-1/4 bottom-8 h-16 w-16 rotate-12 rounded-full border border-[#f35050]/20 bg-[#f35050]/5" />
-              <div className="absolute right-1/4 bottom-8 h-12 w-12 rotate-45 rounded-full border border-[#f35050]/20 bg-[#f35050]/5" />
+            <div className="pointer-events-none absolute inset-[-6%] -z-10 overflow-hidden rounded-[40px]" aria-hidden="true">
+              <div className="absolute left-1/2 top-12 h-28 w-28 -translate-x-1/2 rounded-full border border-[#f35050]/15 bg-[#f35050]/5 blur-3xl" />
+              <div className="absolute left-8 top-24 h-12 w-12 rounded-full bg-[#3a2d2c]/80 blur-[1px]" />
+              <div className="absolute right-10 top-20 h-10 w-10 rounded-full bg-[#2d3a32]/80 blur-[1px]" />
+              <div className="absolute left-1/4 bottom-10 h-12 w-12 rounded-full bg-[#2f2a2d]/80 blur-[1px]" />
             </div>
 
-            <div className="rounded-[30px] border border-[#e7dfd5]/80 bg-[#f1efe9]/95 px-4 py-6 shadow-[0_30px_90px_rgba(0,0,0,0.12)] sm:px-6 sm:py-8 lg:px-8 lg:py-10 backdrop-blur-[1px]">
+            <div className="rounded-[28px] border border-[#e7dfd5]/80 bg-[#f1efe9]/95 px-4 py-6 shadow-[0_30px_90px_rgba(0,0,0,0.15)] sm:px-6 sm:py-8 lg:px-8 lg:py-10 backdrop-blur-[1px]">
               <div className="text-center mb-8 sm:mb-10">
-                <h2 className="text-[clamp(3.2rem,6vw,7rem)] font-black tracking-[-0.08em] text-[#111214] font-['Archivo'] leading-none">
+                <h2 className="text-[clamp(3.6rem,6vw,7.2rem)] font-black tracking-[-0.08em] text-[#111214] font-['Archivo'] leading-none">
                   Who are you?
                 </h2>
-                <p className="mt-3 text-base sm:text-[1.8rem] text-[#2d2e30] opacity-85 leading-[1.4]">
+                <p className="mt-3 text-base sm:text-[1.9rem] text-[#2d2e30] opacity-85 leading-[1.4]">
                   Choose your primary focus on the Hyperniche marketplace.
                 </p>
               </div>
@@ -358,13 +353,13 @@ export const SignupFlow: React.FC = () => {
                     <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#ff5d5d]/10 text-[#ff6b6b] ring-1 ring-[#ff6b6b]/20">
                       <Building2 className="w-6 h-6" />
                     </div>
-                    <h3 className="mb-2 text-[clamp(1.5rem,2vw,2.2rem)] font-black tracking-[-0.04em] text-[#f4f0eb] font-['Archivo'] leading-none">
+                    <h3 className="mb-2 text-[clamp(1.6rem,2vw,2.2rem)] font-black tracking-[-0.04em] text-[#f4f0eb] font-['Archivo'] leading-none">
                       I'm a business owner
                     </h3>
-                    <p className="mt-3 text-[1.05rem] leading-[1.45] text-[#d8d3ce]">
+                    <p className="mt-3 text-[1.08rem] leading-[1.45] text-[#d8d3ce]">
                       Post campaigns, browse verified Indian creators, and hire talent with milestone payouts.
                     </p>
-                    <div className="mt-5 flex items-center gap-1 text-[1.05rem] font-black text-[#ff6b6b] transition-transform group-hover:translate-x-0.5">
+                    <div className="mt-5 flex items-center gap-1 text-[1.08rem] font-black text-[#ff6b6b] transition-transform group-hover:translate-x-0.5">
                       <span>Continue as business</span>
                       <ArrowRight className="w-4 h-4" />
                     </div>
@@ -381,13 +376,13 @@ export const SignupFlow: React.FC = () => {
                     <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#64d1a0]/10 text-[#78e0b0] ring-1 ring-[#64d1a0]/20">
                       <User className="w-6 h-6" />
                     </div>
-                    <h3 className="mb-2 text-[clamp(1.5rem,2vw,2.2rem)] font-black tracking-[-0.04em] text-[#f4f0eb] font-['Archivo'] leading-none">
+                    <h3 className="mb-2 text-[clamp(1.6rem,2vw,2.2rem)] font-black tracking-[-0.04em] text-[#f4f0eb] font-['Archivo'] leading-none">
                       I'm a content creator
                     </h3>
-                    <p className="mt-3 text-[1.05rem] leading-[1.45] text-[#d8d3ce]">
+                    <p className="mt-3 text-[1.08rem] leading-[1.45] text-[#d8d3ce]">
                       Find paid brand deals, send pitches directly to verified companies, and get paid in INR.
                     </p>
-                    <div className="mt-5 flex items-center gap-1 text-[1.05rem] font-black text-[#78e0b0] transition-transform group-hover:translate-x-0.5">
+                    <div className="mt-5 flex items-center gap-1 text-[1.08rem] font-black text-[#78e0b0] transition-transform group-hover:translate-x-0.5">
                       <span>Continue as creator</span>
                       <ArrowRight className="w-4 h-4" />
                     </div>
