@@ -4,6 +4,7 @@ import { UserRole } from '../types';
 import { CATEGORIES } from '../config/categories';
 import { ArrowLeft, ArrowRight, Building2, User, Sparkles, AlertCircle, Camera } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
+import { useTheme } from '../context/ThemeContext';
 import { uploadMedia } from '../lib/storage';
 
 const BUSINESS_SELL_OPTIONS = [
@@ -27,6 +28,9 @@ const FOLLOWER_RANGES = [
 ];
 
 export const SignupFlow: React.FC = () => {
+  const { theme } = useTheme();
+  const isLightMode = theme === 'light';
+
   const { 
     currentUser, 
     signUp, 
@@ -260,7 +264,9 @@ export const SignupFlow: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0b0d0f] text-[var(--text-primary)] flex flex-col justify-between transition-colors relative overflow-hidden">
+    <div
+      className={`min-h-screen ${isLightMode ? 'bg-[var(--bg-primary)]' : 'bg-[#0b0d0f]'} text-[var(--text-primary)] flex flex-col justify-between transition-colors relative overflow-hidden`}
+    >
       
     {step === 1 && (
       <div
@@ -269,19 +275,19 @@ export const SignupFlow: React.FC = () => {
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.02),transparent_50%)] backdrop-blur-[2px]" />
         <div className="absolute left-1/2 top-1/2 h-[28rem] w-[28rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/[0.02] blur-3xl" />
-        <div className="absolute left-8 top-28 h-14 w-14 rounded-full bg-[#3a2d2c]/70 blur-[2px]" />
-        <div className="absolute right-10 top-40 h-10 w-10 rounded-full bg-[#2d3a32]/60 blur-[2px]" />
-        <div className="absolute left-1/4 bottom-20 h-16 w-16 rounded-full bg-[#2f2a2d]/60 blur-[2px]" />
+        <div className={`absolute left-8 top-28 h-14 w-14 rounded-full ${isLightMode ? 'bg-[#d7c8c4]/70' : 'bg-[#3a2d2c]/70'} blur-[2px]`} />
+        <div className={`absolute right-10 top-40 h-10 w-10 rounded-full ${isLightMode ? 'bg-[#d3e7dd]/70' : 'bg-[#2d3a32]/60'} blur-[2px]`} />
+        <div className={`absolute left-1/4 bottom-20 h-16 w-16 rounded-full ${isLightMode ? 'bg-[#e9dfe8]/70' : 'bg-[#2f2a2d]/60'} blur-[2px]`} />
       </div>
     )}
 
-    <div className="w-full border-b border-[#f35050] bg-[#0d0f12]/90 backdrop-blur-[2px] relative z-10">
+    <div className={`w-full border-b border-[#f35050] ${isLightMode ? 'bg-[var(--header-bg)]' : 'bg-[#0d0f12]/90'} backdrop-blur-[2px] relative z-10`}>
         <div className="max-w-[1300px] mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="text-[1.7rem] font-black tracking-[-0.06em] text-[#f5f3ee] font-['Archivo']">
+            <span className={`text-[1.7rem] font-black tracking-[-0.06em] ${isLightMode ? 'text-[#111214]' : 'text-[#f5f3ee]'} font-['Archivo']`}>
               Hyperniche<span className="text-[#ff5d5d]">.</span>
             </span>
-            <span className="text-[11px] font-medium text-[#d9d4ce] hidden sm:inline">
+            <span className={`text-[11px] font-medium ${isLightMode ? 'text-[#4b4b4d]' : 'text-[#d9d4ce]'} hidden sm:inline`}>
               Creator marketplace
             </span>
           </div>
@@ -296,23 +302,23 @@ export const SignupFlow: React.FC = () => {
 
       <main className="flex-1 max-w-[1200px] w-full mx-auto px-4 py-8 sm:py-12 flex flex-col justify-center relative z-10">
         
-        <div className="flex items-center justify-between mb-8 sm:mb-10 text-[#d9d4ce]">
+        <div className={`flex items-center justify-between mb-8 sm:mb-10 ${isLightMode ? 'text-[#323334]' : 'text-[#d9d4ce]'}`}>
           {step > 1 ? (
             <button
               onClick={handleBack}
               type="button"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#d9d4ce] hover:text-white transition-colors cursor-pointer"
+              className={`inline-flex items-center gap-1.5 text-xs font-semibold ${isLightMode ? 'text-[#323334] hover:text-[#111214]' : 'text-[#d9d4ce] hover:text-white'} transition-colors cursor-pointer`}
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Back</span>
             </button>
           ) : (
-            <span className="text-[11px] font-semibold text-[#d9d4ce] opacity-90">
+            <span className="text-[11px] font-semibold opacity-90">
               {getStepLabel()}
             </span>
           )}
 
-          <span className="text-xs font-mono font-semibold text-[#d9d4ce] opacity-80">
+          <span className="text-xs font-mono font-semibold opacity-80">
             {getStepNumber()}
           </span>
         </div>
@@ -327,10 +333,10 @@ export const SignupFlow: React.FC = () => {
 
             <div className="px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
               <div className="text-center mb-8 sm:mb-10">
-                <h2 className="text-[clamp(3.6rem,6vw,7.2rem)] font-black tracking-[-0.08em] text-[#f5f3ee] font-['Archivo'] leading-none">
+                <h2 className={`text-[clamp(3.6rem,6vw,7.2rem)] font-black tracking-[-0.08em] ${isLightMode ? 'text-[#111214]' : 'text-[#f5f3ee]'} font-['Archivo'] leading-none`}>
                   Who are you?
                 </h2>
-                <p className="mt-3 text-base sm:text-[1.9rem] text-[#c9c4bf] opacity-90 leading-[1.4]">
+                <p className={`mt-3 text-base sm:text-[1.9rem] ${isLightMode ? 'text-[#2d2e30]' : 'text-[#c9c4bf]'} opacity-90 leading-[1.4]`}>
                   Choose your primary focus on the Hyperniche marketplace.
                 </p>
               </div>
