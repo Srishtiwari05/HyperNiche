@@ -336,63 +336,74 @@ export const SignupFlow: React.FC = () => {
 
         {/* SLIDE 1: Who are you? */}
         {step === 1 && (
-          <div className="animate-in fade-in slide-in-from-right-4 duration-200">
+          <div className="animate-in fade-in slide-in-from-right-4 duration-200 relative w-full">
+            <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
+              <div className="absolute left-1/2 top-20 h-36 w-36 -translate-x-1/2 rounded-full border border-white/10 bg-white/[0.02] blur-2xl" />
+              <div className="absolute left-10 top-24 h-12 w-12 rotate-12 rounded-full border border-[#f35050]/40 bg-[#f35050]/10" />
+              <div className="absolute right-12 top-20 h-10 w-10 rotate-45 rounded-full border border-[#f35050]/30 bg-[#f35050]/5" />
+              <div className="absolute left-1/4 bottom-12 h-14 w-14 rotate-12 rounded-full border border-[#f35050]/25 bg-[#f35050]/5" />
+              <div className="absolute right-1/4 bottom-10 h-10 w-10 rotate-45 rounded-full border border-[#f35050]/25 bg-[#f35050]/5" />
+            </div>
+
             <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold tracking-tight text-[var(--text-primary)] font-['Archivo']">
+              <h2 className="text-2xl sm:text-4xl font-black tracking-[-0.05em] text-[var(--text-primary)] font-['Archivo']">
                 Who are you?
               </h2>
-              <p className="mt-1 text-xs sm:text-sm text-[var(--text-secondary)]">
+              <p className="mt-2 text-xs sm:text-sm text-[var(--text-secondary)]">
                 Choose your primary focus on the Hyperniche marketplace.
               </p>
             </div>
 
-            {/* Short line above the cards for logged-in user without a saved profile */}
             {isCompletionMode && (
               <div className="text-center mb-6 text-xs font-semibold text-[var(--accent)] bg-[var(--accent-soft)]/60 py-2.5 px-4 rounded-xl border border-[var(--accent)]/30 shadow-2xs">
                 You're signed in. Just 3 quick questions to finish setting up.
               </div>
             )}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Option 1: Business */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
               <button
                 onClick={() => handleStep1SelectRole('business')}
                 type="button"
-                className="p-6 rounded-xl border border-[var(--border-primary)] bg-[var(--bg-card)] hover:border-[var(--accent)] hover:-translate-y-1 transition-all duration-200 text-left group shadow-2xs cursor-pointer"
+                className="group relative overflow-hidden rounded-[20px] border border-white/10 bg-[#111315]/90 p-6 text-left shadow-[0_18px_40px_rgba(0,0,0,0.25)] transition-all duration-200 hover:-translate-y-1 hover:border-[#f35050]/40 hover:shadow-[0_22px_50px_rgba(243,80,80,0.12)] cursor-pointer"
               >
-                <div className="w-12 h-12 rounded-xl bg-[var(--accent-soft)] text-[var(--accent)] flex items-center justify-center mb-4 border border-[var(--border-primary)]">
-                  <Building2 className="w-6 h-6" />
-                </div>
-                <h3 className="text-base font-bold tracking-tight text-[var(--text-primary)] font-['Archivo'] mb-1">
-                  I'm a business owner
-                </h3>
-                <p className="text-xs text-[var(--text-secondary)]">
-                  Post campaigns, browse verified Indian creators, and hire talent with milestone payouts.
-                </p>
-                <div className="mt-4 flex items-center gap-1 text-xs font-bold text-[var(--accent)] group-hover:translate-x-0.5 transition-transform">
-                  <span>Continue as business</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(243,80,80,0.12),transparent_42%)] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+                <div className="relative">
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#ff5d5d]/10 text-[#ff6b6b] ring-1 ring-[#ff6b6b]/20">
+                    <Building2 className="w-6 h-6" />
+                  </div>
+                  <h3 className="mb-2 text-xl font-bold tracking-tight text-[var(--text-primary)] font-['Archivo']">
+                    I'm a business owner
+                  </h3>
+                  <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
+                    Post campaigns, browse verified Indian creators, and hire talent with milestone payouts.
+                  </p>
+                  <div className="mt-5 flex items-center gap-1 text-sm font-bold text-[#ff6b6b] transition-transform group-hover:translate-x-0.5">
+                    <span>Continue as business</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </div>
                 </div>
               </button>
 
-              {/* Option 2: Creator */}
               <button
                 onClick={() => handleStep1SelectRole('creator')}
                 type="button"
-                className="p-6 rounded-xl border border-[var(--border-primary)] bg-[var(--bg-card)] hover:border-[var(--accent)] hover:-translate-y-1 transition-all duration-200 text-left group shadow-2xs cursor-pointer"
+                className="group relative overflow-hidden rounded-[20px] border border-white/10 bg-[#111315]/90 p-6 text-left shadow-[0_18px_40px_rgba(0,0,0,0.25)] transition-all duration-200 hover:-translate-y-1 hover:border-[#5bd19a]/40 hover:shadow-[0_22px_50px_rgba(91,209,154,0.12)] cursor-pointer"
               >
-                <div className="w-12 h-12 rounded-xl bg-[var(--badge-green-bg)] text-[var(--badge-green-text)] flex items-center justify-center mb-4 border border-[var(--border-primary)]">
-                  <User className="w-6 h-6" />
-                </div>
-                <h3 className="text-base font-bold tracking-tight text-[var(--text-primary)] font-['Archivo'] mb-1">
-                  I'm a content creator
-                </h3>
-                <p className="text-xs text-[var(--text-secondary)]">
-                  Find paid brand deals, send pitches directly to verified companies, and get paid in INR.
-                </p>
-                <div className="mt-4 flex items-center gap-1 text-xs font-bold text-[var(--accent)] group-hover:translate-x-0.5 transition-transform">
-                  <span>Continue as creator</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(91,209,154,0.12),transparent_42%)] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+                <div className="relative">
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#64d1a0]/10 text-[#78e0b0] ring-1 ring-[#64d1a0]/20">
+                    <User className="w-6 h-6" />
+                  </div>
+                  <h3 className="mb-2 text-xl font-bold tracking-tight text-[var(--text-primary)] font-['Archivo']">
+                    I'm a content creator
+                  </h3>
+                  <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
+                    Find paid brand deals, send pitches directly to verified companies, and get paid in INR.
+                  </p>
+                  <div className="mt-5 flex items-center gap-1 text-sm font-bold text-[#78e0b0] transition-transform group-hover:translate-x-0.5">
+                    <span>Continue as creator</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </div>
                 </div>
               </button>
             </div>
