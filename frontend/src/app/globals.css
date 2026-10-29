@@ -140,6 +140,73 @@
   }
 }
 
+@keyframes marquee-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes float-card {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -7px, 0);
+  }
+}
+
+@keyframes drift-slow {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(16px, -12px, 0) scale(1.04);
+  }
+  100% {
+    transform: translate3d(-18px, 10px, 0) scale(0.98);
+  }
+}
+
+.hero-orb {
+  animation: drift-slow 18s ease-in-out infinite alternate;
+}
+
+.hero-orb--mint {
+  animation-delay: 0s;
+}
+
+.hero-orb--blush {
+  animation-delay: 1.2s;
+}
+
+.hero-orb--lavender {
+  animation-delay: 0.6s;
+}
+
+.hero-marquee-track {
+  width: max-content;
+  animation: marquee-scroll 26s linear infinite;
+}
+
+.hero-card-float {
+  animation: float-card 6s ease-in-out infinite;
+}
+
+.hero-card-float:nth-child(2n) {
+  animation-delay: 0.7s;
+}
+
+.hero-card-float:nth-child(3n) {
+  animation-delay: 1.2s;
+}
+
+.hero-surface {
+  box-shadow: 0 18px 40px rgba(43, 38, 34, 0.08);
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
@@ -248,7 +315,10 @@
   .aurora-blob-lavender,
   .aurora-blob-blush,
   .motion-fade-up,
-  .skeleton-card {
+  .skeleton-card,
+  .hero-orb,
+  .hero-marquee-track,
+  .hero-card-float {
     animation: none !important;
   }
 }
