@@ -48,8 +48,8 @@ export const Hero: React.FC<HeroProps> = ({
         <div className="hero-orb hero-orb--lavender absolute left-1/2 top-14 h-[22rem] w-[22rem] -translate-x-1/2 rounded-full bg-[#E7DEFF] opacity-20 blur-[90px]" />
       </div>
 
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="hero-marquee mb-7 overflow-hidden rounded-[22px] border border-[var(--border-primary)] bg-[var(--bg-card)]/70 p-2 shadow-[0_10px_30px_rgba(43,38,34,0.05)] backdrop-blur-sm">
+      <div className="relative mx-auto max-w-[1440px] px-5 sm:px-7 lg:px-10 xl:px-12">
+        <div className="hero-marquee mb-8 overflow-hidden rounded-[22px] border border-[var(--border-primary)] bg-[var(--bg-card)]/70 p-2 shadow-[0_10px_30px_rgba(43,38,34,0.05)] backdrop-blur-sm">
           <div className="hero-marquee-track flex min-w-max items-center gap-3">
             {[...creatorShowcase, ...creatorShowcase].map((creator, index) => (
               <div
@@ -68,14 +68,14 @@ export const Hero: React.FC<HeroProps> = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-12">
-          <div className="motion-fade-up lg:col-span-7">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] bg-[var(--bg-card)]/80 px-3 py-1.5 text-[11px] font-semibold tracking-[0.12em] text-[var(--text-secondary)] uppercase shadow-[0_8px_18px_rgba(43,38,34,0.04)]">
+        <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-14 xl:gap-16">
+          <div className="motion-fade-up lg:col-span-7 xl:pr-6">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] bg-[var(--bg-card)]/80 px-3 py-1.5 text-[10px] font-semibold tracking-[0.12em] text-[var(--text-secondary)] uppercase shadow-[0_8px_18px_rgba(43,38,34,0.04)]">
               <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
               <span>{isBusiness ? 'Hire proven creators' : 'Find paid deals that match your niche'}</span>
             </div>
 
-            <h1 className="max-w-[920px] text-[clamp(4rem,8vw,11rem)] leading-[0.8] tracking-[-0.075em] text-[var(--text-primary)] font-black font-['Archivo']">
+            <h1 className="max-w-[920px] text-[clamp(3rem,6vw,7rem)] leading-[0.9] tracking-[-0.065em] text-[var(--text-primary)] font-black font-['Archivo']">
               {isBusiness ? (
                 <>
                   Get your product in front of the{' '}
@@ -94,10 +94,10 @@ export const Hero: React.FC<HeroProps> = ({
               )}
             </h1>
 
-            <p className="mt-5 max-w-[780px] text-base leading-relaxed text-[var(--text-secondary)] sm:text-2xl sm:leading-[1.2]">
+            <p className="mt-5 max-w-[680px] text-sm leading-relaxed text-[var(--text-secondary)] sm:text-base sm:leading-[1.6]">
               {isBusiness
-                ? 'Post a brief, review pitches, and work directly with trusted creators. No agency markup, clear budgets, and faster timelines.'
-                : 'Browse live brand briefs with real budgets, pitch once, and get paid when the work is done.'}
+                ? 'Discover creators, connect with brands, and manage opportunities in one place.'
+                : 'Your next collaboration starts here.'}
             </p>
 
             <div className="mt-7 flex flex-wrap items-center gap-3">
@@ -167,8 +167,8 @@ export const Hero: React.FC<HeroProps> = ({
             </div>
           </div>
 
-          <div className="motion-fade-up lg:col-span-5" style={{ animationDelay: '120ms' }}>
-            <div className="relative mx-auto max-w-[500px]">
+          <div className="motion-fade-up lg:col-span-5 xl:pl-4" style={{ animationDelay: '120ms' }}>
+            <div className="relative mx-auto max-w-[520px]">
               <div className="hero-surface absolute -inset-4 rounded-[32px] bg-[var(--accent)]/10 blur-2xl" />
               <div className="hero-surface relative rounded-[30px] border border-[var(--border-primary)] bg-[linear-gradient(180deg,rgba(255,255,255,0.16),rgba(255,255,255,0.02))] p-5 shadow-[0_18px_40px_rgba(43,38,34,0.08)]">
                 <div className="mb-5 flex items-center justify-between">
