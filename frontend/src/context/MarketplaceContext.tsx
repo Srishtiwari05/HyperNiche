@@ -357,7 +357,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
     if (isAuthLoading) return;
 
     const campaignChannel = supabase
-      .channel(`public:campaigns:${currentUser?.id ?? 'guest'}`)
+      .channel('public:campaigns')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'campaigns' },
@@ -377,26 +377,33 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
       .subscribe();
 
     const messageChannel = supabase
-      .channel(`public:messages:${currentUser?.id ?? 'guest'}`)
+      .channel('public:messages')
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'messages' },
         (payload: any) => {
-          const newMsg: Message = {
-            id: payload.new.id,
-            conversationId: payload.new.conversation_id,
-            campaignId: '',
-            businessId: '',
-            creatorId: '',
-            senderId: payload.new.sender_id,
-            receiverId: '',
-            senderName: 'User',
-            senderRole: 'creator',
-            text: payload.new.message_text,
-            createdAt: payload.new.created_at || new Date().toISOString(),
-            read: payload.new.is_read || false,
+          const row = payload?.new;
+          if (!row?.id) return;
+
+          const nextMsg: Message = {
+            id: row.id,
+            conversationId: row.conversation_id || '',
+            campaignId: row.campaign_id || '',
+            campaignTitle: row.campaign_title || '',
+            businessId: row.business_id || '',
+            creatorId: row.creator_id || '',
+            senderId: row.sender_id || '',
+            receiverId: row.receiver_id || '',
+            senderName: row.sender_name || 'User',
+            senderRole: row.sender_role || 'creator',
+            text: row.message_text || row.text || '',
+            createdAt: row.created_at || new Date().toISOString(),
+            read: Boolean(row.is_read),
           };
-          setMessages((prev) => (prev.some((m) => m.id === newMsg.id) ? prev : [...prev, newMsg]));
+
+          setMessages((prev) => (
+            prev.some((m) => m.id === nextMsg.id) ? prev : [...prev, nextMsg]
+          ));
         }
       )
       .subscribe();
