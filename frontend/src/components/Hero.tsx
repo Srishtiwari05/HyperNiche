@@ -66,8 +66,8 @@ export const Hero: React.FC<HeroProps> = ({
 
         <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-12">
           <div className="motion-fade-up lg:col-span-7">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#1a1c1d]/10 bg-[#f8f5f1]/80 px-3 py-1.5 text-[11px] font-semibold tracking-[0.12em] text-[#2d2c2a] uppercase shadow-[0_8px_18px_rgba(43,38,34,0.04)]">
-              <span className="h-2 w-2 rounded-full bg-[#ef5d5d]" />
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] bg-[var(--bg-card)]/80 px-3 py-1.5 text-[11px] font-semibold tracking-[0.12em] text-[var(--text-secondary)] uppercase shadow-[0_8px_18px_rgba(43,38,34,0.04)]">
+              <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
               <span>{isBusiness ? 'Hire proven creators' : 'Find paid deals that match your niche'}</span>
             </div>
 
