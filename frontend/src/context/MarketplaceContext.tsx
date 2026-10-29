@@ -1,13 +1,14 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { api } from '../lib/api';
-import { Campaign, Application, Message, UserProfile, ReportItem, UserRole } from '../types';
+import { Campaign, Application, Conversation, Message, UserProfile, ReportItem, UserRole } from '../types';
 import { useAuth } from './AuthContext';
 import { FREE_APPLICATIONS_PER_MONTH, FREE_BUSINESS_DECISIONS_PER_MONTH } from '../config/marketplaceConfig';
 import { validateMessageSafety } from '../utils/moderationList';
 import { toIsoDate } from '../lib/utils';
 
 export interface ActiveConversation {
+  conversationId?: string;
   campaignId: string;
   campaignTitle?: string;
   creatorId: string;
@@ -106,6 +107,25 @@ function mapApplicationFromApi(data: any): Application {
   };
 }
 
+function mapMessageFromApi(row: any, conversation: Conversation): Message {
+  return {
+    id: row.id,
+    conversationId: conversation.id,
+    campaignId: conversation.campaignId || '',
+    campaignTitle: conversation.campaignTitle || '',
+    businessId: conversation.brandId,
+    creatorId: conversation.creatorId,
+    senderId: row.senderId,
+    receiverId: row.senderId === conversation.brandId ? conversation.creatorId : conversation.brandId,
+    senderName: row.senderName || 'User',
+    senderAvatar: row.senderAvatar,
+    senderRole: (row.senderId === conversation.brandId ? 'business' : 'creator') as UserRole,
+    text: row.messageText,
+    createdAt: row.createdAt,
+    read: row.isRead || false,
+  };
+}
+
 async function fetchCampaignsFromSupabase(): Promise<Campaign[]> {
   const { data, error } = await supabase
     .from('campaigns')
@@ -176,6 +196,7 @@ export interface MarketplaceContextType {
   campaigns: Campaign[];
   creators: UserProfile[];
   applications: Application[];
+  conversations: Conversation[];
   messages: Message[];
   isLoadingData: boolean;
   dataError: string | null;
@@ -211,6 +232,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [creators, setCreators] = useState<UserProfile[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   
   const [isLoadingData, setIsLoadingData] = useState<boolean>(false);
@@ -223,6 +245,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPlatform, setSelectedPlatform] = useState('All');
   const [selectedFollowers, setSelectedFollowers] = useState('All');
+  const accountDataReady = !isAuthLoading && Boolean(currentUser && userProfile?.id === currentUser.id);
   const loadMarketplace = async (showSpinner = true) => {
     const creatorParams: { niche?: string; size?: number } = { size: 100 };
     if (selectedCategory && selectedCategory !== 'All') creatorParams.niche = selectedCategory;
@@ -258,65 +281,45 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   // 2. Fetch authenticated user applications and conversations
   useEffect(() => {
-    if (!currentUser) return;
+    setApplications([]);
+    setConversations([]);
+    setMessages([]);
+    setActiveConversation(null);
+    if (!currentUser || userProfile?.id !== currentUser.id) return;
 
-    const isBrand = userProfile?.role === 'business' || userProfile?.role === 'BRAND';
+    let active = true;
+    const isBrand = userProfile.role === 'business' || userProfile.role === 'BRAND';
+    const applicationRequest = isBrand ? api.getBrandApplications() : api.getMyApplications();
 
-    if (isBrand) {
-      api.getBrandApplications()
-        .then((res: any[]) => {
-          if (Array.isArray(res)) {
-            setApplications(res.map(mapApplicationFromApi));
+    Promise.all([
+      applicationRequest.catch(() => []),
+      api.getConversations().catch(() => []),
+    ])
+      .then(async ([appRows, conversationRows]: [any[], Conversation[]]) => {
+        if (!active) return;
+        const ownApplications = (Array.isArray(appRows) ? appRows : [])
+          .filter((row) => isBrand ? row.brandId === currentUser.id || row.businessId === currentUser.id : row.creatorId === currentUser.id)
+          .map(mapApplicationFromApi);
+        const ownConversations = Array.isArray(conversationRows)
+          ? conversationRows.filter((row) => row.brandId === currentUser.id || row.creatorId === currentUser.id)
+          : [];
+        setApplications(ownApplications);
+        setConversations(ownConversations);
+
+        const histories = await Promise.all(ownConversations.map(async (conversation) => {
+          try {
+            const rows = await api.getMessages(conversation.id);
+            return (Array.isArray(rows) ? rows : []).map((row: any) => mapMessageFromApi(row, conversation));
+          } catch {
+            return [];
           }
-        })
-        .catch((err) => console.warn('API getBrandApplications note:', err));
-    } else {
-      api.getMyApplications()
-        .then((res: any[]) => {
-          if (Array.isArray(res)) {
-            setApplications(res.map(mapApplicationFromApi));
-          }
-        })
-        .catch((err) => console.warn('API getMyApplications note:', err));
-    }
-
-    api.getConversations()
-      .then((convs: any[]) => {
-        if (Array.isArray(convs)) {
-          convs.forEach((c: any) => {
-            if (c.id) {
-              api.getMessages(c.id).then((msgs: any[]) => {
-                if (Array.isArray(msgs) && msgs.length > 0) {
-                  setMessages((prev) => {
-                    const existingIds = new Set(prev.map((m) => m.id));
-                    const newOnes = msgs
-                      .filter((m: any) => !existingIds.has(m.id))
-                      .map((m: any) => ({
-                        id: m.id,
-                        conversationId: m.conversationId || c.id,
-                        campaignId: c.campaignId || '',
-                        campaignTitle: c.campaignTitle || '',
-                        businessId: c.brandId || '',
-                        creatorId: c.creatorId || '',
-                        senderId: m.senderId,
-                        receiverId: m.senderId === c.brandId ? c.creatorId : c.brandId,
-                        senderName: m.senderName || 'User',
-                        senderRole: (m.senderId === c.brandId ? 'business' : 'creator') as UserRole,
-                        text: m.messageText,
-                        createdAt: m.createdAt,
-                        read: m.isRead || false,
-                      }));
-                    return [...prev, ...newOnes];
-                  });
-                }
-              }).catch(() => {});
-            }
-          });
-        }
+        }));
+        if (active) setMessages((prev) => histories.flat().reduce((items, message) => upsertById(items, message), prev));
       })
-      .catch((err) => console.warn('API getConversations note:', err));
+      .catch((err) => console.warn('Failed to load account conversations:', err));
 
-  }, [currentUser, userProfile?.role]);
+    return () => { active = false; };
+  }, [currentUser?.id, userProfile?.id, userProfile?.role]);
 
   // 3. Supabase Realtime subscriptions
   useEffect(() => {
@@ -349,29 +352,33 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'messages' },
-        (payload: any) => {
+        async (payload: any) => {
           const row = payload?.new;
           if (!row?.id) return;
+          let conversation = conversations.find((item) => item.id === row.conversation_id);
+          if (!conversation) {
+            try {
+              const rows = await api.getConversations();
+              const ownRows = (Array.isArray(rows) ? rows : []).filter((item: Conversation) =>
+                item.brandId === currentUser?.id || item.creatorId === currentUser?.id
+              );
+              setConversations(ownRows);
+              conversation = ownRows.find((item) => item.id === row.conversation_id);
+            } catch {
+              return;
+            }
+          }
+          if (!conversation || (conversation.brandId !== currentUser?.id && conversation.creatorId !== currentUser?.id)) return;
 
-          const nextMsg: Message = {
+          const nextMsg = mapMessageFromApi({
             id: row.id,
-            conversationId: row.conversation_id || '',
-            campaignId: row.campaign_id || '',
-            campaignTitle: row.campaign_title || '',
-            businessId: row.business_id || '',
-            creatorId: row.creator_id || '',
-            senderId: row.sender_id || '',
-            receiverId: row.receiver_id || '',
-            senderName: row.sender_name || 'User',
-            senderRole: row.sender_role || 'creator',
-            text: row.message_text || row.text || '',
-            createdAt: row.created_at || new Date().toISOString(),
-            read: Boolean(row.is_read),
-          };
-
-          setMessages((prev) => (
-            prev.some((m) => m.id === nextMsg.id) ? prev : [...prev, nextMsg]
-          ));
+            senderId: row.sender_id,
+            senderName: row.sender_id === conversation.brandId ? conversation.brandName : conversation.creatorName,
+            messageText: row.message_text,
+            createdAt: row.created_at,
+            isRead: row.is_read,
+          }, conversation);
+          setMessages((prev) => upsertById(prev, nextMsg));
         }
       )
       .subscribe();
@@ -380,7 +387,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
       supabase.removeChannel(campaignChannel);
       supabase.removeChannel(messageChannel);
     };
-  }, [currentUser?.id, isAuthLoading]);
+  }, [currentUser?.id, isAuthLoading, conversations]);
 
   // CREATE CAMPAIGN
   const createCampaign = async (
@@ -653,30 +660,6 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
       prev.map((a) => (a.id === applicationId ? { ...a, status: normalizedStatus, decidedAt: nowIso, updatedAt: nowIso } : a))
     );
 
-    if (normalizedStatus === 'accepted' && targetApp) {
-      const convId = `${targetApp.campaignId}_${targetApp.creatorId}`;
-      const hasExistingMsg = messages.some((m) => m.conversationId === convId);
-
-      if (!hasExistingMsg) {
-        const welcomeMsg: Message = {
-          id: `msg_${Date.now()}`,
-          conversationId: convId,
-          campaignId: targetApp.campaignId,
-          campaignTitle: targetApp.campaignTitle,
-          businessId: targetApp.businessId,
-          creatorId: targetApp.creatorId,
-          senderId: businessId,
-          receiverId: targetApp.creatorId,
-          senderName: userProfile?.name || 'Brand Partner',
-          senderRole: 'business',
-          text: `Deal accepted! Welcome to the "${targetApp.campaignTitle}" campaign. Let's discuss deliverables, sample shipping addresses, and content concepts here.`,
-          createdAt: new Date().toISOString(),
-          read: false,
-        };
-        setMessages((prev) => [...prev, welcomeMsg]);
-      }
-    }
-
     try {
       await api.updateApplicationStatus(applicationId, normalizedStatus.toUpperCase());
       setApplications((prev) => prev.map((a) => {
@@ -717,46 +700,34 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }
 
     const currentUid = currentUser?.id || userProfile.id;
-    const conversationId = `${campaignId}_${creatorId}`;
+    if (currentUid !== businessId && currentUid !== creatorId) {
+      throw new Error('You are not a participant in this conversation.');
+    }
+    const existingConversation = conversations.find((item) =>
+      item.brandId === businessId && item.creatorId === creatorId && item.campaignId === campaignId
+    );
     const camp = campaigns.find((c) => c.id === campaignId);
     const campaignTitle = camp?.title || 'Brand Deal Campaign';
     const receiverId = explicitReceiverId || (currentUid === businessId ? creatorId : businessId);
-
-    const newMsg: Message = {
-      id: `msg_${Date.now()}`,
-      conversationId,
+    const saved: any = await api.sendMessage({
+      conversationId: existingConversation?.id,
+      campaignId: existingConversation ? undefined : (campaignId.includes('_') ? null : campaignId),
+      recipientId: existingConversation ? undefined : (receiverId.includes('_') ? null : receiverId),
+      messageText: text.trim(),
+    });
+    const conversation: Conversation = existingConversation || {
+      id: saved.conversationId,
+      brandId: businessId,
+      brandName: currentUid === businessId ? userProfile.name : 'Brand Partner',
+      creatorId,
+      creatorName: currentUid === creatorId ? userProfile.name : 'Creator',
       campaignId,
       campaignTitle,
-      businessId,
-      creatorId,
-      senderId: currentUid,
-      receiverId,
-      senderName: userProfile.name || 'User',
-      senderRole: userProfile.role,
-      senderIsVerified: Boolean(userProfile.isVerified),
-      text: text.trim(),
-      isInvitation: Boolean(isInvitation),
-      createdAt: new Date().toISOString(),
-      read: false,
+      updatedAt: saved.createdAt || new Date().toISOString(),
     };
-
-    setMessages((prev) => [...prev, newMsg]);
-
-    // Sync to real backend & Supabase
-    try {
-      await api.sendMessage({
-        campaignId: campaignId.includes('_') ? null : campaignId,
-        recipientId: receiverId.includes('_') ? null : receiverId,
-        messageText: text.trim(),
-      });
-      await supabase.from('messages').insert({
-        conversation_id: conversationId,
-        sender_id: currentUid,
-        message_text: text.trim(),
-      });
-    } catch {
-      // optimistic update maintained
-    }
+    if (!conversation.id) throw new Error('Message was sent, but the conversation could not be loaded.');
+    setConversations((prev) => upsertById(prev, conversation));
+    setMessages((prev) => upsertById(prev, mapMessageFromApi(saved, conversation)));
   };
 
   const markConversationAsRead = (conversationId: string) => {
@@ -775,8 +746,9 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
       value={{
         campaigns,
         creators,
-        applications,
-        messages,
+        applications: accountDataReady ? applications : [],
+        conversations: accountDataReady ? conversations : [],
+        messages: accountDataReady ? messages : [],
         isLoadingData,
         dataError,
         createCampaign,
@@ -791,7 +763,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
         updateApplicationStatus,
         sendMessage,
         markConversationAsRead,
-        activeConversation,
+        activeConversation: accountDataReady ? activeConversation : null,
         setActiveConversation,
         selectedCategory,
         setSelectedCategory,

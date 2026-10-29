@@ -26,6 +26,7 @@ interface MessagesInboxProps {
 
 interface ConversationItem {
   id: string; // conversationId
+  conversationId?: string;
   campaignId: string;
   campaignTitle: string;
   creatorId: string;
@@ -46,6 +47,7 @@ export const MessagesInbox: React.FC = () => {
   const { 
     applications, 
     campaigns, 
+    conversations: savedConversations,
     messages, 
     sendMessage, 
     activeConversation, 
@@ -95,7 +97,11 @@ export const MessagesInbox: React.FC = () => {
     });
 
     const list: ConversationItem[] = acceptedApps.map((app) => {
-      const convId = `${app.campaignId}_${app.creatorId}`;
+      const localId = `${app.campaignId}_${app.creatorId}`;
+      const savedConversation = savedConversations.find((item) =>
+        item.campaignId === app.campaignId && item.brandId === app.businessId && item.creatorId === app.creatorId
+      );
+      const convId = savedConversation?.id || localId;
       const campaign = campaigns.find((c) => c.id === app.campaignId);
 
       const counterpartId = role === 'business' ? app.creatorId : app.businessId;
@@ -111,7 +117,7 @@ export const MessagesInbox: React.FC = () => {
 
       // Find all messages for this conversation
       const convMessages = messages.filter(
-        (m) => m.conversationId === convId || (m.campaignId === app.campaignId && m.creatorId === app.creatorId)
+        (m) => m.conversationId === convId
       );
 
       const lastMessage = convMessages.length > 0 ? convMessages[convMessages.length - 1] : undefined;
@@ -124,6 +130,7 @@ export const MessagesInbox: React.FC = () => {
 
       return {
         id: convId,
+        conversationId: savedConversation?.id,
         campaignId: app.campaignId,
         campaignTitle: app.campaignTitle,
         creatorId: app.creatorId,
@@ -143,7 +150,7 @@ export const MessagesInbox: React.FC = () => {
 
     // Sort by most recent message/activity
     return list.sort((a, b) => new Date(b.lastTimestamp).getTime() - new Date(a.lastTimestamp).getTime());
-  }, [applications, campaigns, messages, userProfile, role]);
+  }, [applications, campaigns, savedConversations, messages, userProfile, role]);
 
   // Filter conversations by search box
   const filteredConversations = useMemo(() => {
@@ -164,6 +171,7 @@ export const MessagesInbox: React.FC = () => {
         const first = conversations[0];
         setActiveConversation({
           campaignId: first.campaignId,
+          conversationId: first.conversationId,
           campaignTitle: first.campaignTitle,
           creatorId: first.creatorId,
           businessId: first.businessId,
@@ -177,16 +185,15 @@ export const MessagesInbox: React.FC = () => {
 
   // Find messages for the current open chat
   const currentConvId = activeConversation
-    ? `${activeConversation.campaignId}_${activeConversation.creatorId}`
+    ? activeConversation.conversationId || savedConversations.find((item) =>
+        item.campaignId === activeConversation.campaignId &&
+        item.brandId === activeConversation.businessId && item.creatorId === activeConversation.creatorId
+      )?.id || `${activeConversation.campaignId}_${activeConversation.creatorId}`
     : '';
 
   const threadMessages = useMemo(() => {
     if (!activeConversation) return [];
-    return messages.filter(
-      (m) =>
-        m.conversationId === currentConvId ||
-        (m.campaignId === activeConversation.campaignId && m.creatorId === activeConversation.creatorId)
-    );
+    return messages.filter((m) => m.conversationId === currentConvId);
   }, [messages, activeConversation, currentConvId]);
 
   // When activeConversation is open, mark its messages as read
@@ -224,6 +231,7 @@ export const MessagesInbox: React.FC = () => {
   const handleSelectConversation = (conv: ConversationItem) => {
     setActiveConversation({
       campaignId: conv.campaignId,
+      conversationId: conv.conversationId,
       campaignTitle: conv.campaignTitle,
       creatorId: conv.creatorId,
       businessId: conv.businessId,
@@ -249,7 +257,7 @@ export const MessagesInbox: React.FC = () => {
       const reportedUserName = activeConversation.peerName;
       const msgId = reportingMessage?.id || 'conversation-summary';
       const msgText = reportingMessage?.text || 'Conversation reported by user';
-      const convId = `${activeConversation.campaignId}_${activeConversation.creatorId}`;
+      const convId = currentConvId;
 
       await submitReport(
         reportedUserId,
