@@ -338,19 +338,19 @@ export const SignupFlow: React.FC = () => {
         {step === 1 && (
           <div className="animate-in fade-in slide-in-from-right-4 duration-200 relative w-full">
             <div className="pointer-events-none absolute inset-[-8%] -z-10 overflow-hidden rounded-[40px]" aria-hidden="true">
-              <div className="absolute left-1/2 top-20 h-36 w-36 -translate-x-1/2 rounded-full border border-white/10 bg-white/[0.02] blur-3xl" />
-              <div className="absolute left-10 top-28 h-16 w-16 rotate-12 rounded-full border border-[#f35050]/40 bg-[#f35050]/10" />
-              <div className="absolute right-12 top-20 h-12 w-12 rotate-45 rounded-full border border-[#f35050]/30 bg-[#f35050]/5" />
-              <div className="absolute left-1/4 bottom-12 h-20 w-20 rotate-12 rounded-full border border-[#f35050]/25 bg-[#f35050]/5" />
-              <div className="absolute right-1/4 bottom-8 h-12 w-12 rotate-45 rounded-full border border-[#f35050]/25 bg-[#f35050]/5" />
+              <div className="absolute left-1/2 top-10 h-32 w-32 -translate-x-1/2 rounded-full border border-[#f35050]/15 bg-[#f35050]/5 blur-3xl" />
+              <div className="absolute left-8 top-24 h-14 w-14 rotate-12 rounded-full border border-[#f35050]/25 bg-[#f35050]/10" />
+              <div className="absolute right-8 top-20 h-10 w-10 rotate-45 rounded-full border border-[#f35050]/20 bg-[#f35050]/5" />
+              <div className="absolute left-1/4 bottom-8 h-16 w-16 rotate-12 rounded-full border border-[#f35050]/20 bg-[#f35050]/5" />
+              <div className="absolute right-1/4 bottom-8 h-12 w-12 rotate-45 rounded-full border border-[#f35050]/20 bg-[#f35050]/5" />
             </div>
 
-            <div className="rounded-[32px] border border-white/5 bg-[#0d0f12]/80 px-4 py-6 shadow-[0_35px_90px_rgba(0,0,0,0.35)] backdrop-blur-sm sm:px-6 sm:py-8 lg:px-8 lg:py-10">
+            <div className="rounded-[26px] border border-[#eae5df]/10 bg-[#f3efe9] px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
               <div className="text-center mb-8 sm:mb-10">
-                <h2 className="text-2xl sm:text-4xl font-black tracking-[-0.05em] text-[var(--text-primary)] font-['Archivo']">
+                <h2 className="text-3xl sm:text-6xl font-black tracking-[-0.08em] text-[#18191a] font-['Archivo']">
                   Who are you?
                 </h2>
-                <p className="mt-2 text-xs sm:text-sm text-[var(--text-secondary)]">
+                <p className="mt-3 text-sm sm:text-xl text-[#2f2d2b] opacity-85">
                   Choose your primary focus on the Hyperniche marketplace.
                 </p>
               </div>
@@ -365,20 +365,20 @@ export const SignupFlow: React.FC = () => {
                 <button
                   onClick={() => handleStep1SelectRole('business')}
                   type="button"
-                  className="group relative overflow-hidden rounded-[22px] border border-white/10 bg-[#111315]/90 p-6 text-left shadow-[0_18px_40px_rgba(0,0,0,0.28)] transition-all duration-200 hover:-translate-y-1 hover:border-[#f35050]/40 hover:shadow-[0_24px_60px_rgba(243,80,80,0.14)] cursor-pointer"
+                  className="group relative overflow-hidden rounded-[24px] border border-[#1f1f22]/5 bg-[#111315]/95 p-6 text-left shadow-[0_18px_40px_rgba(0,0,0,0.18)] transition-all duration-200 hover:-translate-y-1 hover:border-[#f35050]/30 hover:shadow-[0_24px_60px_rgba(243,80,80,0.08)] cursor-pointer"
                 >
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(243,80,80,0.14),transparent_42%)] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(243,80,80,0.12),transparent_46%)] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
                   <div className="relative">
                     <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#ff5d5d]/10 text-[#ff6b6b] ring-1 ring-[#ff6b6b]/20">
                       <Building2 className="w-6 h-6" />
                     </div>
-                    <h3 className="mb-2 text-xl font-bold tracking-tight text-[var(--text-primary)] font-['Archivo']">
+                    <h3 className="mb-2 text-xl sm:text-2xl font-bold tracking-tight text-[#f5f3ef] font-['Archivo']">
                       I'm a business owner
                     </h3>
-                    <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
+                    <p className="text-sm sm:text-base leading-relaxed text-[#d5d1cd]">
                       Post campaigns, browse verified Indian creators, and hire talent with milestone payouts.
                     </p>
-                    <div className="mt-5 flex items-center gap-1 text-sm font-bold text-[#ff6b6b] transition-transform group-hover:translate-x-0.5">
+                    <div className="mt-5 flex items-center gap-1 text-sm sm:text-lg font-bold text-[#ff6b6b] transition-transform group-hover:translate-x-0.5">
                       <span>Continue as business</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </div>
@@ -388,20 +388,20 @@ export const SignupFlow: React.FC = () => {
                 <button
                   onClick={() => handleStep1SelectRole('creator')}
                   type="button"
-                  className="group relative overflow-hidden rounded-[22px] border border-white/10 bg-[#111315]/90 p-6 text-left shadow-[0_18px_40px_rgba(0,0,0,0.28)] transition-all duration-200 hover:-translate-y-1 hover:border-[#5bd19a]/40 hover:shadow-[0_24px_60px_rgba(91,209,154,0.14)] cursor-pointer"
+                  className="group relative overflow-hidden rounded-[24px] border border-[#1f1f22]/5 bg-[#111315]/95 p-6 text-left shadow-[0_18px_40px_rgba(0,0,0,0.18)] transition-all duration-200 hover:-translate-y-1 hover:border-[#5bd19a]/30 hover:shadow-[0_24px_60px_rgba(91,209,154,0.08)] cursor-pointer"
                 >
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(91,209,154,0.14),transparent_42%)] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(91,209,154,0.12),transparent_46%)] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
                   <div className="relative">
                     <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#64d1a0]/10 text-[#78e0b0] ring-1 ring-[#64d1a0]/20">
                       <User className="w-6 h-6" />
                     </div>
-                    <h3 className="mb-2 text-xl font-bold tracking-tight text-[var(--text-primary)] font-['Archivo']">
+                    <h3 className="mb-2 text-xl sm:text-2xl font-bold tracking-tight text-[#f5f3ef] font-['Archivo']">
                       I'm a content creator
                     </h3>
-                    <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
+                    <p className="text-sm sm:text-base leading-relaxed text-[#d5d1cd]">
                       Find paid brand deals, send pitches directly to verified companies, and get paid in INR.
                     </p>
-                    <div className="mt-5 flex items-center gap-1 text-sm font-bold text-[#78e0b0] transition-transform group-hover:translate-x-0.5">
+                    <div className="mt-5 flex items-center gap-1 text-sm sm:text-lg font-bold text-[#78e0b0] transition-transform group-hover:translate-x-0.5">
                       <span>Continue as creator</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </div>
