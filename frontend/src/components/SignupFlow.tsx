@@ -260,37 +260,29 @@ export const SignupFlow: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] flex flex-col justify-between transition-colors relative overflow-hidden">
+    <div className="min-h-screen bg-[#0b0d0f] text-[var(--text-primary)] flex flex-col justify-between transition-colors relative overflow-hidden">
       
-      {/* Soft Northern Lights / Aurora Background on First "Who are you?" Page */}
-      {step === 1 && (
-        <div
-          className="fixed inset-0 pointer-events-none select-none overflow-hidden z-0"
-          aria-hidden="true"
-        >
-          {/* Pale Mint Blob */}
-          <div
-            className="aurora-blob-mint absolute -top-20 -left-20 w-[34rem] h-[34rem] rounded-full blur-[95px] opacity-[0.14] dark:opacity-[0.08] bg-[#D9F2E6] dark:bg-[#0D281E]"
-          />
-          {/* Lavender Blob */}
-          <div
-            className="aurora-blob-lavender absolute top-1/4 -right-24 w-[36rem] h-[36rem] rounded-full blur-[105px] opacity-[0.15] dark:opacity-[0.09] bg-[#E6DCFF] dark:bg-[#221838]"
-          />
-          {/* Blush Blob */}
-          <div
-            className="aurora-blob-blush absolute -bottom-24 left-1/3 w-[32rem] h-[32rem] rounded-full blur-[100px] opacity-[0.13] dark:opacity-[0.07] bg-[#FFDBE6] dark:bg-[#30141E]"
-          />
-        </div>
-      )}
+    {/* Soft Northern Lights / Aurora Background on First "Who are you?" Page */}
+    {step === 1 && (
+      <div
+        className="fixed inset-0 pointer-events-none select-none overflow-hidden z-0"
+        aria-hidden="true"
+      >
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.02),transparent_50%)]" />
+        <div className="aurora-blob-mint absolute -top-20 -left-20 w-[34rem] h-[34rem] rounded-full blur-[95px] opacity-[0.08] bg-[#D9F2E6]" />
+        <div className="aurora-blob-lavender absolute top-1/4 -right-24 w-[36rem] h-[36rem] rounded-full blur-[105px] opacity-[0.08] bg-[#E6DCFF]" />
+        <div className="aurora-blob-blush absolute -bottom-24 left-1/3 w-[32rem] h-[32rem] rounded-full blur-[100px] opacity-[0.08] bg-[#FFDBE6]" />
+      </div>
+    )}
 
-      {/* Top Header with Brand & Theme Toggle */}
-      <div className="w-full border-b border-[var(--border-primary)] bg-[var(--bg-card)]/90 backdrop-blur-xs relative z-10">
-        <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-xl font-bold tracking-tight text-[var(--text-primary)] font-['Archivo']">
-              Hyperniche<span className="text-[var(--accent)]">.</span>
+    {/* Top Header with Brand & Theme Toggle */}
+    <div className="w-full border-b border-[#f35050] bg-[#0d0f12]/95 backdrop-blur-xs relative z-10">
+        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className="text-xl font-black tracking-[-0.05em] text-[#f5f3ee] font-['Archivo']">
+              Hyperniche<span className="text-[#ff5d5d]">.</span>
             </span>
-            <span className="text-[11px] font-semibold text-[var(--text-muted)] hidden sm:inline">
+            <span className="text-[11px] font-medium text-[#c8c3bd] hidden sm:inline">
               Creator marketplace
             </span>
           </div>
@@ -300,36 +292,30 @@ export const SignupFlow: React.FC = () => {
           </div>
         </div>
 
-        {/* Progress Bar on Top */}
-        <div className="w-full bg-[var(--border-primary)]/40 h-1.5 overflow-hidden">
-          <div
-            className="h-full bg-[var(--accent)] transition-all duration-300 ease-out"
-            style={{ width: `${progressPercent}%` }}
-          />
-        </div>
+        <div className="w-full bg-[#f35050] h-[3px] overflow-hidden" />
       </div>
 
       {/* Main Flow Container */}
       <main className="flex-1 max-w-[760px] w-full mx-auto px-4 py-10 sm:py-14 flex flex-col justify-center relative z-10">
         
         {/* Navigation & Step Indicator */}
-        <div className="flex items-center justify-between mb-8 sm:mb-10">
+        <div className="flex items-center justify-between mb-8 sm:mb-10 text-[#d9d4ce]">
           {step > 1 ? (
             <button
               onClick={handleBack}
               type="button"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#d9d4ce] hover:text-white transition-colors cursor-pointer"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Back</span>
             </button>
           ) : (
-            <span className="text-[11px] font-semibold text-[var(--text-muted)]">
+            <span className="text-[11px] font-semibold text-[#d9d4ce] opacity-90">
               {getStepLabel()}
             </span>
           )}
 
-          <span className="text-xs font-mono font-semibold text-[var(--text-muted)]">
+          <span className="text-xs font-mono font-semibold text-[#d9d4ce] opacity-80">
             {getStepNumber()}
           </span>
         </div>
