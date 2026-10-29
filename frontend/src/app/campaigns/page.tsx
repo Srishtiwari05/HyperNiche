@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import { CampaignCard } from "@/components/features/CampaignCard";
 import { Campaign } from "@/types";
 import { api } from "@/lib/api";
+import { supabase } from "@/lib/supabase";
+import { normalizeCampaign } from "@/context/MarketplaceContext";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { PlusCircle, Search, Sparkles } from "lucide-react";
@@ -36,14 +38,40 @@ export default function CampaignsPage() {
     fetchCampaigns();
   }, [selectedCategory]);
 
+  useEffect(() => {
+    const channel = supabase
+      .channel("campaigns-page")
+      .on("postgres_changes", { event: "*", schema: "public", table: "campaigns" }, (payload) => {
+        if (payload.eventType === "DELETE") {
+          setCampaigns((prev) => prev.filter((campaign) => campaign.id !== payload.old.id));
+          return;
+        }
+        const campaign = normalizeCampaign(payload.new);
+        if (selectedCategory !== "All" && campaign.category !== selectedCategory) return;
+        setCampaigns((prev) => {
+          const index = prev.findIndex((item) => item.id === campaign.id);
+          return index < 0 ? [campaign, ...prev] : prev.map((item) => item.id === campaign.id ? { ...item, ...campaign } : item);
+        });
+      })
+      .subscribe((status) => {
+        if (status === "SUBSCRIBED") void fetchCampaigns();
+      });
+    return () => { void supabase.removeChannel(channel); };
+  }, [selectedCategory]);
+
   async function fetchCampaigns() {
     setLoading(true);
     try {
-      const catParam = selectedCategory === "All" ? undefined : selectedCategory;
-      const res = await api.getCampaigns({ category: catParam });
-      if (res?.content) {
-        setCampaigns(res.content);
-      }
+      let query = supabase.from("campaigns").select("*, users:brand_id(display_name, avatar_url)").order("created_at", { ascending: false });
+      if (selectedCategory !== "All") query = query.eq("category", selectedCategory);
+      const { data, error } = await query;
+      if (error) throw error;
+      setCampaigns((data || []).map((row) => normalizeCampaign({
+        ...row,
+        brandName: row.users?.display_name,
+        businessName: row.users?.display_name,
+        brandAvatar: row.users?.avatar_url,
+      })));
     } catch (e) {
       console.error("Error fetching campaigns", e);
     } finally {
@@ -81,13 +109,19 @@ export default function CampaignsPage() {
     setCreating(true);
     setFeedbackMsg("");
     try {
-      await api.createCampaign({
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+      if (!user) throw new Error("Sign in with a brand account to publish campaigns.");
+      const { error } = await supabase.from("campaigns").insert({
+        brand_id: user.id,
         title: newTitle,
         description: newDesc,
         category: newCategory,
         platform: newPlatform,
-        budgetInr: parseFloat(newBudget),
+        budget_inr: parseFloat(newBudget),
+        status: "ACTIVE",
       });
+      if (error) throw error;
       setFeedbackMsg("Campaign published successfully!");
       setTimeout(() => {
         setShowCreateModal(false);

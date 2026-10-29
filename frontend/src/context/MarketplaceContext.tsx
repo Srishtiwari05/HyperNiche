@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { api } from '../lib/api';
 import { Campaign, Application, Message, UserProfile, ReportItem, UserRole } from '../types';
@@ -81,10 +81,6 @@ function upsertById<T extends { id: string }>(prev: T[], item: T): T[] {
   return next;
 }
 
-function mergeById(primary: Campaign[], extra: Campaign[]): Campaign[] {
-  return extra.reduce((acc, row) => upsertById(acc, row), primary);
-}
-
 function mapApplicationFromApi(data: any): Application {
   const creatorName = data.creatorName || data.creator?.displayName || 'Creator';
   const creatorHandle = data.creatorHandle || (creatorName ? `@${creatorName.toLowerCase().replace(/\s+/g, '')}` : '@creator');
@@ -108,18 +104,6 @@ function mapApplicationFromApi(data: any): Application {
     createdAt: data.createdAt || new Date().toISOString(),
     updatedAt: data.updatedAt || data.createdAt || new Date().toISOString(),
   };
-}
-
-async function fetchCampaignsFromApi(params: { category?: string; platform?: string }): Promise<Campaign[]> {
-  const first = await api.getCampaigns({ ...params, page: 0, size: 100 });
-  const content = first?.content || (Array.isArray(first) ? first : []);
-  let rows = content.map(normalizeCampaign);
-  const totalPages = Math.min(Number(first?.totalPages) || 1, 20);
-  for (let page = 1; page < totalPages; page++) {
-    const next = await api.getCampaigns({ ...params, page, size: 100 });
-    rows = rows.concat((next?.content || []).map(normalizeCampaign));
-  }
-  return rows;
 }
 
 async function fetchCampaignsFromSupabase(): Promise<Campaign[]> {
@@ -239,16 +223,9 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPlatform, setSelectedPlatform] = useState('All');
   const [selectedFollowers, setSelectedFollowers] = useState('All');
-  const filtersRef = useRef({ selectedCategory, selectedPlatform });
-  filtersRef.current = { selectedCategory, selectedPlatform };
-
   const loadMarketplace = async (showSpinner = true) => {
-    const { selectedCategory: category, selectedPlatform: platform } = filtersRef.current;
-    const campParams: { category?: string; platform?: string } = {};
-    if (category && category !== 'All') campParams.category = category;
-    if (platform && platform !== 'All') campParams.platform = platform;
     const creatorParams: { niche?: string; size?: number } = { size: 100 };
-    if (category && category !== 'All') creatorParams.niche = category;
+    if (selectedCategory && selectedCategory !== 'All') creatorParams.niche = selectedCategory;
 
     if (showSpinner) {
       setIsLoadingData(true);
@@ -256,10 +233,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }
 
     try {
-      const apiCamps = await fetchCampaignsFromApi(campParams);
-      const sbCamps = await fetchCampaignsFromSupabase().catch(() => [] as Campaign[]);
-      const merged = mergeById(apiCamps, sbCamps);
-      setCampaigns(merged);
+      setCampaigns(await fetchCampaignsFromSupabase());
     } catch {
       setCampaigns([]);
     }
@@ -280,7 +254,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
   useEffect(() => {
     if (isAuthLoading) return;
     void loadMarketplace(true);
-  }, [selectedCategory, selectedPlatform, currentUser?.id, isAuthLoading]);
+  }, [selectedCategory, currentUser?.id, isAuthLoading]);
 
   // 2. Fetch authenticated user applications and conversations
   useEffect(() => {
@@ -342,14 +316,6 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
       })
       .catch((err) => console.warn('API getConversations note:', err));
 
-    api.getMyCampaigns()
-      .then((mine: any) => {
-        const list = Array.isArray(mine) ? mine : (mine?.content || []);
-        if (list.length) {
-          setCampaigns((prev) => list.reduce((acc: Campaign[], row: any) => upsertById(acc, normalizeCampaign(row)), prev));
-        }
-      })
-      .catch(() => {});
   }, [currentUser, userProfile?.role]);
 
   // 3. Supabase Realtime subscriptions
@@ -374,7 +340,9 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
           await loadMarketplace(false).catch(() => {});
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') void loadMarketplace(false);
+      });
 
     const messageChannel = supabase
       .channel('public:messages')
@@ -426,78 +394,32 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
       ? data.platforms.join(', ')
       : (data.platforms || data.platform || 'Instagram Reels');
 
-    const payload = {
-      title: data.title,
-      description: data.description,
-      category: data.category,
-      platform: platformValue,
-      budgetInr: data.budget,
-      requirements: data.requirements,
-      deadline: isoDeadline,
-      imageUrl: data.imageUrl || null,
-      contentType: data.contentType || null,
-    };
-
-    await supabase.from('users').upsert({
+    const { error: profileError } = await supabase.from('users').upsert({
       id: currentUid,
       email: userProfile.email,
       role: 'BRAND',
       display_name: userProfile.name,
       avatar_url: userProfile.avatarUrl || null,
     });
+    if (profileError) throw profileError;
 
-    let created: any = null;
-    let apiErr: any = null;
-    try {
-      created = await api.createCampaign(payload);
-    } catch (err) {
-      apiErr = err;
-    }
-
-    const { data: sbRows, error: sbErr } = await supabase
+    const { data: sbRow, error: sbErr } = await supabase
       .from('campaigns')
-      .upsert(toCampaignRow(currentUid, { ...data, deadline: isoDeadline, platform: platformValue }, created?.id))
-      .select();
-
-    const sbRow = Array.isArray(sbRows) ? sbRows[0] : sbRows;
-
-    if (sbRow || created) {
-      const nextCampaign = normalizeCampaign({
-        ...data,
-        ...created,
-        ...sbRow,
-        businessName: userProfile.name,
-        businessHandle: userProfile.handle,
-        businessId: currentUid,
-        contentType: data.contentType,
-        imageUrl: data.imageUrl || created?.imageUrl,
-      });
-      setCampaigns((prev) => upsertById(prev, nextCampaign));
-      await loadMarketplace(false).catch(() => {});
-      return;
-    }
-
-    throw new Error(apiErr?.message || sbErr?.message || 'Could not publish campaign. Please try again.');
+      .insert(toCampaignRow(currentUid, { ...data, deadline: isoDeadline, platform: platformValue }))
+      .select()
+      .single();
+    if (sbErr) throw sbErr;
+    setCampaigns((prev) => upsertById(prev, normalizeCampaign({
+      ...sbRow,
+      businessName: userProfile.name,
+      businessHandle: userProfile.handle,
+      businessId: currentUid,
+    })));
   };
 
   // UPDATE CAMPAIGN
   const updateCampaign = async (campaignId: string, data: Partial<Campaign>) => {
     if (!userProfile) throw new Error('You must be logged in to edit a campaign.');
-    try {
-      await api.updateCampaign(campaignId, {
-        title: data.title,
-        description: data.description,
-        category: data.category,
-        platform: Array.isArray(data.platforms) ? data.platforms.join(', ') : (data.platforms || 'Instagram Reels'),
-        budgetInr: data.budget,
-        requirements: data.requirements,
-        deadline: toIsoDate(data.deadline),
-        imageUrl: data.imageUrl,
-        contentType: data.contentType,
-      });
-    } catch {
-      // still persist on Supabase so other accounts keep the edit
-    }
     const patch: Record<string, unknown> = {};
     if (data.title) patch.title = data.title;
     if (data.description) patch.description = data.description;
@@ -511,7 +433,8 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
     if (data.imageUrl) patch.image_url = data.imageUrl;
     if (data.contentType) patch.content_type = data.contentType;
     if (Object.keys(patch).length) {
-      await supabase.from('campaigns').update(patch).eq('id', campaignId);
+      const { error } = await supabase.from('campaigns').update(patch).eq('id', campaignId);
+      if (error) throw error;
     }
     await loadMarketplace(false).catch(() => {});
     setCampaigns((prev) =>
@@ -522,12 +445,8 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
   // REMOVE CAMPAIGN
   const removeCampaign = async (campaignId: string) => {
     if (!userProfile) throw new Error('You must be logged in to remove a campaign.');
-    try {
-      await api.deleteCampaign(campaignId);
-    } catch {
-      // still hide locally and in Supabase
-    }
-    await supabase.from('campaigns').update({ status: 'removed' }).eq('id', campaignId);
+    const { error } = await supabase.from('campaigns').update({ status: 'removed' }).eq('id', campaignId);
+    if (error) throw error;
     await loadMarketplace(false).catch(() => {});
     setCampaigns((prev) =>
       prev.map((c) => (c.id === campaignId ? { ...c, status: 'removed', removed: true } : c))
@@ -537,7 +456,8 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
   // RESTORE CAMPAIGN
   const restoreCampaign = async (campaignId: string) => {
     if (!userProfile) throw new Error('You must be logged in to restore a campaign.');
-    await supabase.from('campaigns').update({ status: 'ACTIVE' }).eq('id', campaignId);
+    const { error } = await supabase.from('campaigns').update({ status: 'ACTIVE' }).eq('id', campaignId);
+    if (error) throw error;
     await loadMarketplace(false).catch(() => {});
     setCampaigns((prev) =>
       prev.map((c) => (c.id === campaignId ? { ...c, status: 'open', removed: false } : c))
