@@ -310,10 +310,10 @@ export const SignupFlow: React.FC = () => {
       </div>
 
       {/* Main Flow Container */}
-      <main className="flex-1 max-w-xl w-full mx-auto px-4 py-8 sm:py-12 flex flex-col justify-center relative z-10">
+      <main className="flex-1 max-w-[760px] w-full mx-auto px-4 py-10 sm:py-14 flex flex-col justify-center relative z-10">
         
         {/* Navigation & Step Indicator */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-8 sm:mb-10">
           {step > 1 ? (
             <button
               onClick={handleBack}
@@ -337,75 +337,77 @@ export const SignupFlow: React.FC = () => {
         {/* SLIDE 1: Who are you? */}
         {step === 1 && (
           <div className="animate-in fade-in slide-in-from-right-4 duration-200 relative w-full">
-            <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
-              <div className="absolute left-1/2 top-20 h-36 w-36 -translate-x-1/2 rounded-full border border-white/10 bg-white/[0.02] blur-2xl" />
-              <div className="absolute left-10 top-24 h-12 w-12 rotate-12 rounded-full border border-[#f35050]/40 bg-[#f35050]/10" />
-              <div className="absolute right-12 top-20 h-10 w-10 rotate-45 rounded-full border border-[#f35050]/30 bg-[#f35050]/5" />
-              <div className="absolute left-1/4 bottom-12 h-14 w-14 rotate-12 rounded-full border border-[#f35050]/25 bg-[#f35050]/5" />
-              <div className="absolute right-1/4 bottom-10 h-10 w-10 rotate-45 rounded-full border border-[#f35050]/25 bg-[#f35050]/5" />
+            <div className="pointer-events-none absolute inset-[-8%] -z-10 overflow-hidden rounded-[40px]" aria-hidden="true">
+              <div className="absolute left-1/2 top-20 h-36 w-36 -translate-x-1/2 rounded-full border border-white/10 bg-white/[0.02] blur-3xl" />
+              <div className="absolute left-10 top-28 h-16 w-16 rotate-12 rounded-full border border-[#f35050]/40 bg-[#f35050]/10" />
+              <div className="absolute right-12 top-20 h-12 w-12 rotate-45 rounded-full border border-[#f35050]/30 bg-[#f35050]/5" />
+              <div className="absolute left-1/4 bottom-12 h-20 w-20 rotate-12 rounded-full border border-[#f35050]/25 bg-[#f35050]/5" />
+              <div className="absolute right-1/4 bottom-8 h-12 w-12 rotate-45 rounded-full border border-[#f35050]/25 bg-[#f35050]/5" />
             </div>
 
-            <div className="text-center mb-8">
-              <h2 className="text-2xl sm:text-4xl font-black tracking-[-0.05em] text-[var(--text-primary)] font-['Archivo']">
-                Who are you?
-              </h2>
-              <p className="mt-2 text-xs sm:text-sm text-[var(--text-secondary)]">
-                Choose your primary focus on the Hyperniche marketplace.
-              </p>
-            </div>
-
-            {isCompletionMode && (
-              <div className="text-center mb-6 text-xs font-semibold text-[var(--accent)] bg-[var(--accent-soft)]/60 py-2.5 px-4 rounded-xl border border-[var(--accent)]/30 shadow-2xs">
-                You're signed in. Just 3 quick questions to finish setting up.
+            <div className="rounded-[32px] border border-white/5 bg-[#0d0f12]/80 px-4 py-6 shadow-[0_35px_90px_rgba(0,0,0,0.35)] backdrop-blur-sm sm:px-6 sm:py-8 lg:px-8 lg:py-10">
+              <div className="text-center mb-8 sm:mb-10">
+                <h2 className="text-2xl sm:text-4xl font-black tracking-[-0.05em] text-[var(--text-primary)] font-['Archivo']">
+                  Who are you?
+                </h2>
+                <p className="mt-2 text-xs sm:text-sm text-[var(--text-secondary)]">
+                  Choose your primary focus on the Hyperniche marketplace.
+                </p>
               </div>
-            )}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-              <button
-                onClick={() => handleStep1SelectRole('business')}
-                type="button"
-                className="group relative overflow-hidden rounded-[20px] border border-white/10 bg-[#111315]/90 p-6 text-left shadow-[0_18px_40px_rgba(0,0,0,0.25)] transition-all duration-200 hover:-translate-y-1 hover:border-[#f35050]/40 hover:shadow-[0_22px_50px_rgba(243,80,80,0.12)] cursor-pointer"
-              >
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(243,80,80,0.12),transparent_42%)] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
-                <div className="relative">
-                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#ff5d5d]/10 text-[#ff6b6b] ring-1 ring-[#ff6b6b]/20">
-                    <Building2 className="w-6 h-6" />
-                  </div>
-                  <h3 className="mb-2 text-xl font-bold tracking-tight text-[var(--text-primary)] font-['Archivo']">
-                    I'm a business owner
-                  </h3>
-                  <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
-                    Post campaigns, browse verified Indian creators, and hire talent with milestone payouts.
-                  </p>
-                  <div className="mt-5 flex items-center gap-1 text-sm font-bold text-[#ff6b6b] transition-transform group-hover:translate-x-0.5">
-                    <span>Continue as business</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </div>
+              {isCompletionMode && (
+                <div className="text-center mb-7 text-xs font-semibold text-[var(--accent)] bg-[var(--accent-soft)]/60 py-2.5 px-4 rounded-xl border border-[var(--accent)]/30 shadow-2xs">
+                  You're signed in. Just 3 quick questions to finish setting up.
                 </div>
-              </button>
+              )}
 
-              <button
-                onClick={() => handleStep1SelectRole('creator')}
-                type="button"
-                className="group relative overflow-hidden rounded-[20px] border border-white/10 bg-[#111315]/90 p-6 text-left shadow-[0_18px_40px_rgba(0,0,0,0.25)] transition-all duration-200 hover:-translate-y-1 hover:border-[#5bd19a]/40 hover:shadow-[0_22px_50px_rgba(91,209,154,0.12)] cursor-pointer"
-              >
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(91,209,154,0.12),transparent_42%)] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
-                <div className="relative">
-                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#64d1a0]/10 text-[#78e0b0] ring-1 ring-[#64d1a0]/20">
-                    <User className="w-6 h-6" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
+                <button
+                  onClick={() => handleStep1SelectRole('business')}
+                  type="button"
+                  className="group relative overflow-hidden rounded-[22px] border border-white/10 bg-[#111315]/90 p-6 text-left shadow-[0_18px_40px_rgba(0,0,0,0.28)] transition-all duration-200 hover:-translate-y-1 hover:border-[#f35050]/40 hover:shadow-[0_24px_60px_rgba(243,80,80,0.14)] cursor-pointer"
+                >
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(243,80,80,0.14),transparent_42%)] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+                  <div className="relative">
+                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#ff5d5d]/10 text-[#ff6b6b] ring-1 ring-[#ff6b6b]/20">
+                      <Building2 className="w-6 h-6" />
+                    </div>
+                    <h3 className="mb-2 text-xl font-bold tracking-tight text-[var(--text-primary)] font-['Archivo']">
+                      I'm a business owner
+                    </h3>
+                    <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
+                      Post campaigns, browse verified Indian creators, and hire talent with milestone payouts.
+                    </p>
+                    <div className="mt-5 flex items-center gap-1 text-sm font-bold text-[#ff6b6b] transition-transform group-hover:translate-x-0.5">
+                      <span>Continue as business</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </div>
                   </div>
-                  <h3 className="mb-2 text-xl font-bold tracking-tight text-[var(--text-primary)] font-['Archivo']">
-                    I'm a content creator
-                  </h3>
-                  <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
-                    Find paid brand deals, send pitches directly to verified companies, and get paid in INR.
-                  </p>
-                  <div className="mt-5 flex items-center gap-1 text-sm font-bold text-[#78e0b0] transition-transform group-hover:translate-x-0.5">
-                    <span>Continue as creator</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+
+                <button
+                  onClick={() => handleStep1SelectRole('creator')}
+                  type="button"
+                  className="group relative overflow-hidden rounded-[22px] border border-white/10 bg-[#111315]/90 p-6 text-left shadow-[0_18px_40px_rgba(0,0,0,0.28)] transition-all duration-200 hover:-translate-y-1 hover:border-[#5bd19a]/40 hover:shadow-[0_24px_60px_rgba(91,209,154,0.14)] cursor-pointer"
+                >
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(91,209,154,0.14),transparent_42%)] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+                  <div className="relative">
+                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#64d1a0]/10 text-[#78e0b0] ring-1 ring-[#64d1a0]/20">
+                      <User className="w-6 h-6" />
+                    </div>
+                    <h3 className="mb-2 text-xl font-bold tracking-tight text-[var(--text-primary)] font-['Archivo']">
+                      I'm a content creator
+                    </h3>
+                    <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
+                      Find paid brand deals, send pitches directly to verified companies, and get paid in INR.
+                    </p>
+                    <div className="mt-5 flex items-center gap-1 text-sm font-bold text-[#78e0b0] transition-transform group-hover:translate-x-0.5">
+                      <span>Continue as creator</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </div>
                   </div>
-                </div>
-              </button>
+                </button>
+              </div>
             </div>
           </div>
         )}
