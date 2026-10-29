@@ -420,46 +420,84 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const switchActiveRole = async (targetRole: UserRole) => {
     if (!userProfile) return;
-    let updated: UserProfile = {
+
+    const updated: UserProfile = {
       ...userProfile,
       role: targetRole,
       activeRole: targetRole,
       lastActiveRole: targetRole,
+      hasBusinessProfile: targetRole === 'business' || Boolean(userProfile.hasBusinessProfile || userProfile.businessProfile),
+      hasCreatorProfile: targetRole === 'creator' || Boolean(userProfile.hasCreatorProfile || userProfile.creatorProfile),
       updatedAt: new Date().toISOString(),
     };
 
     if (targetRole === 'creator') {
-      const c = userProfile.creatorProfile;
-      if (c) {
-        updated.handle = c.handle;
-        updated.followers = c.followers;
-        updated.niche = c.niche;
-        updated.name = c.name || updated.name;
-        if (c.bio) updated.bio = c.bio;
-        if (c.city) updated.city = c.city;
-        if (c.minRate) updated.minRate = c.minRate;
-      }
+      const c = userProfile.creatorProfile || {
+        handle: userProfile.handle || '@creator',
+        followers: userProfile.followers || '10K-50K',
+        niche: userProfile.niche || 'Fashion',
+        name: userProfile.name || 'Creator User',
+        bio: userProfile.bio,
+        city: userProfile.city,
+        minRate: userProfile.minRate || 25000,
+      };
+
+      updated.handle = c.handle;
+      updated.followers = c.followers;
+      updated.niche = c.niche;
+      updated.name = c.name || updated.name;
+      updated.minRate = c.minRate || updated.minRate || 25000;
+      if (c.bio) updated.bio = c.bio;
+      if (c.city) updated.city = c.city;
+      updated.creatorProfile = c;
+      updated.businessProfile = userProfile.businessProfile;
     } else {
-      const b = userProfile.businessProfile;
-      if (b) {
-        updated.name = b.name;
-        updated.handle = b.handle || (b.websiteOrInstagram?.startsWith('@') ? b.websiteOrInstagram : `@${b.name.toLowerCase().replace(/\s+/g, '')}`);
-        updated.websiteOrInstagram = b.websiteOrInstagram;
-        updated.whatYouSell = b.whatYouSell;
-        if (b.bio) updated.bio = b.bio;
-        if (b.city) updated.city = b.city;
-      }
+      const b = userProfile.businessProfile || {
+        name: userProfile.name || 'Business Partner',
+        handle: userProfile.handle || '@brand',
+        websiteOrInstagram: userProfile.websiteOrInstagram || '',
+        whatYouSell: userProfile.whatYouSell || 'Consumer Goods',
+        bio: userProfile.bio,
+        city: userProfile.city,
+      };
+
+      updated.name = b.name;
+      updated.handle = b.handle || (b.websiteOrInstagram?.startsWith('@') ? b.websiteOrInstagram : `@${b.name.toLowerCase().replace(/\s+/g, '')}`);
+      updated.websiteOrInstagram = b.websiteOrInstagram;
+      updated.whatYouSell = b.whatYouSell;
+      updated.businessProfile = b;
+      updated.creatorProfile = userProfile.creatorProfile;
+      if (b.bio) updated.bio = b.bio;
+      if (b.city) updated.city = b.city;
     }
 
     setUserProfile(updated);
     saveProfileLocally(updated);
 
     if (currentUser) {
+      setCurrentUser((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          user_metadata: {
+            ...(prev.user_metadata || {}),
+            role: toDbRole(targetRole),
+            displayName: updated.name,
+          },
+        };
+      });
+
       try {
-        await supabase.from('users').update({
+        await supabase.from('users').upsert({
+          id: currentUser.id,
+          email: currentUser.email || updated.email,
           role: toDbRole(targetRole),
+          display_name: updated.name,
+          avatar_url: updated.avatarUrl || null,
+          bio: updated.bio || '',
           updated_at: updated.updatedAt,
-        }).eq('id', currentUser.id);
+          profile_json: JSON.stringify(updated),
+        });
       } catch (err) {
         console.warn('Supabase switch role note:', err);
       }
