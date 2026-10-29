@@ -296,7 +296,7 @@ export const SignupFlow: React.FC = () => {
       </div>
 
       {/* Main Flow Container */}
-      <main className="flex-1 max-w-[760px] w-full mx-auto px-4 py-10 sm:py-14 flex flex-col justify-center relative z-10">
+      <main className="flex-1 max-w-[1040px] w-full mx-auto px-4 py-10 sm:py-14 flex flex-col justify-center relative z-10">
         
         {/* Navigation & Step Indicator */}
         <div className="flex items-center justify-between mb-8 sm:mb-10 text-[#d9d4ce]">
@@ -331,12 +331,12 @@ export const SignupFlow: React.FC = () => {
               <div className="absolute right-1/4 bottom-8 h-12 w-12 rotate-45 rounded-full border border-[#f35050]/20 bg-[#f35050]/5" />
             </div>
 
-            <div className="rounded-[30px] border border-[#e9e1d6]/60 bg-[#f5f1eb] px-4 py-6 shadow-[0_24px_70px_rgba(15,17,20,0.06)] sm:px-6 sm:py-8 lg:px-8 lg:py-10">
+            <div className="rounded-[30px] border border-[#e7dfd5]/80 bg-[#f1efe9]/95 px-4 py-6 shadow-[0_30px_90px_rgba(0,0,0,0.12)] sm:px-6 sm:py-8 lg:px-8 lg:py-10 backdrop-blur-[1px]">
               <div className="text-center mb-8 sm:mb-10">
-                <h2 className="text-3xl sm:text-6xl font-black tracking-[-0.08em] text-[#111214] font-['Archivo']">
+                <h2 className="text-[clamp(3.2rem,6vw,7rem)] font-black tracking-[-0.08em] text-[#111214] font-['Archivo'] leading-none">
                   Who are you?
                 </h2>
-                <p className="mt-3 text-sm sm:text-xl text-[#2d2e30] opacity-80">
+                <p className="mt-3 text-base sm:text-[1.8rem] text-[#2d2e30] opacity-85 leading-[1.4]">
                   Choose your primary focus on the Hyperniche marketplace.
                 </p>
               </div>
@@ -351,22 +351,22 @@ export const SignupFlow: React.FC = () => {
                 <button
                   onClick={() => handleStep1SelectRole('business')}
                   type="button"
-                  className="group relative overflow-hidden rounded-[24px] border border-[#e9e1d6] bg-[#16181a] p-6 text-left shadow-[0_20px_40px_rgba(17,18,20,0.16)] transition-all duration-200 hover:-translate-y-1 hover:border-[#f35050]/35 hover:shadow-[0_28px_60px_rgba(243,80,80,0.08)] cursor-pointer"
+                  className="group relative overflow-hidden rounded-[24px] border border-[#d7d0c7] bg-[#171b1f] p-6 text-left shadow-[0_20px_40px_rgba(17,18,20,0.16)] transition-all duration-200 hover:-translate-y-1 hover:border-[#f35050]/40 hover:shadow-[0_22px_50px_rgba(243,80,80,0.08)] cursor-pointer"
                 >
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(243,80,80,0.12),transparent_42%)] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
                   <div className="relative">
                     <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#ff5d5d]/10 text-[#ff6b6b] ring-1 ring-[#ff6b6b]/20">
                       <Building2 className="w-6 h-6" />
                     </div>
-                    <h3 className="mb-2 text-xl sm:text-2xl font-bold tracking-tight text-[#f4f0eb] font-['Archivo']">
+                    <h3 className="mb-2 text-[clamp(1.5rem,2vw,2.2rem)] font-black tracking-[-0.04em] text-[#f4f0eb] font-['Archivo'] leading-none">
                       I'm a business owner
                     </h3>
-                    <p className="text-sm sm:text-base leading-relaxed text-[#d8d3ce]">
+                    <p className="mt-3 text-[1.05rem] leading-[1.45] text-[#d8d3ce]">
                       Post campaigns, browse verified Indian creators, and hire talent with milestone payouts.
                     </p>
-                    <div className="mt-5 flex items-center gap-1 text-sm sm:text-lg font-bold text-[#ff6b6b] transition-transform group-hover:translate-x-0.5">
+                    <div className="mt-5 flex items-center gap-1 text-[1.05rem] font-black text-[#ff6b6b] transition-transform group-hover:translate-x-0.5">
                       <span>Continue as business</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
+                      <ArrowRight className="w-4 h-4" />
                     </div>
                   </div>
                 </button>
@@ -374,22 +374,22 @@ export const SignupFlow: React.FC = () => {
                 <button
                   onClick={() => handleStep1SelectRole('creator')}
                   type="button"
-                  className="group relative overflow-hidden rounded-[24px] border border-[#e9e1d6] bg-[#16181a] p-6 text-left shadow-[0_20px_40px_rgba(17,18,20,0.16)] transition-all duration-200 hover:-translate-y-1 hover:border-[#5bd19a]/35 hover:shadow-[0_28px_60px_rgba(91,209,154,0.08)] cursor-pointer"
+                  className="group relative overflow-hidden rounded-[24px] border border-[#d7d0c7] bg-[#171b1f] p-6 text-left shadow-[0_20px_40px_rgba(17,18,20,0.16)] transition-all duration-200 hover:-translate-y-1 hover:border-[#5bd19a]/40 hover:shadow-[0_22px_50px_rgba(91,209,154,0.08)] cursor-pointer"
                 >
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(91,209,154,0.12),transparent_42%)] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
                   <div className="relative">
                     <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#64d1a0]/10 text-[#78e0b0] ring-1 ring-[#64d1a0]/20">
                       <User className="w-6 h-6" />
                     </div>
-                    <h3 className="mb-2 text-xl sm:text-2xl font-bold tracking-tight text-[#f4f0eb] font-['Archivo']">
+                    <h3 className="mb-2 text-[clamp(1.5rem,2vw,2.2rem)] font-black tracking-[-0.04em] text-[#f4f0eb] font-['Archivo'] leading-none">
                       I'm a content creator
                     </h3>
-                    <p className="text-sm sm:text-base leading-relaxed text-[#d8d3ce]">
+                    <p className="mt-3 text-[1.05rem] leading-[1.45] text-[#d8d3ce]">
                       Find paid brand deals, send pitches directly to verified companies, and get paid in INR.
                     </p>
-                    <div className="mt-5 flex items-center gap-1 text-sm sm:text-lg font-bold text-[#78e0b0] transition-transform group-hover:translate-x-0.5">
+                    <div className="mt-5 flex items-center gap-1 text-[1.05rem] font-black text-[#78e0b0] transition-transform group-hover:translate-x-0.5">
                       <span>Continue as creator</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
+                      <ArrowRight className="w-4 h-4" />
                     </div>
                   </div>
                 </button>
