@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { MarketplaceProvider, useMarketplace } from './context/MarketplaceContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -17,6 +17,7 @@ import { MainMarketplace } from './components/MainMarketplace';
 import { HowItWorks } from './components/HowItWorks';
 import { Footer } from './components/Footer';
 import { SignupFlow } from './components/SignupFlow';
+import { PublicLanding } from './components/PublicLanding';
 import { CreateCampaignModal } from './components/CreateCampaignModal';
 import { ApplyCampaignModal } from './components/ApplyCampaignModal';
 import { SendBriefModal } from './components/SendBriefModal';
@@ -30,6 +31,11 @@ import { UserProfile, Campaign } from './types';
 const MainAppContent: React.FC = () => {
   const { userProfile, currentUser, isLoading, authError, retryAuth } = useAuth();
   const { setSelectedCategory } = useMarketplace();
+  const [publicScreen, setPublicScreen] = useState<'home' | 'signup' | 'login'>('home');
+
+  useEffect(() => {
+    if (!currentUser) setPublicScreen('home');
+  }, [currentUser?.id]);
 
   // Navigation tab: 'browse' | 'my-campaigns' | 'applications' | 'messages' | 'profile'
   const [currentTab, setCurrentTab] = useState<
@@ -79,9 +85,23 @@ const MainAppContent: React.FC = () => {
     );
   }
 
-  // If user is not authenticated or profile not set up yet, show the sign-up flow
+  // Keep the marketing homepage public; expose app features only after profile setup.
   if (!userProfile) {
-    return <SignupFlow />;
+    if (currentUser) return <SignupFlow onBackToHome={() => setPublicScreen('home')} />;
+    if (publicScreen === 'home') {
+      return (
+        <PublicLanding
+          onCreateAccount={() => setPublicScreen('signup')}
+          onLogin={() => setPublicScreen('login')}
+        />
+      );
+    }
+    return (
+      <SignupFlow
+        initialMode={publicScreen}
+        onBackToHome={() => setPublicScreen('home')}
+      />
+    );
   }
 
   const role = userProfile.role;

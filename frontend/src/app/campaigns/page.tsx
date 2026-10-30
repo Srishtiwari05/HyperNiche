@@ -9,10 +9,11 @@ import { normalizeCampaign } from "@/context/MarketplaceContext";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { PlusCircle, Search, Sparkles } from "lucide-react";
+import { RequireAuth } from "@/components/RequireAuth";
 
 const CATEGORIES = ["All", "Tech & SaaS", "Fitness & Wellness", "Fintech & Crypto", "Beauty & Skincare", "Gaming & Esports", "Food & Beverage"];
 
-export default function CampaignsPage() {
+function CampaignsPageContent() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [search, setSearch] = useState("");
@@ -327,4 +328,8 @@ export default function CampaignsPage() {
       )}
     </div>
   );
+}
+
+export default function CampaignsPage() {
+  return <RequireAuth><CampaignsPageContent /></RequireAuth>;
 }

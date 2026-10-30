@@ -27,7 +27,12 @@ const FOLLOWER_RANGES = [
   'Above 250K',
 ];
 
-export const SignupFlow: React.FC = () => {
+interface SignupFlowProps {
+  initialMode?: 'signup' | 'login';
+  onBackToHome?: () => void;
+}
+
+export const SignupFlow: React.FC<SignupFlowProps> = ({ initialMode = 'signup', onBackToHome }) => {
   const { theme } = useTheme();
   const isLightMode = theme === 'light';
 
@@ -41,9 +46,9 @@ export const SignupFlow: React.FC = () => {
   } = useAuth();
 
   // Slide state: 1 to 4 (always starts on Step 1 "Who are you?")
-  const [step, setStep] = useState<number>(1);
+  const [step, setStep] = useState<number>(initialMode === 'login' ? 4 : 1);
   const [role, setRole] = useState<UserRole>('business');
-  const [accountType, setAccountType] = useState<'new' | 'existing'>('new');
+  const [accountType, setAccountType] = useState<'new' | 'existing'>(initialMode === 'login' ? 'existing' : 'new');
 
   // Step 3 Creator fields
   const [creatorHandle, setCreatorHandle] = useState('');
@@ -256,7 +261,8 @@ export const SignupFlow: React.FC = () => {
       }
     } else if (step === 4) {
       if (accountType === 'existing') {
-        setStep(2);
+        if (initialMode === 'login') onBackToHome?.();
+        else setStep(2);
       } else {
         setStep(3);
       }
@@ -310,12 +316,12 @@ export const SignupFlow: React.FC = () => {
               className={`inline-flex items-center gap-1.5 text-xs font-semibold ${isLightMode ? 'text-[#323334] hover:text-[#111214]' : 'text-[#d9d4ce] hover:text-white'} transition-colors cursor-pointer`}
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>Back</span>
+              <span>{initialMode === 'login' && step === 4 ? 'Back to home' : 'Back'}</span>
             </button>
           ) : (
-            <span className="text-[11px] font-semibold opacity-90">
-              {getStepLabel()}
-            </span>
+            onBackToHome ? (
+              <button type="button" onClick={onBackToHome} className="text-[11px] font-semibold opacity-75 transition hover:opacity-100">Back to home</button>
+            ) : <span className="text-[11px] font-semibold opacity-90">{getStepLabel()}</span>
           )}
 
           <span className="text-xs font-mono font-semibold opacity-80">

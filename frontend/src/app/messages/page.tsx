@@ -7,8 +7,9 @@ import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { MessageSquare, Send, ShieldAlert, Sparkles } from "lucide-react";
+import { RequireAuth } from "@/components/RequireAuth";
 
-export default function MessagesPage() {
+function MessagesPageContent() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -238,4 +239,8 @@ export default function MessagesPage() {
       </div>
     </div>
   );
+}
+
+export default function MessagesPage() {
+  return <RequireAuth><MessagesPageContent /></RequireAuth>;
 }

@@ -6,8 +6,9 @@ import { api } from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { CheckCircle2, Clock, XCircle } from "lucide-react";
+import { RequireAuth } from "@/components/RequireAuth";
 
-export default function ApplicationsPage() {
+function ApplicationsPageContent() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -83,4 +84,8 @@ export default function ApplicationsPage() {
       )}
     </div>
   );
+}
+
+export default function ApplicationsPage() {
+  return <RequireAuth><ApplicationsPageContent /></RequireAuth>;
 }

@@ -6,10 +6,11 @@ import { CreatorProfile } from "@/types";
 import { api } from "@/lib/api";
 import { Input } from "@/components/ui/Input";
 import { Search, Sparkles } from "lucide-react";
+import { RequireAuth } from "@/components/RequireAuth";
 
 const NICHES = ["All", "Tech", "SaaS", "Fitness", "Fintech", "Gaming", "Beauty", "Fashion", "AI Tools"];
 
-export default function CreatorsPage() {
+function CreatorsPageContent() {
   const [creators, setCreators] = useState<CreatorProfile[]>([]);
   const [selectedNiche, setSelectedNiche] = useState("All");
   const [search, setSearch] = useState("");
@@ -94,4 +95,8 @@ export default function CreatorsPage() {
       )}
     </div>
   );
+}
+
+export default function CreatorsPage() {
+  return <RequireAuth><CreatorsPageContent /></RequireAuth>;
 }
