@@ -7,6 +7,13 @@ interface PublicLandingProps {
   onLogin: () => void;
 }
 
+const creatorShowcase = [
+  { name: 'Sophia', value: '2.3M followers', tone: 'bg-[#F5DDA7]' },
+  { name: 'Ari', value: '875K subscribers', tone: 'bg-[#FFB59F]' },
+  { name: 'Maya', value: '1.2M views / week', tone: 'bg-[#C9E7CD]' },
+  { name: 'Noah', value: '430 brand collabs', tone: 'bg-[#D9D3FF]' },
+];
+
 export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, onLogin }) => {
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === 'dark';
@@ -48,6 +55,22 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
       </header>
 
       <section className="relative z-10 mx-auto grid min-h-[calc(100svh-77px)] max-w-[1440px] items-center gap-12 px-5 py-14 sm:px-8 sm:py-20 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16 lg:px-12 lg:py-16">
+        <div className="hero-marquee lg:col-span-2 overflow-hidden rounded-[22px] border border-[#EADFCF] bg-[#FFFAF2]/75 p-2 dark:border-white/10 dark:bg-white/[0.03]">
+          <div className="hero-marquee-track flex min-w-max items-center gap-3">
+            {[...creatorShowcase, ...creatorShowcase].map((creator, index) => (
+              <div key={`${creator.name}-${index}`} className="hero-card-float flex min-w-[220px] items-center gap-3 rounded-2xl border border-[#EADFCF] bg-[#FDF6EC] px-3 py-2.5 dark:border-white/10 dark:bg-[#141414]">
+                <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${creator.tone} text-sm font-black text-[#2B2622]`}>
+                  {creator.name[0]}
+                </div>
+                <div className="min-w-0">
+                  <div className="text-sm font-bold">{creator.name}</div>
+                  <div className="text-[11px] text-[#736B63] dark:text-white/55">{creator.value}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         <div className="max-w-[720px]">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#EADFCF] bg-[#FFFAF2] px-3.5 py-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[#736B63] dark:border-white/10 dark:bg-white/[0.04] dark:text-white/65">
             <span className="h-2 w-2 rounded-full bg-[#F06A4D] shadow-[0_0_14px_rgba(240,106,77,0.5)] dark:bg-[#ef3542] dark:shadow-[0_0_14px_rgba(239,53,66,0.8)]" />
