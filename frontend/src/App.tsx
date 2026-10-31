@@ -114,9 +114,11 @@ const MainAppContent: React.FC = () => {
     }
   };
 
-  const scrollToMarketplace = () => {
+  const scrollToMarketplace = (sectionId: string) => {
     setCurrentTab('browse');
-    window.scrollTo({ top: 480, behavior: 'smooth' });
+    window.setTimeout(() => {
+      document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 0);
   };
 
   const handleOpenOwnProfile = () => {
@@ -176,8 +178,8 @@ const MainAppContent: React.FC = () => {
             {/* Role-Personalized Hero Banner */}
             <Hero
               onPostCampaign={() => setIsCreateCampaignOpen(true)}
-              onBrowseCreators={scrollToMarketplace}
-              onSeeOpenDeals={scrollToMarketplace}
+              onBrowseCreators={() => scrollToMarketplace('marketplace-section')}
+              onSeeOpenDeals={() => scrollToMarketplace('open-deals-section')}
               onBrowseCategories={scrollToCategories}
             />
 

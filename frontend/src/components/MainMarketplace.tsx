@@ -284,7 +284,7 @@ export const MainMarketplace: React.FC<MainMarketplaceProps> = ({
     verifiedOnly;
 
   return (
-    <section className="py-8 min-h-[500px] transition-colors">
+    <section id="marketplace-section" className="scroll-mt-28 py-8 min-h-[500px] transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Search & Filter Header Bar */}
@@ -511,7 +511,7 @@ export const MainMarketplace: React.FC<MainMarketplaceProps> = ({
         )}
 
         {/* Header Count & Title */}
-        <div className="flex items-center justify-between mb-6">
+        <div id="open-deals-section" className="scroll-mt-28 flex items-center justify-between mb-6">
           <div>
             <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)] font-['Archivo']">
               {role === 'business' ? 'Vetted Indian Content Creators' : 'Open Brand Sponsorship Campaigns'}
