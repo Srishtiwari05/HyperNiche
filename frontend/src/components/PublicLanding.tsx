@@ -8,22 +8,21 @@ import {
   Check, 
   CheckCircle2, 
   ChevronDown, 
-  ExternalLink, 
+  Compass,
+  FileCheck,
   Lock, 
   Mail, 
   Menu, 
   MessageSquare, 
   Moon, 
   ShieldCheck, 
+  SlidersHorizontal,
   Sparkles, 
   Sun, 
+  TrendingUp,
   UserRound, 
   X,
-  BadgeCheck,
-  TrendingUp,
-  SlidersHorizontal,
-  Compass,
-  FileCheck
+  BadgeCheck
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { UserRole } from '../types';
@@ -33,204 +32,204 @@ interface PublicLandingProps {
   onLogin: () => void;
 }
 
-// 1. Illustrative Indian creators for marquee showcase
+// 1. Diverse specialized Indian creators for marquee showcase
 const CREATOR_SHOWCASE = [
   {
-    name: 'Asha Patel',
-    handle: '@ashafooddiaries',
-    niche: 'Food & Cooking',
-    followers: '48.2K',
-    engagement: '11.8%',
-    city: 'Mumbai',
-    badge: 'Regional recipes & quick snacks',
+    name: 'Ritu Sharma',
+    handle: '@rituculinary',
+    niche: 'Food & Regional Recipes',
+    followers: '62.4K',
+    engagement: '13.8%',
+    city: 'Delhi NCR',
+    badge: 'Heritage flavours & everyday kitchen hacks',
     tone: 'bg-[#FFDEB5] dark:bg-[#593d18]',
     border: 'border-[#F0C895] dark:border-[#7d5725]',
     accentColor: '#E67E22',
   },
   {
-    name: 'Kabir Verma',
-    handle: '@kabirfits',
-    niche: 'Streetwear & Fashion',
-    followers: '84.5K',
-    engagement: '14.2%',
-    city: 'Delhi NCR',
-    badge: 'Outfit breakdowns & thrift finds',
+    name: 'Tanya Mehra',
+    handle: '@tanyastyled',
+    niche: 'Streetwear & Vintage',
+    followers: '78.2K',
+    engagement: '14.5%',
+    city: 'Mumbai',
+    badge: 'Capsule wardrobes & Indian homegrown labels',
     tone: 'bg-[#D9D3FF] dark:bg-[#2e265c]',
     border: 'border-[#C2B7FC] dark:border-[#483d8a]',
     accentColor: '#7C5CFC',
   },
   {
-    name: 'Meera Iyer',
-    handle: '@meeratechsound',
-    niche: 'Consumer Tech',
-    followers: '124K',
-    engagement: '9.6%',
+    name: 'Arjun Nair',
+    handle: '@arjuntechstudio',
+    niche: 'Consumer Electronics',
+    followers: '115K',
+    engagement: '10.2%',
     city: 'Bengaluru',
-    badge: 'Audio gear & workspace setups',
+    badge: 'Acoustic gear & ergonomic productivity setups',
     tone: 'bg-[#C9E7CD] dark:bg-[#1f4726]',
     border: 'border-[#A8DCB0] dark:border-[#32693b]',
     accentColor: '#27AE60',
   },
   {
-    name: 'Rohan Joshi',
-    handle: '@rohanlifts',
-    niche: 'Fitness & Calisthenics',
-    followers: '62.1K',
-    engagement: '15.4%',
+    name: 'Aakash Rao',
+    handle: '@aakash_moves',
+    niche: 'Mobility & Calisthenics',
+    followers: '68.9K',
+    engagement: '16.1%',
     city: 'Pune',
-    badge: 'Home workouts & nutrition',
+    badge: 'Bodyweight strength & natural nutrition',
     tone: 'bg-[#FFDBE6] dark:bg-[#571f30]',
     border: 'border-[#F8B6CA] dark:border-[#7a2f46]',
     accentColor: '#E91E63',
   },
   {
-    name: 'Ananya Roy',
-    handle: '@ananyaskincare',
-    niche: 'Clean Beauty',
-    followers: '39.8K',
-    engagement: '12.5%',
-    city: 'Kolkata',
-    badge: 'Ingredient science & sunscreens',
+    name: 'Neha Varma',
+    handle: '@nehaskinlab',
+    niche: 'Derm & Clean Beauty',
+    followers: '44.3K',
+    engagement: '13.4%',
+    city: 'Hyderabad',
+    badge: 'Ingredient breakdowns & climate skincare',
     tone: 'bg-[#FFF0B8] dark:bg-[#524416]',
     border: 'border-[#EAD589] dark:border-[#736021]',
     accentColor: '#D4AC0D',
   },
   {
-    name: 'Simran & Dev',
-    handle: '@routesandrituals',
-    niche: 'Travel & Solo Stays',
-    followers: '96.3K',
-    engagement: '13.1%',
+    name: 'Sneha & Varun',
+    handle: '@hiddenroutes_in',
+    niche: 'Eco Stays & Roadtrips',
+    followers: '102K',
+    engagement: '12.7%',
     city: 'Chandigarh',
-    badge: 'Himalayan homestays & roadtrips',
+    badge: 'Slow travel escapes & mountain homestays',
     tone: 'bg-[#C6EBEE] dark:bg-[#1a444a]',
     border: 'border-[#A3DEE3] dark:border-[#2a6871]',
     accentColor: '#17A2B8',
   },
 ];
 
-// 2. Interactive "How it works" 5-step data (Reference Image 2)
+// 2. Interactive "The Collaboration Journey" steps
 interface WorkflowStep {
   step: number;
   title: string;
   description: string;
-  previewType: 'campaign' | 'checks' | 'pitch' | 'accepted' | 'chat';
+  previewType: 'brief' | 'identity' | 'angle' | 'approval' | 'workspace';
 }
 
 const WORKFLOW_STEPS: WorkflowStep[] = [
   {
     step: 1,
-    title: 'A brand posts a campaign',
-    description: 'The budget is shown in full, in rupees, before anyone applies. Deliverables, deadlines, and requirements are crystal clear from day one.',
-    previewType: 'campaign',
+    title: 'Brand publishes a structured brief',
+    description: 'Every brief discloses the full INR compensation range, expected formats, submission milestones, and brand guidelines before any creator invests time pitching.',
+    previewType: 'brief',
   },
   {
     step: 2,
-    title: 'Hyperniche shows two checks',
-    description: 'One for the brand, one for the person who posted it. Unverified isn\'t a warning — it simply means nobody has checked yet. Verified badges confirm legitimate work domains.',
-    previewType: 'checks',
+    title: 'Two-tier verification protects both parties',
+    description: 'We cross-verify corporate web domains and representative credentials. Emerging profiles without verification remain transparently labeled so creators make informed choices.',
+    previewType: 'identity',
   },
   {
     step: 3,
-    title: 'Creators apply with a pitch',
-    description: 'Find campaigns by niche, budget, and deadline, then say in a few lines why you fit. No generic cover letters or awkward DM cold pitches.',
-    previewType: 'pitch',
+    title: 'Creators propose a tailored angle',
+    description: 'Skip robotic templates. Creators write a concise 3-sentence concept explaining how the brand naturally complements their upcoming content and audience.',
+    previewType: 'angle',
   },
   {
     step: 4,
-    title: 'The brand accepts',
-    description: 'Brands read each pitch directly alongside the creator\'s portfolio metrics and accept the ones that fit. Both sides get immediate notification.',
-    previewType: 'accepted',
+    title: 'Brand approves and locks milestone terms',
+    description: 'Marketing leads inspect creator audience quality, past sample work, and concept fit, confirming chosen partners with zero agency friction.',
+    previewType: 'approval',
   },
   {
     step: 5,
-    title: 'You message each other directly',
-    description: 'Once a brand accepts, you talk right on Hyperniche. Share script outlines, sample delivery addresses, and feedback without switching apps.',
-    previewType: 'chat',
+    title: 'Collaborate inside a dedicated workspace',
+    description: 'Coordinate creative outlines, dispatch sample packages, review video previews, and approve milestones in our unified real-time chat.',
+    previewType: 'workspace',
   },
 ];
 
-// 3. Illustrative Sample Campaigns (Reference Image 1 & 2)
+// 3. Illustrative Sample Campaigns
 const SAMPLE_CAMPAIGNS = [
   {
     id: 'samp-1',
-    brand: 'Chai Kettle',
-    brandInitial: 'CK',
+    brand: 'BeanCraft Roasters',
+    brandInitial: 'BC',
     brandBg: 'bg-[#F06A4D]/15 text-[#F06A4D] dark:bg-[#c81020]/20 dark:text-[#ff7070]',
-    title: 'Rainy days. Really good reels.',
+    title: 'Artisan Cold Brew for Monsoon Study Sessions',
     category: 'Food & Beverage',
-    budget: '₹25,000 – ₹45,000',
-    deliverables: '1x 60s Reel + 2x Stories',
-    deadline: 'Apply by 30 Nov',
+    budget: '₹30,000 – ₹55,000',
+    deliverables: '1x Dedicated 60s Reel + 2x Story Frames',
+    deadline: 'Pitch before 30 Nov',
     verified: true,
     niche: 'Food',
   },
   {
     id: 'samp-2',
-    brand: 'Urban Thread Studio',
-    brandInitial: 'UT',
+    brand: 'Kala Sutra Atelier',
+    brandInitial: 'KS',
     brandBg: 'bg-[#7C5CFC]/15 text-[#7C5CFC] dark:bg-[#7C5CFC]/20 dark:text-[#b4a4ff]',
-    title: 'Winter Corduroy & Heavyweight Tees drop',
+    title: 'Heavyweight Winter Cotton & Oversized Knit Drop',
     category: 'Fashion & Streetwear',
-    budget: '₹35,000 – ₹60,000',
-    deliverables: '2x Styling Reels + Lookbook carousel',
-    deadline: 'Apply by 5 Dec',
+    budget: '₹45,000 – ₹75,000',
+    deliverables: '2x Styling Lookbooks + Reel Sound Integration',
+    deadline: 'Pitch before 5 Dec',
     verified: true,
     niche: 'Fashion',
   },
   {
     id: 'samp-3',
-    brand: 'Nova Audio Labs',
-    brandInitial: 'NA',
+    brand: 'Zenith Audio Labs',
+    brandInitial: 'ZA',
     brandBg: 'bg-[#27AE60]/15 text-[#27AE60] dark:bg-[#27AE60]/20 dark:text-[#7ae6a6]',
-    title: 'ANC Earbuds real commute test in local train',
-    category: 'Consumer Tech',
-    budget: '₹40,000 – ₹70,000',
-    deliverables: '1x Dedicated Review Reel + YouTube Short',
-    deadline: 'Apply by 10 Dec',
+    title: 'ANC Headphones Real Commute Test in Rush Hour',
+    category: 'Consumer Electronics',
+    budget: '₹50,000 – ₹85,000',
+    deliverables: '1x Hands-on Field Review + YouTube Short',
+    deadline: 'Pitch before 10 Dec',
     verified: true,
     niche: 'Tech',
   },
   {
     id: 'samp-4',
-    brand: 'PureRoot Organics',
-    brandInitial: 'PR',
+    brand: 'DermisBotanica',
+    brandInitial: 'DB',
     brandBg: 'bg-[#E67E22]/15 text-[#E67E22] dark:bg-[#E67E22]/20 dark:text-[#ffb77a]',
-    title: '7-Day Monsoon Glow barrier repair routine',
-    category: 'Beauty & Skincare',
-    budget: '₹20,000 – ₹35,000',
-    deliverables: '1x UGC Reel + 3x Before/After Stories',
-    deadline: 'Apply by 28 Nov',
+    title: 'Barrier Defense Serum 7-Day Skin Reset Challenge',
+    category: 'Clean Beauty & Wellness',
+    budget: '₹25,000 – ₹42,000',
+    deliverables: '1x UGC Demonstration + Texture Macro Clips',
+    deadline: 'Pitch before 28 Nov',
     verified: false,
     niche: 'Beauty',
   },
 ];
 
-// 4. FAQ Questions (Reference Image 4)
+// 4. FAQ Questions & Answers
 const FAQ_ITEMS = [
   {
-    question: 'Is Hyperniche free to join?',
-    answer: 'Yes, for creators. Joining, setting up your profile, and pitching campaigns cost nothing. You keep 100% of your agreed payout with zero agency cuts taken from your earnings.',
+    question: 'Does Hyperniche deduct fees from creator payouts?',
+    answer: 'Never. For creators, joining, publishing a profile, and pitching deals is entirely free. You receive 100% of your agreed commercial fee with no hidden agency cuts taken from your earnings.',
   },
   {
-    question: 'How do you check brands?',
-    answer: 'Hyperniche checks brand submissions against the company\'s official website, business registration, or work email domains. The person posting the campaign is also checked separately so creators know exactly who they\'re partnering with.',
+    question: 'How are brands and posting representatives authenticated?',
+    answer: 'We evaluate brand accounts against their verified corporate domain, official web presence, and business email signatures. The actual individual posting the campaign is also validated separately to ensure authentic representation.',
   },
   {
-    question: 'What does "unverified" mean?',
-    answer: 'Nobody has checked it yet. It is not a warning or penalty — it simply indicates a newly registered brand or creator profile that has not yet completed our domain verification checks.',
+    question: 'What does the "Unverified" label indicate?',
+    answer: 'It simply means the profile or campaign is freshly onboarded and has not yet completed our full domain validation cycle. It is an honest transparency marker, not a penalty.',
   },
   {
-    question: 'Who can join as a creator?',
-    answer: 'Anyone who creates original, high-quality content on Instagram, YouTube, or other social platforms in India. There is no minimum follower threshold: nano, micro, and established creators are all welcome.',
+    question: 'Can creators with nano or micro followings apply?',
+    answer: 'Absolutely. Many of our partner brands prioritize targeted engagement, niche credibility, and strong creative aesthetics over vanity follower totals. There is no minimum follower barrier.',
   },
   {
-    question: 'How do campaign budgets work?',
-    answer: 'Every campaign states its full budget range in Indian Rupees (INR) upfront before you apply. Deliverables, revisions, and deadlines are transparently listed so both parties are always aligned.',
+    question: 'How are campaign deliverables and budgets structured?',
+    answer: 'Every brief specifies an unambiguous INR budget range, clear deliverables (e.g. 1x Reel + Stories), and firm turnaround timelines. Both parties enter each collaboration with shared clarity.',
   },
   {
-    question: 'Who is behind Hyperniche?',
-    answer: 'Hyperniche is built in India for the Indian creator economy — designed to replace noisy WhatsApp groups, spammy agency DMs, and opaque commission fees with a direct, transparent platform.',
+    question: 'How is Hyperniche different from traditional talent agencies?',
+    answer: 'Traditional agencies take hefty 20-30% cuts and operate through opaque communication channels. Hyperniche provides a direct, software-first marketplace where brands and creators interact directly with speed and transparency.',
   },
 ];
 
@@ -241,10 +240,10 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
   // Navigation mobile drawer state
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Audience toggle: 'creators' | 'brands' (Reference Image 3 & 6)
+  // Audience toggle: 'creators' | 'brands'
   const [audienceTab, setAudienceTab] = useState<'creators' | 'brands'>('creators');
 
-  // Interactive "How It Works" step selector (Reference Image 2)
+  // Interactive step selector
   const [activeStep, setActiveStep] = useState<number>(1);
 
   // Campaign sample category filter
@@ -295,7 +294,7 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                 Hyperniche<span className="text-[var(--accent)] transition-transform inline-block group-hover:scale-125">.</span>
               </div>
               <div className="text-[10px] font-semibold text-[var(--text-secondary)] tracking-wider uppercase mt-1">
-                Creator commerce platform
+                Direct creator commerce hub
               </div>
             </button>
           </div>
@@ -306,31 +305,31 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
               onClick={() => scrollTo('how-it-works')} 
               className="hover:text-[var(--text-primary)] transition-colors cursor-pointer"
             >
-              How it works
+              The workflow
             </button>
             <button 
               onClick={() => scrollTo('for-audience')} 
               className="hover:text-[var(--text-primary)] transition-colors cursor-pointer"
             >
-              For creators & brands
+              Ecosystem benefits
             </button>
             <button 
               onClick={() => scrollTo('campaign-previews')} 
               className="hover:text-[var(--text-primary)] transition-colors cursor-pointer"
             >
-              Sample deals
+              Brief catalog
             </button>
             <button 
               onClick={() => scrollTo('trust-promises')} 
               className="hover:text-[var(--text-primary)] transition-colors cursor-pointer"
             >
-              Trust & promises
+              Operating standards
             </button>
             <button 
               onClick={() => scrollTo('faq-section')} 
               className="hover:text-[var(--text-primary)] transition-colors cursor-pointer"
             >
-              Questions
+              Common queries
             </button>
           </nav>
 
@@ -352,7 +351,7 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
               onClick={onLogin}
               className="px-4 py-2 rounded-xl text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-card)] border border-transparent hover:border-[var(--border-primary)] transition-all cursor-pointer"
             >
-              Log in
+              Member sign in
             </button>
 
             {/* Get Started CTA */}
@@ -360,7 +359,7 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
               onClick={() => onCreateAccount()}
               className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-xl bg-[var(--accent)] text-white text-xs font-black shadow-xs hover:opacity-95 hover:-translate-y-0.5 transition-all cursor-pointer"
             >
-              <span>Get started</span>
+              <span>Get onboarded</span>
               <ArrowUpRight className="h-3.5 w-3.5" />
             </button>
 
@@ -383,31 +382,31 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
               onClick={() => scrollTo('how-it-works')} 
               className="block w-full text-left py-2 text-sm font-bold text-[var(--text-primary)]"
             >
-              How it works
+              The workflow
             </button>
             <button 
               onClick={() => scrollTo('for-audience')} 
               className="block w-full text-left py-2 text-sm font-bold text-[var(--text-primary)]"
             >
-              For creators & brands
+              Ecosystem benefits
             </button>
             <button 
               onClick={() => scrollTo('campaign-previews')} 
               className="block w-full text-left py-2 text-sm font-bold text-[var(--text-primary)]"
             >
-              Sample deals
+              Brief catalog
             </button>
             <button 
               onClick={() => scrollTo('trust-promises')} 
               className="block w-full text-left py-2 text-sm font-bold text-[var(--text-primary)]"
             >
-              Trust & promises
+              Operating standards
             </button>
             <button 
               onClick={() => scrollTo('faq-section')} 
               className="block w-full text-left py-2 text-sm font-bold text-[var(--text-primary)]"
             >
-              Questions (FAQ)
+              Common queries
             </button>
             <div className="pt-3 border-t border-[var(--border-primary)] flex gap-2">
               <button
@@ -420,7 +419,7 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                 onClick={() => onCreateAccount()}
                 className="flex-1 py-2.5 rounded-xl bg-[var(--accent)] text-white text-xs font-black text-center"
               >
-                Sign up
+                Register
               </button>
             </div>
           </div>
@@ -428,7 +427,7 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
       </header>
 
       {/* ─────────────────────────────────────────────────────────────
-          2. HERO SECTION (Inspired by Reference Image 1 & 6)
+          2. HERO SECTION
       ───────────────────────────────────────────────────────────── */}
       <section className="relative z-10 pt-10 pb-16 sm:pt-16 sm:pb-24 border-b border-[var(--border-primary)]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -437,24 +436,23 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
           <div className="flex justify-center mb-6">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[var(--bg-card)] border border-[var(--border-primary)] text-[var(--text-secondary)] shadow-2xs">
               <span className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse" />
-              <span>A little talent. A lot of direct possibility.</span>
+              <span>Where focused creator communities power modern Indian commerce.</span>
             </div>
           </div>
 
-          {/* Massive Headline (Sentence Case with Playful Highlight Accent) */}
+          {/* Headline */}
           <div className="text-center max-w-4xl mx-auto">
             <h1 className="text-4xl sm:text-6xl lg:text-[76px] font-black tracking-tight leading-[1.04] font-['Archivo'] text-[var(--text-primary)]">
-              Meet your next <br className="hidden sm:inline" />
+              Direct sponsorships. <br className="hidden sm:inline" />
               <span className="relative inline-block mt-1 sm:mt-0">
-                <span className="relative z-10 text-[var(--accent)] italic font-serif tracking-normal">let&apos;s make it.*</span>
+                <span className="relative z-10 text-[var(--accent)] italic font-serif tracking-normal">Built on real trust.*</span>
                 <span className="absolute left-0 bottom-1 sm:bottom-2 w-full h-3 sm:h-4 bg-[var(--accent-soft)] -z-0 -rotate-1 rounded-sm" />
               </span>
             </h1>
 
             {/* Subtitle */}
             <p className="mt-6 text-base sm:text-xl text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed">
-              The right brand. Your original voice. A good idea that becomes something great. 
-              Direct deals with full INR budgets and zero agency middlemen.
+              We bridge forward-thinking Indian brands directly with specialized creators in fashion, consumer tech, gourmet food, and 13+ verticals. Unambiguous INR terms with zero agency markups.
             </p>
 
             {/* Dual CTAs (Creator vs Brand) */}
@@ -463,7 +461,7 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                 onClick={() => onCreateAccount('creator')}
                 className="group px-7 py-3.5 rounded-xl bg-[var(--accent)] text-white text-sm font-black shadow-md hover:opacity-95 hover:-translate-y-0.5 transition-all inline-flex items-center gap-2 cursor-pointer"
               >
-                <span>Join as a creator</span>
+                <span>Discover brand deals</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </button>
 
@@ -471,18 +469,18 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                 onClick={() => onCreateAccount('business')}
                 className="px-7 py-3.5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-primary)] text-[var(--text-primary)] text-sm font-bold hover:border-[var(--text-primary)] hover:-translate-y-0.5 transition-all shadow-2xs inline-flex items-center gap-2 cursor-pointer"
               >
-                <span>Post a campaign</span>
+                <span>Launch campaign brief</span>
                 <ArrowUpRight className="w-4 h-4 text-[var(--text-secondary)]" />
               </button>
             </div>
 
             {/* Trust reassurance row */}
             <p className="mt-4 text-xs font-medium text-[var(--text-muted)] tracking-wide">
-              Paid campaigns • Upfront INR budgets • 100% free for creators
+              Upfront budget disclosures • Verified company domains • 100% free for creator applications
             </p>
           </div>
 
-          {/* ── Playful Visual Collage (Inspired by Reference Image 1) ── */}
+          {/* ── Visual Showcase Composition ── */}
           <div className="mt-14 sm:mt-20 max-w-5xl mx-auto relative">
             
             {/* Background dashed decorative connector */}
@@ -490,87 +488,87 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 items-center relative z-10">
               
-              {/* Left Polaroid: Asha (Food creator) */}
+              {/* Left Polaroid: Ritu (Culinary creator) */}
               <div className="hero-card-float group relative rounded-3xl border border-[var(--border-primary)] bg-[var(--bg-card)] p-5 shadow-sm hover:shadow-md transition-all md:-rotate-2">
                 {/* Washi tape sticker */}
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-20 h-6 bg-[#FFE3D3] dark:bg-[#4a2820] opacity-80 -rotate-3 rounded-xs border-x border-dashed border-[#F06A4D]/30" />
                 
                 <div className="aspect-4/3 rounded-2xl bg-gradient-to-tr from-[#FFDEB5] to-[#FFE8CC] dark:from-[#3a2814] dark:to-[#573d1f] flex flex-col justify-end p-4 relative overflow-hidden">
                   <div className="w-12 h-12 rounded-full bg-white/90 dark:bg-black/50 backdrop-blur-xs flex items-center justify-center font-black text-lg text-[#E67E22] mb-auto">
-                    AP
+                    RS
                   </div>
                   <span className="inline-block px-2.5 py-1 rounded-full bg-black/40 text-white text-[10px] font-bold backdrop-blur-xs w-max">
-                    Food & Recipes • 48K
+                    Culinary Stories • 62K
                   </span>
                 </div>
                 
                 <div className="mt-3.5">
-                  <h2 className="text-sm font-bold text-[var(--text-primary)]">Asha makes comfort food.</h2>
-                  <p className="text-xs text-[var(--text-secondary)] mt-0.5">And a little monsoon magic.</p>
+                  <h2 className="text-sm font-bold text-[var(--text-primary)]">Ritu champions authentic taste.</h2>
+                  <p className="text-xs text-[var(--text-secondary)] mt-0.5">Heritage flavours with modern charm.</p>
                 </div>
               </div>
 
-              {/* Center Highlight: The Campaign Deal Card (Chai Kettle) */}
+              {/* Center Highlight: The Campaign Deal Card (BeanCraft Roasters) */}
               <div className="relative rounded-3xl border-2 border-[var(--accent)] bg-[var(--bg-card)] p-6 shadow-xl md:scale-105 z-20">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2.5">
                     <div className="w-9 h-9 rounded-xl bg-[var(--accent)] text-white font-black flex items-center justify-center text-xs">
-                      CK
+                      BC
                     </div>
                     <div>
-                      <div className="text-xs font-black text-[var(--text-primary)]">Chai Kettle</div>
+                      <div className="text-xs font-black text-[var(--text-primary)]">BeanCraft Roasters</div>
                       <div className="text-[10px] text-[var(--text-muted)]">Verified Brand Partner</div>
                     </div>
                   </div>
                   <span className="px-2.5 py-1 rounded-full bg-[var(--badge-green-bg)] text-[var(--badge-green-text)] text-[10px] font-bold flex items-center gap-1">
-                    <BadgeCheck className="w-3 h-3" /> Verified
+                    <BadgeCheck className="w-3 h-3" /> Authenticated
                   </span>
                 </div>
 
                 <div className="py-3">
                   <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--accent)] mb-1">
-                    Live Sample Campaign
+                    Spotlight Sponsorship
                   </div>
                   <h2 className="text-lg font-black text-[var(--text-primary)] font-['Archivo'] leading-snug">
-                    Rainy days. Really good reels.
+                    Artisan Cold Brew for Monsoon Study Sessions
                   </h2>
                 </div>
 
                 <div className="mt-3 pt-3 border-t border-[var(--border-primary)] flex items-center justify-between">
                   <div>
-                    <div className="text-[10px] text-[var(--text-secondary)] font-medium">Campaign budget</div>
+                    <div className="text-[10px] text-[var(--text-secondary)] font-medium">Stated payout pool</div>
                     <div className="text-base font-black text-[var(--text-primary)] font-['Archivo']">
-                      ₹25,000 – ₹45,000
+                      ₹30,000 – ₹55,000
                     </div>
                   </div>
                   <span className="px-3 py-1 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-primary)] text-[11px] font-bold text-[var(--text-secondary)]">
-                    Instagram Reels
+                    Reels & Stories
                   </span>
                 </div>
 
                 {/* Floating pill sticker */}
                 <div className="absolute -bottom-4 right-4 bg-[var(--accent)] text-white px-3 py-1 rounded-full text-[10px] font-black shadow-md flex items-center gap-1">
-                  <Sparkles className="w-3 h-3" /> Big ideas welcome
+                  <Sparkles className="w-3 h-3" /> Pitches open now
                 </div>
               </div>
 
-              {/* Right Polaroid: Meera (Tech creator) */}
+              {/* Right Polaroid: Arjun (Consumer Tech) */}
               <div className="hero-card-float group relative rounded-3xl border border-[var(--border-primary)] bg-[var(--bg-card)] p-5 shadow-sm hover:shadow-md transition-all md:rotate-2">
                 {/* Washi tape sticker */}
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-20 h-6 bg-[#C9E7CD] dark:bg-[#1f4726] opacity-80 rotate-2 rounded-xs border-x border-dashed border-[#27AE60]/30" />
                 
                 <div className="aspect-4/3 rounded-2xl bg-gradient-to-tr from-[#C9E7CD] to-[#E3F5E5] dark:from-[#1b3d21] dark:to-[#2c5c34] flex flex-col justify-end p-4 relative overflow-hidden">
                   <div className="w-12 h-12 rounded-full bg-white/90 dark:bg-black/50 backdrop-blur-xs flex items-center justify-center font-black text-lg text-[#27AE60] mb-auto">
-                    MI
+                    AN
                   </div>
                   <span className="inline-block px-2.5 py-1 rounded-full bg-black/40 text-white text-[10px] font-bold backdrop-blur-xs w-max">
-                    Tech & Audio • 124K
+                    Tech & Audio • 115K
                   </span>
                 </div>
 
                 <div className="mt-3.5">
-                  <h2 className="text-sm font-bold text-[var(--text-primary)]">Meera has her own rhythm.</h2>
-                  <p className="text-xs text-[var(--text-secondary)] mt-0.5">Honest sound tests & tech reels.</p>
+                  <h2 className="text-sm font-bold text-[var(--text-primary)]">Arjun builds thoughtful setups.</h2>
+                  <p className="text-xs text-[var(--text-secondary)] mt-0.5">Hardware field tests that convert.</p>
                 </div>
               </div>
 
@@ -582,23 +580,23 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          3. CREATOR SHOWCASE (Horizontal Marquee - Reference Images 1 & 6)
+          3. CREATOR SHOWCASE (Horizontal Marquee)
       ───────────────────────────────────────────────────────────── */}
       <section className="py-14 sm:py-18 border-b border-[var(--border-primary)] bg-[var(--bg-card)]/50 overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mb-8 text-center">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--bg-card)] border border-[var(--border-primary)] text-xs font-semibold text-[var(--text-secondary)] mb-2">
             <Compass className="w-3.5 h-3.5 text-[var(--accent)]" />
-            <span>Real talent across India</span>
+            <span>Curated creator ecosystem</span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-black text-[var(--text-primary)] font-['Archivo']">
-            Small creators, genuine Indian reach.
+            Targeted communities with unbeatable engagement.
           </h2>
           <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-1 max-w-xl mx-auto">
-            From regional food and street fashion to tech unboxings and fitness — meet creators with high engagement.
+            Hyperniche creators hold genuine credibility across tier-1 and tier-2 hubs, turning audience trust into measurable brand traction.
           </p>
         </div>
 
-        {/* Marquee Track (Double duplicate for infinite seamless loop) */}
+        {/* Marquee Track */}
         <div className="relative w-full overflow-hidden">
           <div className="hero-marquee-track flex gap-4 px-4 hover:[animation-play-state:paused]">
             {[...CREATOR_SHOWCASE, ...CREATOR_SHOWCASE].map((creator, i) => (
@@ -637,7 +635,7 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          4. HOW HYPERNICHE WORKS ("A campaign, start to finish" - Reference Image 2)
+          4. THE COLLABORATION JOURNEY ("Workflow")
       ───────────────────────────────────────────────────────────── */}
       <section id="how-it-works" className="py-16 sm:py-24 border-b border-[var(--border-primary)]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -645,20 +643,20 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
           <div className="max-w-3xl mb-12">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--bg-card)] border border-[var(--border-primary)] text-xs font-semibold text-[var(--text-secondary)] mb-3">
               <span className="w-2 h-2 rounded-full bg-[var(--accent)]" />
-              <span>Simple, transparent flow</span>
+              <span>Transparent operating model</span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-black text-[var(--text-primary)] font-['Archivo'] tracking-tight">
-              A campaign, start to finish.
+              The collaboration journey, made seamless.
             </h2>
             <p className="mt-2 text-sm sm:text-base text-[var(--text-secondary)]">
-              No agency gatekeepers, no hidden cuts. Here is exactly how brands and creators collaborate on Hyperniche.
+              A structured, friction-free pipeline replacing messy WhatsApp forwards and weeks of unread agency emails.
             </p>
           </div>
 
-          {/* Interactive Steps Grid: Left = Steps list, Right = Interactive visual preview */}
+          {/* Interactive Steps Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
             
-            {/* Steps Navigation (Left Column) */}
+            {/* Steps Navigation */}
             <div className="lg:col-span-6 space-y-4">
               {WORKFLOW_STEPS.map((s) => {
                 const isActive = activeStep === s.step;
@@ -693,38 +691,38 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
               })}
             </div>
 
-            {/* Interactive Preview Panel (Right Column - Directly renders the preview matching Reference Image 2) */}
+            {/* Interactive Preview Panel */}
             <div className="lg:col-span-6 sticky top-28 rounded-3xl border border-[var(--border-primary)] bg-[var(--bg-card)] p-6 sm:p-8 shadow-sm">
               <div className="flex items-center justify-between pb-4 border-b border-[var(--border-primary)] mb-6">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-                  Live Flow Preview • Step {activeStep} of 5
+                  Live Stage Preview • Milestone {activeStep} of 5
                 </span>
                 <span className="px-2.5 py-0.5 rounded-full bg-[var(--accent-soft)] text-[var(--accent-soft-text)] text-[10px] font-black">
-                  Interactive Demo
+                  Interactive Simulation
                 </span>
               </div>
 
-              {/* Dynamic Preview Content based on activeStep */}
+              {/* Dynamic Step Previews */}
               {activeStep === 1 && (
                 <div className="animate-fade-in space-y-4">
                   <div className="text-xs font-semibold text-[var(--text-secondary)]">
-                    Example: What creators see when a campaign is posted
+                    Simulated View: Stated campaign terms visible to creator network
                   </div>
                   <div className="p-5 rounded-2xl bg-[var(--bg-primary)] border border-[var(--border-primary)]">
                     <div className="flex items-center justify-between">
-                      <div className="text-sm font-bold text-[var(--text-primary)]">Monsoon recipe reels</div>
+                      <div className="text-sm font-bold text-[var(--text-primary)]">Artisan Cold Brew Launch</div>
                       <span className="text-[10px] px-2 py-0.5 rounded bg-[var(--badge-green-bg)] text-[var(--badge-green-text)] font-bold">
-                        Open
+                        Accepting Submissions
                       </span>
                     </div>
                     <div className="text-2xl font-black text-[var(--text-primary)] font-['Archivo'] mt-2">
-                      ₹25,000 – ₹45,000
+                      ₹30,000 – ₹55,000
                     </div>
                     <div className="text-xs text-[var(--text-secondary)] mt-1">
-                      Chai Kettle • Apply by 30 Nov • 1x 60s Reel
+                      BeanCraft Roasters • Deadline 30 Nov • 1x 60s Reel
                     </div>
                     <div className="mt-4 pt-3 border-t border-[var(--border-primary)] text-xs text-[var(--text-muted)]">
-                      Deliverables: Share an authentic regional tea snack pairing. Fast payouts in INR.
+                      Deliverable criteria: Highlight morning coffee routines & bean origin. Zero hidden deductions.
                     </div>
                   </div>
                 </div>
@@ -733,27 +731,27 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
               {activeStep === 2 && (
                 <div className="animate-fade-in space-y-4">
                   <div className="text-xs font-semibold text-[var(--text-secondary)]">
-                    Example: Trust badges shown on every profile and deal
+                    Simulated View: Verification indicators displayed across parties
                   </div>
                   <div className="p-5 rounded-2xl bg-[var(--bg-primary)] border border-[var(--border-primary)] space-y-3">
-                    <div className="text-xs font-bold text-[var(--text-secondary)]">The Brand checks:</div>
+                    <div className="text-xs font-bold text-[var(--text-secondary)]">Corporate Credentials:</div>
                     <div className="flex flex-wrap gap-2">
                       <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--badge-green-bg)] text-[var(--badge-green-text)] text-xs font-bold">
-                        <ShieldCheck className="w-4 h-4" /> Verified brand (chaikettle.in)
+                        <ShieldCheck className="w-4 h-4" /> Domain Validated (beancraft.in)
                       </span>
                       <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--badge-yellow-bg)] text-[var(--badge-yellow-text)] text-xs font-bold">
-                        <Lock className="w-3.5 h-3.5" /> Unverified brand
+                        <Lock className="w-3.5 h-3.5" /> Domain Review Pending
                       </span>
                     </div>
 
-                    <div className="text-xs font-bold text-[var(--text-secondary)] pt-3">The Person who posted it:</div>
+                    <div className="text-xs font-bold text-[var(--text-secondary)] pt-3">Designated Contact:</div>
                     <div className="flex flex-wrap gap-2">
                       <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--badge-green-bg)] text-[var(--badge-green-text)] text-xs font-bold">
-                        <BadgeCheck className="w-4 h-4" /> Verified representative
+                        <BadgeCheck className="w-4 h-4" /> Official Brand Representative
                       </span>
                     </div>
                     <p className="text-[11px] text-[var(--text-muted)] mt-2">
-                      Unverified is never hidden; it simply lets creators choose their level of comfort.
+                      Full transparency ensures creators engage exclusively with confirmed brand stakeholders.
                     </p>
                   </div>
                 </div>
@@ -762,25 +760,25 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
               {activeStep === 3 && (
                 <div className="animate-fade-in space-y-4">
                   <div className="text-xs font-semibold text-[var(--text-secondary)]">
-                    Example: How a creator pitches directly without spamming
+                    Simulated View: Creator creative angle proposal
                   </div>
                   <div className="p-5 rounded-2xl bg-[var(--bg-primary)] border border-[var(--border-primary)]">
                     <div className="flex items-center gap-3 mb-3">
                       <div className="w-10 h-10 rounded-full bg-[var(--accent)] text-white flex items-center justify-center font-bold text-sm">
-                        AG
+                        RS
                       </div>
                       <div>
-                        <div className="text-sm font-bold text-[var(--text-primary)]">Aman Gill</div>
-                        <div className="text-[11px] text-[var(--text-muted)]">18,100 followers • Food / Recipes</div>
+                        <div className="text-sm font-bold text-[var(--text-primary)]">Ritu Sharma</div>
+                        <div className="text-[11px] text-[var(--text-muted)]">62,400 audience • Regional Culinary</div>
                       </div>
                     </div>
                     <div className="p-3.5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-primary)] text-xs text-[var(--text-primary)] leading-relaxed font-sans">
-                      <div className="font-bold text-[10px] uppercase text-[var(--accent)] mb-1">Creator Pitch</div>
-                      &ldquo;I post quick Punjabi home-cooking reels. Every June my followers ask for monsoon snacks, so this fits my audience naturally.&rdquo;
+                      <div className="font-bold text-[10px] uppercase text-[var(--accent)] mb-1">Proposed Creative Concept</div>
+                      &ldquo;My followers frequently ask for non-bitter coffee pairings during monsoon mornings. I will film a rustic cold brew brewing sequence paired with homemade cardamom biscotti.&rdquo;
                     </div>
                     <div className="mt-3 flex items-center justify-between text-xs text-[var(--text-secondary)]">
-                      <span>Proposed rate: <strong>₹28,000</strong></span>
-                      <span>Format: <strong>1x Reel</strong></span>
+                      <span>Proposed compensation: <strong>₹35,000</strong></span>
+                      <span>Commitment: <strong>1x Dedicated Reel</strong></span>
                     </div>
                   </div>
                 </div>
@@ -789,20 +787,20 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
               {activeStep === 4 && (
                 <div className="animate-fade-in space-y-4">
                   <div className="text-xs font-semibold text-[var(--text-secondary)]">
-                    Example: What you see when the brand reviews and accepts
+                    Simulated View: Brand approval & milestone confirmation
                   </div>
                   <div className="p-5 rounded-2xl bg-[var(--bg-primary)] border border-[var(--border-primary)]">
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="text-sm font-bold text-[var(--text-primary)]">Monsoon recipe reels</div>
-                        <div className="text-xs text-[var(--text-muted)]">Chai Kettle • ₹28,000 agreed payout</div>
+                        <div className="text-sm font-bold text-[var(--text-primary)]">Artisan Cold Brew Launch</div>
+                        <div className="text-xs text-[var(--text-muted)]">BeanCraft Roasters • ₹35,000 agreed payout</div>
                       </div>
                       <span className="px-3 py-1 rounded-full bg-[var(--badge-green-bg)] text-[var(--badge-green-text)] text-xs font-black flex items-center gap-1">
-                        <Check className="w-3.5 h-3.5" /> Accepted
+                        <Check className="w-3.5 h-3.5" /> Concept Approved
                       </span>
                     </div>
                     <div className="mt-4 p-3 rounded-xl bg-[var(--badge-green-bg)]/30 border border-[var(--badge-green-bg)] text-xs text-[var(--badge-green-text)]">
-                      🎉 Your application was accepted! Direct messaging has been unlocked for this campaign.
+                      🎉 Collaboration confirmed. The integrated workspace and direct messaging have been activated.
                     </div>
                   </div>
                 </div>
@@ -811,24 +809,24 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
               {activeStep === 5 && (
                 <div className="animate-fade-in space-y-4">
                   <div className="text-xs font-semibold text-[var(--text-secondary)]">
-                    Example: In-app direct messaging between brand and creator
+                    Simulated View: Integrated direct collaboration workspace
                   </div>
                   <div className="p-4 rounded-2xl bg-[var(--bg-primary)] border border-[var(--border-primary)] space-y-3">
                     <div className="flex items-start gap-2.5">
                       <div className="w-7 h-7 rounded-lg bg-[var(--accent)] text-white text-[10px] font-black flex items-center justify-center shrink-0">
-                        CK
+                        BC
                       </div>
                       <div className="p-3 rounded-2xl rounded-tl-xs bg-[var(--bg-card)] border border-[var(--border-primary)] text-xs max-w-[85%] text-[var(--text-primary)]">
-                        Hi Aman! Loved your snack pairing pitch. Can we ship you our Masala Chai sample kit by Wednesday?
+                        Welcome aboard Ritu! Loved your cardamom biscotti concept. We have dispatched the origin sampler beans to your Delhi studio.
                       </div>
                     </div>
 
                     <div className="flex items-start gap-2.5 justify-end">
                       <div className="p-3 rounded-2xl rounded-tr-xs bg-[var(--accent)] text-white text-xs max-w-[85%]">
-                        Yes absolutely! Sent my shipping address. I&apos;ll shoot the first draft as soon as it arrives.
+                        Thank you! Tracking received. I will have the rough cut ready for your team by Monday morning.
                       </div>
                       <div className="w-7 h-7 rounded-lg bg-gray-700 text-white text-[10px] font-black flex items-center justify-center shrink-0">
-                        AG
+                        RS
                       </div>
                     </div>
                   </div>
@@ -842,17 +840,17 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                   onClick={() => setActiveStep((prev) => Math.max(1, prev - 1))}
                   className="px-3 py-1.5 rounded-lg border border-[var(--border-primary)] text-xs font-bold disabled:opacity-30 cursor-pointer"
                 >
-                  Previous
+                  Previous stage
                 </button>
                 <div className="text-xs text-[var(--text-muted)] font-bold">
-                  Step {activeStep} of 5
+                  Stage {activeStep} of 5
                 </div>
                 <button
                   disabled={activeStep === 5}
                   onClick={() => setActiveStep((prev) => Math.min(5, prev + 1))}
                   className="px-3 py-1.5 rounded-lg bg-[var(--accent)] text-white text-xs font-bold disabled:opacity-30 cursor-pointer"
                 >
-                  Next step
+                  Advance stage
                 </button>
               </div>
 
@@ -864,7 +862,7 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          5. FOR CREATORS & FOR BRANDS (Interactive Tabs - Ref 3 & 6)
+          5. AUDIENCE ADVANTAGES (Creators vs Brands)
       ───────────────────────────────────────────────────────────── */}
       <section id="for-audience" className="py-16 sm:py-24 border-b border-[var(--border-primary)] bg-[var(--bg-card)]/30">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -881,7 +879,7 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                 }`}
               >
                 <UserRound className="w-4 h-4" />
-                <span>For Creators</span>
+                <span>Creator Advantages</span>
               </button>
 
               <button
@@ -893,7 +891,7 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                 }`}
               >
                 <Building2 className="w-4 h-4" />
-                <span>For Brands</span>
+                <span>Brand Advantages</span>
               </button>
             </div>
           </div>
@@ -903,11 +901,11 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
             <div className="animate-fade-in">
               <div className="text-center max-w-2xl mx-auto mb-12">
                 <h2 className="text-3xl sm:text-4xl font-black text-[var(--text-primary)] font-['Archivo']">
-                  Turn your audience into predictable income.
+                  Monetize your craft with transparency and respect.
                 </h2>
                 <p className="mt-3 text-sm sm:text-base text-[var(--text-secondary)] leading-relaxed">
-                  Stop hoping for brand emails or dealing with dodgy middle agencies. 
-                  Browse verified campaigns, pitch your unique angle, and get paid transparently in INR.
+                  Stop settling for product-only barter deals or waiting months for unpaid invoices. 
+                  Connect directly with authentic Indian brands offering guaranteed milestone compensation.
                 </p>
               </div>
 
@@ -917,10 +915,10 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                     ₹
                   </div>
                   <h3 className="text-base font-bold text-[var(--text-primary)] font-['Archivo']">
-                    Keep 100% of What You Earn
+                    Zero Commission Deductions
                   </h3>
                   <p className="mt-2 text-xs text-[var(--text-secondary)] leading-relaxed">
-                    Zero application fees, zero platform commission taken from your agreed payouts. Every rupee belongs to you.
+                    We never take a percentage from your creative fees. Every rupee agreed with the brand lands fully in your account.
                   </p>
                 </div>
 
@@ -929,10 +927,10 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                     <CheckCircle2 className="w-5 h-5" />
                   </div>
                   <h3 className="text-base font-bold text-[var(--text-primary)] font-['Archivo']">
-                    Upfront Published Budgets
+                    Upfront Budget Disclosures
                   </h3>
                   <p className="mt-2 text-xs text-[var(--text-secondary)] leading-relaxed">
-                    Never guess what a brand pays. Budgets, deliverables, and timelines are listed publicly before you invest time pitching.
+                    Never negotiate in the dark. Payout figures, format requirements, and dates are stated before you prepare a concept.
                   </p>
                 </div>
 
@@ -941,10 +939,10 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                     <MessageSquare className="w-5 h-5" />
                   </div>
                   <h3 className="text-base font-bold text-[var(--text-primary)] font-['Archivo']">
-                    Direct Founder & Lead Access
+                    Direct Decision-Maker Access
                   </h3>
                   <p className="mt-2 text-xs text-[var(--text-secondary)] leading-relaxed">
-                    Talk straight to marketing leads and founders through in-app DMs. Coordinate briefs and get feedback without middlemen.
+                    Chat straight with founders and marketing heads. Speed up approvals and eliminate miscommunicated briefs.
                   </p>
                 </div>
               </div>
@@ -954,7 +952,7 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                   onClick={() => onCreateAccount('creator')}
                   className="px-6 py-3 rounded-xl bg-[var(--accent)] text-white text-xs font-black shadow-xs hover:opacity-95 transition-all inline-flex items-center gap-2 cursor-pointer"
                 >
-                  <span>Create creator account (Free)</span>
+                  <span>Build creator profile (Complimentary)</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -966,11 +964,10 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
             <div className="animate-fade-in">
               <div className="text-center max-w-2xl mx-auto mb-12">
                 <h2 className="text-3xl sm:text-4xl font-black text-[var(--text-primary)] font-['Archivo']">
-                  Small creators, real authentic reach.
+                  Engage niche audiences with proven credibility.
                 </h2>
                 <p className="mt-3 text-sm sm:text-base text-[var(--text-secondary)] leading-relaxed">
-                  Nano and micro creators are often closer to their audience than massive accounts are. 
-                  Post one campaign with the full budget and let creators find you by niche.
+                  Specialized micro-creators generate high-intent audience action that broad, disconnected celebrity promotions rarely achieve. Post once and receive tailored creator pitches.
                 </p>
               </div>
 
@@ -980,10 +977,10 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                     <TrendingUp className="w-5 h-5" />
                   </div>
                   <h3 className="text-base font-bold text-[var(--text-primary)] font-['Archivo']">
-                    Higher Conversion & Trust
+                    High-Intent Communities
                   </h3>
                   <p className="mt-2 text-xs text-[var(--text-secondary)] leading-relaxed">
-                    Micro-influencers have 3-5x higher engagement rates. Audiences genuinely trust their product recommendations.
+                    Reach viewers who actively seek advice and buy products recommended by creators they follow loyally.
                   </p>
                 </div>
 
@@ -992,10 +989,10 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                     <FileCheck className="w-5 h-5" />
                   </div>
                   <h3 className="text-base font-bold text-[var(--text-primary)] font-['Archivo']">
-                    Structured Pitches, Not DM Chaos
+                    Centralized Pitch Submissions
                   </h3>
                   <p className="mt-2 text-xs text-[var(--text-secondary)] leading-relaxed">
-                    Stop messaging accounts one by one. Receive formatted pitches with creator statistics in one centralized dashboard.
+                    Say goodbye to scattered DMs. Review clean, comparable creative proposals with real engagement figures in one place.
                   </p>
                 </div>
 
@@ -1004,10 +1001,10 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                     <ShieldCheck className="w-5 h-5" />
                   </div>
                   <h3 className="text-base font-bold text-[var(--text-primary)] font-['Archivo']">
-                    Zero Agency Markups
+                    No Inflated Agency Overheads
                   </h3>
                   <p className="mt-2 text-xs text-[var(--text-secondary)] leading-relaxed">
-                    Work directly with creator talent at real market rates. Every rupee of your budget goes towards content production.
+                    Invest your marketing budget directly into authentic production. Transparent milestone agreements guarantee deliverable quality.
                   </p>
                 </div>
               </div>
@@ -1017,38 +1014,38 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                   onClick={() => onCreateAccount('business')}
                   className="px-6 py-3 rounded-xl bg-[var(--accent)] text-white text-xs font-black shadow-xs hover:opacity-95 transition-all inline-flex items-center gap-2 cursor-pointer"
                 >
-                  <span>Post your first campaign</span>
+                  <span>Post your brand opportunity</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
           )}
 
-          {/* ── Our Promises Section (Directly inspired by Reference Image 3) ── */}
+          {/* ── Operating Standards / Commitments ── */}
           <div id="trust-promises" className="mt-20 pt-12 border-t border-[var(--border-primary)]">
             <h3 className="text-xl sm:text-2xl font-black text-[var(--text-primary)] font-['Archivo'] mb-6">
-              Our promises
+              Our core operating commitments
             </h3>
 
             <div className="rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-card)] divide-y divide-[var(--border-primary)] overflow-hidden shadow-2xs">
               <div className="p-5 sm:p-6">
-                <div className="text-sm font-bold text-[var(--text-primary)]">You never pay to apply.</div>
+                <div className="text-sm font-bold text-[var(--text-primary)]">Zero application taxation</div>
                 <div className="text-xs sm:text-sm text-[var(--text-secondary)] mt-1 leading-relaxed">
-                  Hyperniche is 100% free for creators. If any campaign or brand asks you for money, report it immediately.
+                  Hyperniche is free for creators to browse and pitch. If any brand solicits upfront fees or charges, report it immediately for swift removal.
                 </div>
               </div>
 
               <div className="p-5 sm:p-6">
-                <div className="text-sm font-bold text-[var(--text-primary)]">The budget is shown in full.</div>
+                <div className="text-sm font-bold text-[var(--text-primary)]">Guaranteed budget transparency</div>
                 <div className="text-xs sm:text-sm text-[var(--text-secondary)] mt-1 leading-relaxed">
-                  Every campaign states its budget in Indian Rupees before you apply. No surprise renegotiations.
+                  Every opportunity declares its full INR commercial scope prior to pitch submission. No downward renegotiation after approval.
                 </div>
               </div>
 
               <div className="p-5 sm:p-6">
-                <div className="text-sm font-bold text-[var(--text-primary)]">Any campaign can be reported.</div>
+                <div className="text-sm font-bold text-[var(--text-primary)]">Comprehensive safety & moderation</div>
                 <div className="text-xs sm:text-sm text-[var(--text-secondary)] mt-1 leading-relaxed">
-                  Every campaign page and message thread has safety and moderation checks built right in.
+                  Every interaction and creative exchange is guarded by active community guidelines, moderation logs, and identity validation.
                 </div>
               </div>
             </div>
@@ -1058,7 +1055,7 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          6. CAMPAIGN PREVIEW (Illustrative Sample Campaigns)
+          6. CAMPAIGN BRIEF CATALOG (Sample Deals)
       ───────────────────────────────────────────────────────────── */}
       <section id="campaign-previews" className="py-16 sm:py-24 border-b border-[var(--border-primary)]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -1066,13 +1063,13 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
             <div>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--bg-card)] border border-[var(--border-primary)] text-xs font-semibold text-[var(--text-secondary)] mb-2">
-                <span>Sample deals</span>
+                <span>Deal inventory preview</span>
               </div>
               <h2 className="text-2xl sm:text-4xl font-black text-[var(--text-primary)] font-['Archivo']">
-                What active campaigns look like.
+                Explore representative campaign briefs.
               </h2>
               <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-1">
-                Illustrative sample previews for demonstration. Live campaigns and pitching unlock after login.
+                Illustrative sample briefs for preview purposes. Real-time briefs and live application forms unlock after member registration.
               </p>
             </div>
 
@@ -1114,11 +1111,11 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
 
                   {camp.verified ? (
                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[var(--badge-green-bg)] text-[var(--badge-green-text)] text-[10px] font-bold">
-                      <BadgeCheck className="w-3 h-3" /> Verified
+                      <BadgeCheck className="w-3 h-3" /> Authenticated
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[var(--badge-yellow-bg)] text-[var(--badge-yellow-text)] text-[10px] font-bold">
-                      Unverified
+                      Pending Check
                     </span>
                   )}
                 </div>
@@ -1129,11 +1126,11 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                   </h3>
                   <div className="mt-3 flex items-center justify-between text-xs py-2 px-3 rounded-xl bg-[var(--bg-primary)] border border-[var(--border-primary)]">
                     <div>
-                      <span className="text-[10px] text-[var(--text-muted)] block">Published budget</span>
+                      <span className="text-[10px] text-[var(--text-muted)] block">Committed budget pool</span>
                       <strong className="text-sm font-black text-[var(--text-primary)] font-['Archivo']">{camp.budget}</strong>
                     </div>
                     <div className="text-right">
-                      <span className="text-[10px] text-[var(--text-muted)] block">Format</span>
+                      <span className="text-[10px] text-[var(--text-muted)] block">Deliverable scope</span>
                       <strong className="text-xs font-bold text-[var(--text-secondary)]">{camp.deliverables}</strong>
                     </div>
                   </div>
@@ -1145,7 +1142,7 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                     onClick={() => onCreateAccount('creator')}
                     className="inline-flex items-center gap-1 text-xs font-bold text-[var(--accent)] hover:underline cursor-pointer"
                   >
-                    <span>Sign up to apply</span>
+                    <span>Register to pitch</span>
                     <ArrowRight className="w-3 h-3" />
                   </button>
                 </div>
@@ -1158,7 +1155,7 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
               onClick={() => onCreateAccount()}
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[var(--bg-card)] border border-[var(--border-primary)] text-xs font-bold text-[var(--text-primary)] hover:border-[var(--text-primary)] transition-all cursor-pointer"
             >
-              <span>Explore all marketplace categories</span>
+              <span>Explore all category verticals</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -1167,7 +1164,7 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          7. PLATFORM FEATURES (Bento Grid)
+          7. PLATFORM CAPABILITIES
       ───────────────────────────────────────────────────────────── */}
       <section className="py-16 sm:py-24 border-b border-[var(--border-primary)] bg-[var(--bg-card)]/40">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -1175,13 +1172,13 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
           <div className="text-center max-w-3xl mx-auto mb-14">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--bg-card)] border border-[var(--border-primary)] text-xs font-semibold text-[var(--text-secondary)] mb-2">
               <SlidersHorizontal className="w-3.5 h-3.5 text-[var(--accent)]" />
-              <span>Full platform capabilities</span>
+              <span>Engineered for creator commerce</span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-black text-[var(--text-primary)] font-['Archivo']">
-              Everything built for smooth collaboration.
+              Engineered to make partnerships effortless.
             </h2>
             <p className="mt-2 text-sm text-[var(--text-secondary)]">
-              From discovering the right creators to pitching, chatting, and confirming milestones.
+              From discovering authentic creator voices to pitch evaluation, real-time messaging, and deliverable approvals.
             </p>
           </div>
 
@@ -1193,10 +1190,10 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                 <Compass className="w-5 h-5" />
               </div>
               <h3 className="text-base font-bold text-[var(--text-primary)] font-['Archivo']">
-                16 Indian Categories
+                16 Indian Market Verticals
               </h3>
               <p className="mt-2 text-xs text-[var(--text-secondary)] leading-relaxed">
-                Filter by Streetwear, Beauty, Tech, Regional Food, Wellness, Home, and more. Find exactly who fits your product.
+                Filter by Streetwear, Derm Beauty, Tech, Desi Culinary, Fitness, and more. Locate creators aligned with your target buyer persona.
               </p>
             </div>
 
@@ -1206,10 +1203,10 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                 <MessageSquare className="w-5 h-5" />
               </div>
               <h3 className="text-base font-bold text-[var(--text-primary)] font-['Archivo']">
-                Instagram-Style In-App DMs
+                Built-in Direct Messaging
               </h3>
               <p className="mt-2 text-xs text-[var(--text-secondary)] leading-relaxed">
-                Coordinate scripts, share content drafts, and send sample tracking links without ever sharing personal phone numbers.
+                Coordinate video scripts, clarify creative briefs, and share package tracking details without ever handing out personal phone numbers.
               </p>
             </div>
 
@@ -1219,10 +1216,10 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                 <ShieldCheck className="w-5 h-5" />
               </div>
               <h3 className="text-base font-bold text-[var(--text-primary)] font-['Archivo']">
-                Dual Verification
+                Dual Identity Validation
               </h3>
               <p className="mt-2 text-xs text-[var(--text-secondary)] leading-relaxed">
-                Separate checks for brand domains and the representative posting. Creators know who they deal with before committing.
+                Corporate web domains and individual poster roles are inspected separately, ensuring negotiations are safe and authentic.
               </p>
             </div>
 
@@ -1232,10 +1229,10 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                 <FileCheck className="w-5 h-5" />
               </div>
               <h3 className="text-base font-bold text-[var(--text-primary)] font-['Archivo']">
-                Pitch Pipeline
+                Structured Application Pipeline
               </h3>
               <p className="mt-2 text-xs text-[var(--text-secondary)] leading-relaxed">
-                Track submitted pitches, review pending applications, and manage active campaigns in one unified status board.
+                Monitor incoming pitches, assess candidate metrics, and track active deliverables through clean, organized milestone stages.
               </p>
             </div>
 
@@ -1245,10 +1242,10 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                 <Sparkles className="w-5 h-5" />
               </div>
               <h3 className="text-base font-bold text-[var(--text-primary)] font-['Archivo']">
-                Rich Creator Profiles
+                Verified Creator Portfolios
               </h3>
               <p className="mt-2 text-xs text-[var(--text-secondary)] leading-relaxed">
-                Showcase your verified Instagram handle, follower tier, past campaign portfolio, and starting rates in INR.
+                Exhibit your authentic social handles, audience engagement brackets, past commercial clips, and baseline rate expectations in INR.
               </p>
             </div>
 
@@ -1258,10 +1255,10 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                 <TrendingUp className="w-5 h-5" />
               </div>
               <h3 className="text-base font-bold text-[var(--text-primary)] font-['Archivo']">
-                Clear INR Terms
+                Firm Commercial Agreements
               </h3>
               <p className="mt-2 text-xs text-[var(--text-secondary)] leading-relaxed">
-                Clear milestone agreements. Both parties know the deliverables and timeline before any video is filmed.
+                Clear milestone contracts ensure mutual accountability: content criteria and payout dates are fixed prior to video recording.
               </p>
             </div>
 
@@ -1271,17 +1268,17 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          8. QUESTIONS / FAQ (Accordion - Directly from Reference Image 4)
+          8. COMMON QUERIES (FAQ Accordion)
       ───────────────────────────────────────────────────────────── */}
       <section id="faq-section" className="py-16 sm:py-24 border-b border-[var(--border-primary)]">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           
           <div className="mb-10">
             <h2 className="text-3xl sm:text-4xl font-black text-[var(--text-primary)] font-['Archivo']">
-              Questions
+              Frequently asked questions
             </h2>
             <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-1">
-              Clear answers about fees, verification, and how collaborations work.
+              Straightforward details about onboarding, commercial verification, and collaboration terms.
             </p>
           </div>
 
@@ -1314,22 +1311,22 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          9. TALK TO US & FINAL CTA (Reference Images 4 & 5)
+          9. DIRECT CONTACT & FINAL CTA
       ───────────────────────────────────────────────────────────── */}
       <section className="py-16 sm:py-24 border-b border-[var(--border-primary)] bg-[var(--bg-card)]/50">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
           
-          {/* "Talk to us" contact card (Reference Image 5) */}
+          {/* Direct Support Card */}
           <div className="max-w-xl mx-auto mb-16 p-6 rounded-3xl border border-[var(--border-primary)] bg-[var(--bg-card)] shadow-xs">
             <div className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-2">
-              Support & Community
+              Direct Support & Feedback
             </div>
             <h3 className="text-xl font-black text-[var(--text-primary)] font-['Archivo']">
-              Talk to us
+              Connect with our founding team
             </h3>
             <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-2 leading-relaxed">
-              A question about a campaign, your account, or scaling with Hyperniche? 
-              Our team reads and replies to every message.
+              Have questions regarding brand briefs, profile onboarding, or platform features? 
+              Our founders review and respond to community messages promptly.
             </p>
             <div className="mt-5 flex flex-wrap justify-center gap-3">
               <a
@@ -1342,13 +1339,13 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
             </div>
           </div>
 
-          {/* "Free to join" Final CTA banner (Reference Image 5) */}
+          {/* Final Call to Action */}
           <div className="space-y-6">
             <h2 className="text-3xl sm:text-5xl font-black text-[var(--text-primary)] font-['Archivo'] tracking-tight">
-              Free to join.
+              Ready to elevate your partnerships?
             </h2>
             <p className="text-sm sm:text-base text-[var(--text-secondary)] max-w-md mx-auto">
-              Ready to find paid sponsorships or launch your brand campaign across India?
+              Join hundreds of independent creators and pioneering Indian consumer brands building direct, profitable collaborations.
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-3.5 pt-2">
@@ -1356,7 +1353,7 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                 onClick={() => onCreateAccount('creator')}
                 className="px-8 py-3.5 rounded-xl bg-[var(--accent)] text-white text-xs sm:text-sm font-black shadow-md hover:opacity-95 hover:-translate-y-0.5 transition-all inline-flex items-center gap-2 cursor-pointer"
               >
-                <span>Join as a creator</span>
+                <span>Launch creator profile</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
@@ -1364,7 +1361,7 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                 onClick={() => onCreateAccount('business')}
                 className="px-8 py-3.5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-primary)] text-[var(--text-primary)] text-xs sm:text-sm font-bold hover:border-[var(--text-primary)] hover:-translate-y-0.5 transition-all shadow-2xs inline-flex items-center gap-2 cursor-pointer"
               >
-                <span>Post a campaign</span>
+                <span>Post brand opportunity</span>
                 <ArrowUpRight className="w-4 h-4" />
               </button>
             </div>
@@ -1374,7 +1371,7 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                 onClick={onLogin}
                 className="text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] underline font-medium cursor-pointer"
               >
-                Already have an account? Log in here
+                Existing account holder? Sign in here
               </button>
             </div>
           </div>
@@ -1395,27 +1392,27 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                 Hyperniche<span className="text-[var(--accent)]">.</span>
               </div>
               <p className="mt-2 text-xs text-[var(--text-muted)] leading-relaxed">
-                Direct creator commerce platform. Brands post influencer campaigns. Creators apply.
+                Direct creator commerce platform. Where Indian brands meet specialized creators with verified reach.
               </p>
             </div>
 
             {/* Col 2 */}
             <div>
-              <div className="font-bold text-[var(--text-primary)] mb-3">For creators</div>
+              <div className="font-bold text-[var(--text-primary)] mb-3">Creators</div>
               <ul className="space-y-2 text-xs">
-                <li><button onClick={() => onCreateAccount('creator')} className="hover:text-[var(--text-primary)]">Join as a creator</button></li>
-                <li><button onClick={() => scrollTo('how-it-works')} className="hover:text-[var(--text-primary)]">A campaign, start to finish</button></li>
-                <li><button onClick={() => scrollTo('campaign-previews')} className="hover:text-[var(--text-primary)]">Sample brand deals</button></li>
+                <li><button onClick={() => onCreateAccount('creator')} className="hover:text-[var(--text-primary)]">Launch creator profile</button></li>
+                <li><button onClick={() => scrollTo('how-it-works')} className="hover:text-[var(--text-primary)]">The collaboration workflow</button></li>
+                <li><button onClick={() => scrollTo('campaign-previews')} className="hover:text-[var(--text-primary)]">Sponsorship catalog</button></li>
               </ul>
             </div>
 
             {/* Col 3 */}
             <div>
-              <div className="font-bold text-[var(--text-primary)] mb-3">For brands</div>
+              <div className="font-bold text-[var(--text-primary)] mb-3">Brands</div>
               <ul className="space-y-2 text-xs">
-                <li><button onClick={() => onCreateAccount('business')} className="hover:text-[var(--text-primary)]">Post a campaign</button></li>
-                <li><button onClick={() => scrollTo('for-audience')} className="hover:text-[var(--text-primary)]">Small creators, real reach</button></li>
-                <li><button onClick={() => scrollTo('trust-promises')} className="hover:text-[var(--text-primary)]">Brand verification</button></li>
+                <li><button onClick={() => onCreateAccount('business')} className="hover:text-[var(--text-primary)]">Post a brand opportunity</button></li>
+                <li><button onClick={() => scrollTo('for-audience')} className="hover:text-[var(--text-primary)]">Targeted audience reach</button></li>
+                <li><button onClick={() => scrollTo('trust-promises')} className="hover:text-[var(--text-primary)]">Corporate authentication</button></li>
               </ul>
             </div>
 
@@ -1423,9 +1420,9 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
             <div>
               <div className="font-bold text-[var(--text-primary)] mb-3">Hyperniche</div>
               <ul className="space-y-2 text-xs">
-                <li><button onClick={() => scrollTo('faq-section')} className="hover:text-[var(--text-primary)]">Questions (FAQ)</button></li>
+                <li><button onClick={() => scrollTo('faq-section')} className="hover:text-[var(--text-primary)]">Common questions</button></li>
                 <li><a href="mailto:support@hyperniche.in" className="hover:text-[var(--text-primary)]">support@hyperniche.in</a></li>
-                <li><span className="text-[var(--text-muted)]">India Creator Economy</span></li>
+                <li><span className="text-[var(--text-muted)]">Built for the Indian Creator Economy</span></li>
               </ul>
             </div>
 
