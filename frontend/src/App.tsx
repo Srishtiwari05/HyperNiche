@@ -26,12 +26,13 @@ import { MessagesInbox } from './components/MessagesInbox';
 import { MyCampaignsView } from './components/MyCampaignsView';
 import { ManageApplicationsView } from './components/ManageApplicationsView';
 import { MyApplicationsView } from './components/MyApplicationsView';
-import { UserProfile, Campaign } from './types';
+import { UserProfile, Campaign, UserRole } from './types';
 
 const MainAppContent: React.FC = () => {
   const { userProfile, currentUser, isLoading, authError, retryAuth } = useAuth();
   const { setSelectedCategory } = useMarketplace();
   const [publicScreen, setPublicScreen] = useState<'home' | 'signup' | 'login'>('home');
+  const [preferredRole, setPreferredRole] = useState<UserRole | undefined>(undefined);
 
   useEffect(() => {
     if (!currentUser) setPublicScreen('home');
@@ -91,7 +92,10 @@ const MainAppContent: React.FC = () => {
     if (publicScreen === 'home') {
       return (
         <PublicLanding
-          onCreateAccount={() => setPublicScreen('signup')}
+          onCreateAccount={(role) => {
+            setPreferredRole(role);
+            setPublicScreen('signup');
+          }}
           onLogin={() => setPublicScreen('login')}
         />
       );
@@ -99,6 +103,7 @@ const MainAppContent: React.FC = () => {
     return (
       <SignupFlow
         initialMode={publicScreen}
+        initialRole={preferredRole}
         onBackToHome={() => setPublicScreen('home')}
       />
     );

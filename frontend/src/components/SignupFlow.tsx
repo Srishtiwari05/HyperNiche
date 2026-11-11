@@ -29,10 +29,11 @@ const FOLLOWER_RANGES = [
 
 interface SignupFlowProps {
   initialMode?: 'signup' | 'login';
+  initialRole?: UserRole;
   onBackToHome?: () => void;
 }
 
-export const SignupFlow: React.FC<SignupFlowProps> = ({ initialMode = 'signup', onBackToHome }) => {
+export const SignupFlow: React.FC<SignupFlowProps> = ({ initialMode = 'signup', initialRole, onBackToHome }) => {
   const { theme } = useTheme();
   const isLightMode = theme === 'light';
 
@@ -45,9 +46,9 @@ export const SignupFlow: React.FC<SignupFlowProps> = ({ initialMode = 'signup', 
     updateUserProfile,
   } = useAuth();
 
-  // Slide state: 1 to 4 (always starts on Step 1 "Who are you?")
-  const [step, setStep] = useState<number>(initialMode === 'login' ? 4 : 1);
-  const [role, setRole] = useState<UserRole>('business');
+  // Slide state: 1 to 4 (starts on Step 2 if role is already chosen via CTA, or Step 4 if login)
+  const [step, setStep] = useState<number>(initialMode === 'login' ? 4 : (initialRole ? 2 : 1));
+  const [role, setRole] = useState<UserRole>(initialRole || 'business');
   const [accountType, setAccountType] = useState<'new' | 'existing'>(initialMode === 'login' ? 'existing' : 'new');
 
   // Step 3 Creator fields
