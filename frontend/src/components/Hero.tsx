@@ -19,22 +19,12 @@ interface HeroProps {
 }
 
 const creatorShowcase = [
-  { name: 'Sophia', value: '2.3M followers', tone: 'bg-[#F5DDA7]' },
-  { name: 'Ari', value: '875K subscribers', tone: 'bg-[#FFB59F]' },
-  { name: 'Maya', value: '1.2M views / week', tone: 'bg-[#C9E7CD]' },
-  { name: 'Noah', value: '430 brand collabs', tone: 'bg-[#D9D3FF]' },
-  { name: 'Sophia', value: '2.3M followers', tone: 'bg-[#F5DDA7]' },
-  { name: 'Ari', value: '875K subscribers', tone: 'bg-[#FFB59F]' },
-  { name: 'Maya', value: '1.2M views / week', tone: 'bg-[#C9E7CD]' },
-  { name: 'Noah', value: '430 brand collabs', tone: 'bg-[#D9D3FF]' },
-  { name: 'Sophia', value: '2.3M followers', tone: 'bg-[#F5DDA7]' },
-  { name: 'Ari', value: '875K subscribers', tone: 'bg-[#FFB59F]' },
-  { name: 'Maya', value: '1.2M views / week', tone: 'bg-[#C9E7CD]' },
-  { name: 'Noah', value: '430 brand collabs', tone: 'bg-[#D9D3FF]' },
-  { name: 'Sophia', value: '2.3M followers', tone: 'bg-[#F5DDA7]' },
-  { name: 'Ari', value: '875K subscribers', tone: 'bg-[#FFB59F]' },
-  { name: 'Maya', value: '1.2M views / week', tone: 'bg-[#C9E7CD]' },
-  { name: 'Noah', value: '430 brand collabs', tone: 'bg-[#D9D3FF]' },
+  { name: 'Ritu Sharma', value: '62K • Regional Recipes', tone: 'bg-[#FFDEB5]' },
+  { name: 'Tanya Mehra', value: '78K • Streetwear & Thrift', tone: 'bg-[#D9D3FF]' },
+  { name: 'Arjun Nair', value: '115K • Tech & Acoustics', tone: 'bg-[#C9E7CD]' },
+  { name: 'Aakash Rao', value: '69K • Calisthenics', tone: 'bg-[#FFDBE6]' },
+  { name: 'Neha Varma', value: '44K • Clean Beauty', tone: 'bg-[#FFF0B8]' },
+  { name: 'Sneha Kapoor', value: '102K • Eco Travel', tone: 'bg-[#C6EBEE]' },
 ];
 
 export const Hero: React.FC<HeroProps> = ({
@@ -83,11 +73,11 @@ export const Hero: React.FC<HeroProps> = ({
               <span>{isBusiness ? 'Hire proven creators' : 'Find paid deals that match your niche'}</span>
             </div>
 
-            <h1 className="max-w-[920px] text-[clamp(3rem,6vw,7rem)] leading-[0.9] tracking-[-0.065em] text-[var(--text-primary)] font-black font-['Archivo']">
+            <h1 className="max-w-[920px] text-3xl sm:text-5xl lg:text-[62px] leading-[1.08] tracking-tight text-[var(--text-primary)] font-black font-['Archivo'] break-words">
               {isBusiness ? (
                 <>
                   Get your product in front of the{' '}
-                  <span className="inline-block rounded-[26px] bg-[var(--bg-card)] px-2 py-1 text-[var(--text-primary)] shadow-[0_14px_30px_rgba(43,38,34,0.08)]">
+                  <span className="inline-block rounded-[20px] bg-[var(--bg-card)] px-2.5 py-1 text-[var(--text-primary)] shadow-[0_10px_24px_rgba(43,38,34,0.06)] border border-[var(--border-primary)]">
                     right audience
                   </span>
                   .
@@ -95,32 +85,32 @@ export const Hero: React.FC<HeroProps> = ({
               ) : (
                 <>
                   Turn your audience into{' '}
-                  <span className="inline-block rounded-[26px] bg-[var(--bg-card)] px-2 py-1 text-[var(--text-primary)] shadow-[0_14px_30px_rgba(43,38,34,0.08)]">
+                  <span className="inline-block rounded-[20px] bg-[var(--bg-card)] px-2.5 py-1 text-[var(--text-primary)] shadow-[0_10px_24px_rgba(43,38,34,0.06)] border border-[var(--border-primary)]">
                     income.
                   </span>
                 </>
               )}
             </h1>
 
-            <p className="mt-5 max-w-[680px] text-sm leading-relaxed text-[var(--text-secondary)] sm:text-base sm:leading-[1.6]">
+            <p className="mt-4 sm:mt-5 max-w-[640px] text-xs sm:text-base leading-relaxed text-[var(--text-secondary)]">
               {isBusiness
-                ? 'Discover creators, connect with brands, and manage opportunities in one place.'
-                : 'Your next collaboration starts here.'}
+                ? 'Discover specialized creators, review incoming pitches, and manage collaborations in one place.'
+                : 'Browse verified brand campaigns, pitch your creative angle, and earn transparent milestone payouts.'}
             </p>
 
-            <div className="mt-7 flex flex-wrap items-center gap-3">
+            <div className="mt-6 sm:mt-7 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
               {isBusiness ? (
                 <>
                   <button
                     onClick={onPostCampaign}
-                    className="group inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-6 py-3 text-xs font-black uppercase tracking-[0.08em] text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_14px_32px_rgba(240,106,77,0.35)]"
+                    className="w-full sm:w-auto justify-center group inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-6 py-3 text-xs font-black uppercase tracking-[0.08em] text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_14px_32px_rgba(240,106,77,0.35)] cursor-pointer"
                   >
                     <span>Post a campaign</span>
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                   </button>
                   <button
                     onClick={onBrowseCreators}
-                    className="rounded-full border border-[var(--border-primary)] bg-[var(--bg-card)] px-6 py-3 text-xs font-black uppercase tracking-[0.08em] text-[var(--text-primary)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--text-primary)]"
+                    className="w-full sm:w-auto justify-center rounded-xl border border-[var(--border-primary)] bg-[var(--bg-card)] px-6 py-3 text-xs font-black uppercase tracking-[0.08em] text-[var(--text-primary)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--text-primary)] cursor-pointer"
                   >
                     Browse creators
                   </button>
@@ -129,14 +119,14 @@ export const Hero: React.FC<HeroProps> = ({
                 <>
                   <button
                     onClick={onSeeOpenDeals}
-                    className="group inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-6 py-3 text-xs font-black uppercase tracking-[0.08em] text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_14px_32px_rgba(240,106,77,0.35)]"
+                    className="w-full sm:w-auto justify-center group inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-6 py-3 text-xs font-black uppercase tracking-[0.08em] text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_14px_32px_rgba(240,106,77,0.35)] cursor-pointer"
                   >
                     <span>See open deals</span>
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                   </button>
                   <button
                     onClick={onBrowseCategories}
-                    className="rounded-full border border-[var(--border-primary)] bg-[var(--bg-card)] px-6 py-3 text-xs font-black uppercase tracking-[0.08em] text-[var(--text-primary)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--text-primary)]"
+                    className="w-full sm:w-auto justify-center rounded-xl border border-[var(--border-primary)] bg-[var(--bg-card)] px-6 py-3 text-xs font-black uppercase tracking-[0.08em] text-[var(--text-primary)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--text-primary)] cursor-pointer"
                   >
                     Browse categories
                   </button>
@@ -194,11 +184,11 @@ export const Hero: React.FC<HeroProps> = ({
                   <div className="flex items-center justify-between gap-3 rounded-2xl bg-[var(--bg-card-subtle)] p-3">
                     <div className="flex items-center gap-3">
                       <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#FFDDBB,#F7C7A3)] text-base font-black text-[var(--text-primary)]">
-                        A
+                        R
                       </div>
                       <div>
-                        <div className="text-base font-black text-[var(--text-primary)]">Aisha Mehta</div>
-                        <div className="text-[11px] text-[var(--text-secondary)]">Beauty & lifestyle</div>
+                        <div className="text-base font-black text-[var(--text-primary)]">Ritu Sharma</div>
+                        <div className="text-[11px] text-[var(--text-secondary)]">Regional recipes & food</div>
                       </div>
                     </div>
                     <div className="rounded-full bg-[var(--bg-card)] px-2 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--accent)]">

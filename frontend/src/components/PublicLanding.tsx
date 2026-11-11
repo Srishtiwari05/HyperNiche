@@ -282,18 +282,18 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
           1. HEADER NAVIGATION
       ───────────────────────────────────────────────────────────── */}
       <header className="sticky top-0 z-50 backdrop-blur-md bg-[var(--bg-primary)]/85 border-b border-[var(--border-primary)] transition-colors">
-        <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex h-[64px] sm:h-[72px] max-w-7xl items-center justify-between px-3.5 sm:px-6 lg:px-8">
           
           {/* Brand Logo */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <button 
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
               className="text-left group cursor-pointer"
             >
-              <div className="text-2xl sm:text-[1.75rem] font-black tracking-tight font-['Archivo'] leading-none">
+              <div className="text-xl sm:text-2xl font-black tracking-tight font-['Archivo'] leading-none">
                 Hyperniche<span className="text-[var(--accent)] transition-transform inline-block group-hover:scale-125">.</span>
               </div>
-              <div className="text-[10px] font-semibold text-[var(--text-secondary)] tracking-wider uppercase mt-1">
+              <div className="hidden sm:block text-[10px] font-semibold text-[var(--text-secondary)] tracking-wider uppercase mt-1">
                 Direct creator commerce hub
               </div>
             </button>
@@ -334,14 +334,14 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
           </nav>
 
           {/* Right Action Controls */}
-          <div className="flex items-center gap-2.5 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
             {/* Theme Toggle */}
             <button
               type="button"
               onClick={toggleTheme}
               aria-label={isDark ? 'Switch to bright mode' : 'Switch to dark mode'}
               title={isDark ? 'Bright mode' : 'Dark mode'}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--border-primary)] bg-[var(--bg-card)] text-[var(--text-primary)] transition hover:border-[var(--accent)] hover:shadow-xs cursor-pointer"
+              className="inline-flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl border border-[var(--border-primary)] bg-[var(--bg-card)] text-[var(--text-primary)] transition hover:border-[var(--accent)] hover:shadow-xs cursor-pointer"
             >
               {isDark ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-[var(--text-secondary)]" />}
             </button>
@@ -349,17 +349,17 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
             {/* Log In */}
             <button
               onClick={onLogin}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-card)] border border-transparent hover:border-[var(--border-primary)] transition-all cursor-pointer"
+              className="px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-card)] border border-transparent hover:border-[var(--border-primary)] transition-all cursor-pointer whitespace-nowrap"
             >
-              Member sign in
+              Sign in
             </button>
 
             {/* Get Started CTA */}
             <button
               onClick={() => onCreateAccount()}
-              className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-xl bg-[var(--accent)] text-white text-xs font-black shadow-xs hover:opacity-95 hover:-translate-y-0.5 transition-all cursor-pointer"
+              className="inline-flex items-center gap-1 sm:gap-1.5 px-3 sm:px-5 py-1.5 sm:py-2.5 rounded-xl bg-[var(--accent)] text-white text-xs font-black shadow-xs hover:opacity-95 hover:-translate-y-0.5 transition-all cursor-pointer whitespace-nowrap"
             >
-              <span>Get onboarded</span>
+              <span>Get started</span>
               <ArrowUpRight className="h-3.5 w-3.5" />
             </button>
 
@@ -367,17 +367,17 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--border-primary)] bg-[var(--bg-card)] text-[var(--text-primary)] ml-1"
+              className="lg:hidden inline-flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl border border-[var(--border-primary)] bg-[var(--bg-card)] text-[var(--text-primary)] ml-0.5"
               aria-label="Toggle navigation menu"
             >
-              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {mobileMenuOpen ? <X className="h-4 w-4 sm:h-5 sm:w-5" /> : <Menu className="h-4 w-4 sm:h-5 sm:w-5" />}
             </button>
           </div>
         </div>
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-[var(--border-primary)] bg-[var(--bg-card)] px-5 py-4 space-y-3 animate-fade-in shadow-lg">
+          <div className="lg:hidden border-t border-[var(--border-primary)] bg-[var(--bg-card)] px-4 py-4 space-y-2.5 animate-fade-in shadow-lg">
             <button 
               onClick={() => scrollTo('how-it-works')} 
               className="block w-full text-left py-2 text-sm font-bold text-[var(--text-primary)]"
@@ -429,37 +429,37 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
       {/* ─────────────────────────────────────────────────────────────
           2. HERO SECTION
       ───────────────────────────────────────────────────────────── */}
-      <section className="relative z-10 pt-10 pb-16 sm:pt-16 sm:pb-24 border-b border-[var(--border-primary)]">
+      <section className="relative z-10 pt-8 pb-14 sm:pt-16 sm:pb-24 border-b border-[var(--border-primary)] overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           
           {/* Top Micro-badge */}
-          <div className="flex justify-center mb-6">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[var(--bg-card)] border border-[var(--border-primary)] text-[var(--text-secondary)] shadow-2xs">
-              <span className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse" />
-              <span>Where focused creator communities power modern Indian commerce.</span>
+          <div className="flex justify-center mb-5 sm:mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-semibold bg-[var(--bg-card)] border border-[var(--border-primary)] text-[var(--text-secondary)] shadow-2xs text-center max-w-full">
+              <span className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse shrink-0" />
+              <span className="truncate">Where focused creator communities power modern Indian commerce.</span>
             </div>
           </div>
 
           {/* Headline */}
           <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-4xl sm:text-6xl lg:text-[76px] font-black tracking-tight leading-[1.04] font-['Archivo'] text-[var(--text-primary)]">
+            <h1 className="text-3xl sm:text-5xl lg:text-[72px] font-black tracking-tight leading-[1.1] font-['Archivo'] text-[var(--text-primary)] break-words">
               Direct sponsorships. <br className="hidden sm:inline" />
               <span className="relative inline-block mt-1 sm:mt-0">
                 <span className="relative z-10 text-[var(--accent)] italic font-serif tracking-normal">Built on real trust.*</span>
-                <span className="absolute left-0 bottom-1 sm:bottom-2 w-full h-3 sm:h-4 bg-[var(--accent-soft)] -z-0 -rotate-1 rounded-sm" />
+                <span className="absolute left-0 bottom-1 sm:bottom-2 w-full h-2.5 sm:h-4 bg-[var(--accent-soft)] -z-0 -rotate-1 rounded-sm" />
               </span>
             </h1>
 
-            {/* Subtitle */}
-            <p className="mt-6 text-base sm:text-xl text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed">
-              We bridge forward-thinking Indian brands directly with specialized creators in fashion, consumer tech, gourmet food, and 13+ verticals. Unambiguous INR terms with zero agency markups.
+            {/* Shortened, Punchy Subtitle */}
+            <p className="mt-4 sm:mt-5 text-sm sm:text-lg text-[var(--text-secondary)] max-w-xl mx-auto leading-relaxed">
+              Direct partnerships between Indian brands and specialized creators across 16 niches. Transparent INR budgets, zero agency cuts.
             </p>
 
-            {/* Dual CTAs (Creator vs Brand) */}
-            <div className="mt-8 sm:mt-10 flex flex-wrap items-center justify-center gap-3.5 sm:gap-4">
+            {/* Dual CTAs (Responsive on Mobile) */}
+            <div className="mt-7 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 max-w-md sm:max-w-none mx-auto">
               <button
                 onClick={() => onCreateAccount('creator')}
-                className="group px-7 py-3.5 rounded-xl bg-[var(--accent)] text-white text-sm font-black shadow-md hover:opacity-95 hover:-translate-y-0.5 transition-all inline-flex items-center gap-2 cursor-pointer"
+                className="w-full sm:w-auto justify-center group px-7 py-3.5 rounded-xl bg-[var(--accent)] text-white text-xs sm:text-sm font-black shadow-md hover:opacity-95 hover:-translate-y-0.5 transition-all inline-flex items-center gap-2 cursor-pointer"
               >
                 <span>Discover brand deals</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -467,7 +467,7 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
 
               <button
                 onClick={() => onCreateAccount('business')}
-                className="px-7 py-3.5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-primary)] text-[var(--text-primary)] text-sm font-bold hover:border-[var(--text-primary)] hover:-translate-y-0.5 transition-all shadow-2xs inline-flex items-center gap-2 cursor-pointer"
+                className="w-full sm:w-auto justify-center px-7 py-3.5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-primary)] text-[var(--text-primary)] text-xs sm:text-sm font-bold hover:border-[var(--text-primary)] hover:-translate-y-0.5 transition-all shadow-2xs inline-flex items-center gap-2 cursor-pointer"
               >
                 <span>Launch campaign brief</span>
                 <ArrowUpRight className="w-4 h-4 text-[var(--text-secondary)]" />
@@ -475,13 +475,13 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
             </div>
 
             {/* Trust reassurance row */}
-            <p className="mt-4 text-xs font-medium text-[var(--text-muted)] tracking-wide">
+            <p className="mt-4 text-[11px] sm:text-xs font-medium text-[var(--text-muted)] tracking-wide">
               Upfront budget disclosures • Verified company domains • 100% free for creator applications
             </p>
           </div>
 
           {/* ── Visual Showcase Composition ── */}
-          <div className="mt-14 sm:mt-20 max-w-5xl mx-auto relative">
+          <div className="mt-10 sm:mt-20 max-w-5xl mx-auto relative">
             
             {/* Background dashed decorative connector */}
             <div className="hidden md:block absolute top-1/2 left-12 right-12 h-px border-t border-dashed border-[var(--border-primary)] -z-0" />
@@ -489,12 +489,12 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 items-center relative z-10">
               
               {/* Left Polaroid: Ritu (Culinary creator) */}
-              <div className="hero-card-float group relative rounded-3xl border border-[var(--border-primary)] bg-[var(--bg-card)] p-5 shadow-sm hover:shadow-md transition-all md:-rotate-2">
+              <div className="hero-card-float group relative rounded-2xl sm:rounded-3xl border border-[var(--border-primary)] bg-[var(--bg-card)] p-4 sm:p-5 shadow-sm hover:shadow-md transition-all md:-rotate-2">
                 {/* Washi tape sticker */}
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-20 h-6 bg-[#FFE3D3] dark:bg-[#4a2820] opacity-80 -rotate-3 rounded-xs border-x border-dashed border-[#F06A4D]/30" />
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 sm:w-20 h-5 sm:h-6 bg-[#FFE3D3] dark:bg-[#4a2820] opacity-80 -rotate-3 rounded-xs border-x border-dashed border-[#F06A4D]/30" />
                 
-                <div className="aspect-4/3 rounded-2xl bg-gradient-to-tr from-[#FFDEB5] to-[#FFE8CC] dark:from-[#3a2814] dark:to-[#573d1f] flex flex-col justify-end p-4 relative overflow-hidden">
-                  <div className="w-12 h-12 rounded-full bg-white/90 dark:bg-black/50 backdrop-blur-xs flex items-center justify-center font-black text-lg text-[#E67E22] mb-auto">
+                <div className="aspect-4/3 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-[#FFDEB5] to-[#FFE8CC] dark:from-[#3a2814] dark:to-[#573d1f] flex flex-col justify-end p-4 relative overflow-hidden">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/90 dark:bg-black/50 backdrop-blur-xs flex items-center justify-center font-black text-base sm:text-lg text-[#E67E22] mb-auto">
                     RS
                   </div>
                   <span className="inline-block px-2.5 py-1 rounded-full bg-black/40 text-white text-[10px] font-bold backdrop-blur-xs w-max">
@@ -509,8 +509,8 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
               </div>
 
               {/* Center Highlight: The Campaign Deal Card (BeanCraft Roasters) */}
-              <div className="relative rounded-3xl border-2 border-[var(--accent)] bg-[var(--bg-card)] p-6 shadow-xl md:scale-105 z-20">
-                <div className="flex items-center justify-between mb-4">
+              <div className="relative rounded-2xl sm:rounded-3xl border-2 border-[var(--accent)] bg-[var(--bg-card)] p-5 sm:p-6 shadow-xl md:scale-105 z-20">
+                <div className="flex items-center justify-between mb-3 sm:mb-4">
                   <div className="flex items-center gap-2.5">
                     <div className="w-9 h-9 rounded-xl bg-[var(--accent)] text-white font-black flex items-center justify-center text-xs">
                       BC
@@ -525,11 +525,11 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                   </span>
                 </div>
 
-                <div className="py-3">
+                <div className="py-2 sm:py-3">
                   <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--accent)] mb-1">
                     Spotlight Sponsorship
                   </div>
-                  <h2 className="text-lg font-black text-[var(--text-primary)] font-['Archivo'] leading-snug">
+                  <h2 className="text-base sm:text-lg font-black text-[var(--text-primary)] font-['Archivo'] leading-snug">
                     Artisan Cold Brew for Monsoon Study Sessions
                   </h2>
                 </div>
@@ -537,28 +537,28 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                 <div className="mt-3 pt-3 border-t border-[var(--border-primary)] flex items-center justify-between">
                   <div>
                     <div className="text-[10px] text-[var(--text-secondary)] font-medium">Stated payout pool</div>
-                    <div className="text-base font-black text-[var(--text-primary)] font-['Archivo']">
+                    <div className="text-base sm:text-lg font-black text-[var(--text-primary)] font-['Archivo']">
                       ₹30,000 – ₹55,000
                     </div>
                   </div>
-                  <span className="px-3 py-1 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-primary)] text-[11px] font-bold text-[var(--text-secondary)]">
+                  <span className="px-2.5 sm:px-3 py-1 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-primary)] text-[10px] sm:text-[11px] font-bold text-[var(--text-secondary)]">
                     Reels & Stories
                   </span>
                 </div>
 
                 {/* Floating pill sticker */}
-                <div className="absolute -bottom-4 right-4 bg-[var(--accent)] text-white px-3 py-1 rounded-full text-[10px] font-black shadow-md flex items-center gap-1">
+                <div className="absolute -bottom-3.5 right-4 bg-[var(--accent)] text-white px-3 py-1 rounded-full text-[10px] font-black shadow-md flex items-center gap-1">
                   <Sparkles className="w-3 h-3" /> Pitches open now
                 </div>
               </div>
 
               {/* Right Polaroid: Arjun (Consumer Tech) */}
-              <div className="hero-card-float group relative rounded-3xl border border-[var(--border-primary)] bg-[var(--bg-card)] p-5 shadow-sm hover:shadow-md transition-all md:rotate-2">
+              <div className="hero-card-float group relative rounded-2xl sm:rounded-3xl border border-[var(--border-primary)] bg-[var(--bg-card)] p-4 sm:p-5 shadow-sm hover:shadow-md transition-all md:rotate-2">
                 {/* Washi tape sticker */}
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-20 h-6 bg-[#C9E7CD] dark:bg-[#1f4726] opacity-80 rotate-2 rounded-xs border-x border-dashed border-[#27AE60]/30" />
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 sm:w-20 h-5 sm:h-6 bg-[#C9E7CD] dark:bg-[#1f4726] opacity-80 rotate-2 rounded-xs border-x border-dashed border-[#27AE60]/30" />
                 
-                <div className="aspect-4/3 rounded-2xl bg-gradient-to-tr from-[#C9E7CD] to-[#E3F5E5] dark:from-[#1b3d21] dark:to-[#2c5c34] flex flex-col justify-end p-4 relative overflow-hidden">
-                  <div className="w-12 h-12 rounded-full bg-white/90 dark:bg-black/50 backdrop-blur-xs flex items-center justify-center font-black text-lg text-[#27AE60] mb-auto">
+                <div className="aspect-4/3 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-[#C9E7CD] to-[#E3F5E5] dark:from-[#1b3d21] dark:to-[#2c5c34] flex flex-col justify-end p-4 relative overflow-hidden">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/90 dark:bg-black/50 backdrop-blur-xs flex items-center justify-center font-black text-base sm:text-lg text-[#27AE60] mb-auto">
                     AN
                   </div>
                   <span className="inline-block px-2.5 py-1 rounded-full bg-black/40 text-white text-[10px] font-bold backdrop-blur-xs w-max">
@@ -654,10 +654,30 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
           </div>
 
           {/* Interactive Steps Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-10 items-start">
             
-            {/* Steps Navigation */}
-            <div className="lg:col-span-6 space-y-4">
+            {/* Mobile Step Stepper Pills */}
+            <div className="lg:hidden flex overflow-x-auto no-scrollbar gap-2 pb-1 w-full">
+              {WORKFLOW_STEPS.map((s) => (
+                <button
+                  key={s.step}
+                  onClick={() => setActiveStep(s.step)}
+                  className={`shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                    activeStep === s.step
+                      ? 'bg-[var(--accent)] text-white border-[var(--accent)] shadow-xs'
+                      : 'bg-[var(--bg-card)] border-[var(--border-primary)] text-[var(--text-secondary)]'
+                  }`}
+                >
+                  <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-black ${activeStep === s.step ? 'bg-white/20 text-white' : 'bg-[var(--bg-primary)] text-[var(--text-primary)]'}`}>
+                    {s.step}
+                  </span>
+                  <span>{s.title.split(' ').slice(0, 2).join(' ')}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Desktop Steps Navigation */}
+            <div className="hidden lg:block lg:col-span-6 space-y-4 w-full">
               {WORKFLOW_STEPS.map((s) => {
                 const isActive = activeStep === s.step;
                 return (
@@ -692,7 +712,7 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
             </div>
 
             {/* Interactive Preview Panel */}
-            <div className="lg:col-span-6 sticky top-28 rounded-3xl border border-[var(--border-primary)] bg-[var(--bg-card)] p-6 sm:p-8 shadow-sm">
+            <div className="w-full lg:col-span-6 lg:sticky lg:top-28 rounded-2xl sm:rounded-3xl border border-[var(--border-primary)] bg-[var(--bg-card)] p-4 sm:p-8 shadow-sm">
               <div className="flex items-center justify-between pb-4 border-b border-[var(--border-primary)] mb-6">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
                   Live Stage Preview • Milestone {activeStep} of 5
@@ -1074,12 +1094,12 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
             </div>
 
             {/* Category Filter Chips */}
-            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+            <div className="flex overflow-x-auto no-scrollbar py-1 w-full md:w-auto items-center gap-1.5 sm:gap-2">
               {['All', 'Food', 'Fashion', 'Tech', 'Beauty'].map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setCampaignCategory(cat)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+                  className={`shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
                     campaignCategory === cat
                       ? 'bg-[var(--accent)] text-white shadow-2xs'
                       : 'bg-[var(--bg-card)] border border-[var(--border-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
@@ -1092,15 +1112,15 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
           </div>
 
           {/* Sample Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {filteredCampaigns.map((camp) => (
               <div
                 key={camp.id}
-                className="rounded-3xl border border-[var(--border-primary)] bg-[var(--bg-card)] p-6 shadow-2xs hover:-translate-y-1 hover:shadow-md transition-all duration-200"
+                className="rounded-2xl sm:rounded-3xl border border-[var(--border-primary)] bg-[var(--bg-card)] p-4 sm:p-6 shadow-2xs hover:-translate-y-1 hover:shadow-md transition-all duration-200"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-xl ${camp.brandBg} flex items-center justify-center font-black text-xs shrink-0`}>
+                    <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl ${camp.brandBg} flex items-center justify-center font-black text-xs shrink-0`}>
                       {camp.brandInitial}
                     </div>
                     <div>
@@ -1120,16 +1140,16 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                   )}
                 </div>
 
-                <div className="mt-4">
-                  <h3 className="text-base sm:text-lg font-black text-[var(--text-primary)] font-['Archivo'] leading-snug">
+                <div className="mt-3 sm:mt-4">
+                  <h3 className="text-sm sm:text-lg font-black text-[var(--text-primary)] font-['Archivo'] leading-snug">
                     {camp.title}
                   </h3>
-                  <div className="mt-3 flex items-center justify-between text-xs py-2 px-3 rounded-xl bg-[var(--bg-primary)] border border-[var(--border-primary)]">
+                  <div className="mt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs py-2.5 px-3 rounded-xl bg-[var(--bg-primary)] border border-[var(--border-primary)]">
                     <div>
                       <span className="text-[10px] text-[var(--text-muted)] block">Committed budget pool</span>
                       <strong className="text-sm font-black text-[var(--text-primary)] font-['Archivo']">{camp.budget}</strong>
                     </div>
-                    <div className="text-right">
+                    <div className="text-left sm:text-right">
                       <span className="text-[10px] text-[var(--text-muted)] block">Deliverable scope</span>
                       <strong className="text-xs font-bold text-[var(--text-secondary)]">{camp.deliverables}</strong>
                     </div>
