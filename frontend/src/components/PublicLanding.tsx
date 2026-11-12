@@ -206,7 +206,7 @@ const SAMPLE_CAMPAIGNS = [
 ];
 
 // 4. FAQ Questions & Answers
-const FAQ_ITEMS = [
+const FAQ_ITEMS: { question: string; answer: React.ReactNode }[] = [
   {
     question: 'Does Hyperniche deduct fees from creator payouts?',
     answer: 'Never. For creators, joining, publishing a profile, and pitching deals is entirely free. You receive 100% of your agreed commercial fee with no hidden agency cuts taken from your earnings.',
@@ -230,6 +230,14 @@ const FAQ_ITEMS = [
   {
     question: 'How is Hyperniche different from traditional talent agencies?',
     answer: 'Traditional agencies take hefty 20-30% cuts and operate through opaque communication channels. Hyperniche provides a direct, software-first marketplace where brands and creators interact directly with speed and transparency.',
+  },
+  {
+    question: 'Who is behind Hyperniche?',
+    answer: (
+      <>
+        Hyperniche is founded by <strong>Akshit Vashisht, Srish Tiwari, and Divansh Kaler</strong>, in association with <strong>BUSZ Pvt. Ltd.</strong>, with a shared vision of building meaningful connections between creators and brands.
+      </>
+    ),
   },
 ];
 
