@@ -12,17 +12,18 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 const THEME_STORAGE_KEY = 'hyperniche_theme_preference';
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Always open in cream bright mode by default on a fresh visit; remember if user chose a mode
+  // Always open in bright theme by default when opening the site.
+  // Users can switch to dark anytime; during the active session, their choice is respected.
   const [theme, setTheme] = useState<Theme>(() => {
     try {
-      const saved = localStorage.getItem(THEME_STORAGE_KEY);
-      if (saved === 'dark' || saved === 'light') {
-        return saved;
+      const sessionPref = sessionStorage.getItem(THEME_STORAGE_KEY);
+      if (sessionPref === 'dark' || sessionPref === 'light') {
+        return sessionPref;
       }
     } catch {
       // ignore
     }
-    return 'light'; // Always cream bright mode by default!
+    return 'light'; // Always bright theme enabled on open!
   });
 
   useEffect(() => {
@@ -34,6 +35,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       root.classList.remove('dark');
     }
     try {
+      sessionStorage.setItem(THEME_STORAGE_KEY, theme);
       localStorage.setItem(THEME_STORAGE_KEY, theme);
     } catch {
       // ignore

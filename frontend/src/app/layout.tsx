@@ -29,6 +29,27 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" data-mode="light" className={archivo.variable} suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                var s = sessionStorage.getItem('hyperniche_theme_preference');
+                if (s === 'dark') {
+                  document.documentElement.setAttribute('data-mode', 'dark');
+                  document.documentElement.classList.add('dark');
+                } else {
+                  document.documentElement.setAttribute('data-mode', 'light');
+                  document.documentElement.classList.remove('dark');
+                }
+              } catch (e) {
+                document.documentElement.setAttribute('data-mode', 'light');
+                document.documentElement.classList.remove('dark');
+              }
+            `,
+          }}
+        />
+      </head>
       <body className={`${archivo.className} antialiased selection:bg-[#F06A4D]/20 selection:text-[#F06A4D]`}>
         {children}
       </body>
