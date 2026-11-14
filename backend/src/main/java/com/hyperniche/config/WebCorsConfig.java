@@ -34,6 +34,8 @@ public class WebCorsConfig implements WebMvcConfigurer {
         configuration.addAllowedOriginPattern("http://localhost:[*]");
         configuration.addAllowedOriginPattern("https://*.vercel.app");
         configuration.addAllowedOriginPattern("https://*.onrender.com");
+        configuration.addAllowedOriginPattern("https://hyperniche.in");
+        configuration.addAllowedOriginPattern("https://*.hyperniche.in");
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
@@ -47,7 +49,7 @@ public class WebCorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOriginPatterns("http://localhost:[*]", "https://*.vercel.app", "https://*.onrender.com")
+                .allowedOriginPatterns("http://localhost:[*]", "https://*.vercel.app", "https://*.onrender.com", "https://hyperniche.in", "https://*.hyperniche.in")
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true)

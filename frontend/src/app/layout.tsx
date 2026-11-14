@@ -10,15 +10,23 @@ const archivo = Archivo({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://hyperniche.in'),
   title: "Hyperniche — Creator & Brand Deals Marketplace",
   description: "An Indian marketplace where business owners find content creators to promote their products, and creators find paid brand deals.",
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
     title: "Hyperniche — Creator & Brand Deals Marketplace",
     description: "An Indian marketplace where business owners find content creators to promote their products, and creators find paid brand deals.",
+    url: 'https://hyperniche.in',
+    siteName: 'Hyperniche',
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
+    title: "Hyperniche — Creator & Brand Deals Marketplace",
+    description: "An Indian marketplace where business owners find content creators to promote their products, and creators find paid brand deals.",
   },
 };
 
