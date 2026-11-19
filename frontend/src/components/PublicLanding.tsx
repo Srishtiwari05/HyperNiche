@@ -587,13 +587,35 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                 {/* Washi tape sticker */}
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 sm:w-20 h-5 sm:h-6 bg-[#C9E7CD] dark:bg-[#1f4726] opacity-80 rotate-2 rounded-xs border-x border-dashed border-[#27AE60]/30" />
                 
-                <div className="aspect-4/3 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-[#C9E7CD] to-[#E3F5E5] dark:from-[#1b3d21] dark:to-[#2c5c34] flex flex-col justify-end p-4 relative overflow-hidden">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/90 dark:bg-black/50 backdrop-blur-xs flex items-center justify-center font-black text-base sm:text-lg text-[#27AE60] mb-auto">
-                    AN
+                <div className="aspect-4/3 rounded-xl sm:rounded-2xl relative overflow-hidden flex flex-col justify-between p-3.5 sm:p-4 bg-stone-100 dark:bg-stone-900">
+                  {/* Creator Photo */}
+                  <img
+                    src="/images/arjun-tech.jpg"
+                    alt="Arjun - Consumer Tech & Audio"
+                    loading="eager"
+                    className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
+                  />
+
+                  {/* Editorial Vignette / Contrast Gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-black/35 pointer-events-none" />
+
+                  {/* Top: Avatar & Niche tag */}
+                  <div className="relative z-10 flex items-center justify-between w-full">
+                    <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/95 dark:bg-stone-900/90 backdrop-blur-md shadow-md ring-2 ring-white/60 dark:ring-white/20 flex items-center justify-center font-black text-xs sm:text-sm text-[#27AE60]">
+                      AN
+                    </div>
+                    <span className="px-2.5 py-1 rounded-full bg-black/50 text-white text-[10px] font-bold backdrop-blur-md border border-white/20 shadow-xs flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#27AE60]" />
+                      Tech & Audio
+                    </span>
                   </div>
-                  <span className="inline-block px-2.5 py-1 rounded-full bg-black/40 text-white text-[10px] font-bold backdrop-blur-xs w-max">
-                    Tech & Audio • 115K
-                  </span>
+
+                  {/* Bottom: Follower count & Badge */}
+                  <div className="relative z-10">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/60 text-white text-[10px] sm:text-[11px] font-bold backdrop-blur-md border border-white/20 shadow-md">
+                      Tech & Audio • 115K
+                    </span>
+                  </div>
                 </div>
 
                 <div className="mt-3.5">
