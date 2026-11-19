@@ -501,13 +501,35 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                 {/* Washi tape sticker */}
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 sm:w-20 h-5 sm:h-6 bg-[#FFE3D3] dark:bg-[#4a2820] opacity-80 -rotate-3 rounded-xs border-x border-dashed border-[#F06A4D]/30" />
                 
-                <div className="aspect-4/3 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-[#FFDEB5] to-[#FFE8CC] dark:from-[#3a2814] dark:to-[#573d1f] flex flex-col justify-end p-4 relative overflow-hidden">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/90 dark:bg-black/50 backdrop-blur-xs flex items-center justify-center font-black text-base sm:text-lg text-[#E67E22] mb-auto">
-                    RS
+                <div className="aspect-4/3 rounded-xl sm:rounded-2xl relative overflow-hidden flex flex-col justify-between p-3.5 sm:p-4 bg-stone-100 dark:bg-stone-900">
+                  {/* Creator Photo */}
+                  <img
+                    src="/images/ritu-culinary.jpg"
+                    alt="Ritu - Food & Regional Recipes"
+                    loading="eager"
+                    className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
+                  />
+
+                  {/* Editorial Vignette / Contrast Gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-black/35 pointer-events-none" />
+
+                  {/* Top: Avatar & Niche tag */}
+                  <div className="relative z-10 flex items-center justify-between w-full">
+                    <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/95 dark:bg-stone-900/90 backdrop-blur-md shadow-md ring-2 ring-white/60 dark:ring-white/20 flex items-center justify-center font-black text-xs sm:text-sm text-[#E67E22]">
+                      RS
+                    </div>
+                    <span className="px-2.5 py-1 rounded-full bg-black/50 text-white text-[10px] font-bold backdrop-blur-md border border-white/20 shadow-xs flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#E67E22]" />
+                      Food & Recipes
+                    </span>
                   </div>
-                  <span className="inline-block px-2.5 py-1 rounded-full bg-black/40 text-white text-[10px] font-bold backdrop-blur-xs w-max">
-                    Culinary Stories • 62K
-                  </span>
+
+                  {/* Bottom: Follower count & Badge */}
+                  <div className="relative z-10">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/60 text-white text-[10px] sm:text-[11px] font-bold backdrop-blur-md border border-white/20 shadow-md">
+                      Culinary Stories • 62K
+                    </span>
+                  </div>
                 </div>
                 
                 <div className="mt-3.5">
@@ -1461,7 +1483,7 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
               © {new Date().getFullYear()} Hyperniche. All rights reserved.
             </div>
             <div className="flex items-center gap-6">
-              <span>Made with care in India</span>
+              <span> BUSZ Pvt. Ltd.</span>
               <span>100% Free for Creators</span>
             </div>
           </div>
