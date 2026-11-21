@@ -1,7 +1,7 @@
 import { CategoryItem } from '../types';
 
 export const CATEGORIES: CategoryItem[] = [
-  { id: 'Fashion', name: 'Fashion', bgPastel: '#FFE3D3', darkBg: '#34241E', iconName: 'Shirt' },
+  { id: 'Fashion', name: 'Fashion', bgPastel: '#FFE3D3', darkBg: '#34241E', iconName: 'Shirt', imageUrl: '/images/categories/fashion.jpg' },
   { id: 'Beauty', name: 'Beauty', bgPastel: '#FFDBE6', darkBg: '#351D26', iconName: 'Sparkles' },
   { id: 'Tech', name: 'Tech', bgPastel: '#D9F2E6', darkBg: '#18332A', iconName: 'Cpu' },
   { id: 'Food', name: 'Food', bgPastel: '#FFF0B8', darkBg: '#36301A', iconName: 'Utensils' },

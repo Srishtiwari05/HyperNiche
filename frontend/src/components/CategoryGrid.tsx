@@ -84,25 +84,50 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({ id }) => {
         <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-2.5 sm:gap-3">
           {CATEGORIES.map((cat) => {
             const isSelected = selectedCategory === cat.name;
+            const hasImage = Boolean(cat.imageUrl);
 
             return (
               <button
                 key={cat.id}
                 onClick={() => handleTileClick(cat.name)}
                 style={{
-                  backgroundColor: isSelected ? undefined : cat.bgPastel,
+                  backgroundColor: isSelected ? undefined : (hasImage ? undefined : cat.bgPastel),
                 }}
-                className={`group relative p-3 sm:p-3.5 rounded-xl border transition-all duration-200 text-left flex flex-col justify-between h-24 hover:-translate-y-0.5 hover:shadow-2xs cursor-pointer ${
+                className={`group relative p-3 sm:p-3.5 rounded-xl border transition-all duration-200 text-left flex flex-col justify-between h-24 hover:-translate-y-0.5 hover:shadow-2xs cursor-pointer overflow-hidden ${
                   isSelected
                     ? 'border-[var(--btn-primary-bg)] bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] ring-2 ring-[var(--accent)]/30'
+                    : hasImage
+                    ? 'border-white/20 text-white shadow-xs'
                     : 'border-[var(--border-primary)] text-[#2B2622]'
                 }`}
               >
-                <div className="flex items-center justify-between w-full">
+                {/* Background image when provided */}
+                {hasImage && (
+                  <>
+                    <img
+                      src={cat.imageUrl}
+                      alt={cat.name}
+                      loading="lazy"
+                      decoding="async"
+                      className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500 ease-out"
+                    />
+                    <div
+                      className={`absolute inset-0 transition-opacity duration-300 pointer-events-none ${
+                        isSelected
+                          ? 'bg-[var(--btn-primary-bg)]/80'
+                          : 'bg-gradient-to-t from-black/85 via-black/35 to-black/25 group-hover:from-black/75'
+                      }`}
+                    />
+                  </>
+                )}
+
+                <div className="relative z-10 flex items-center justify-between w-full">
                   <div
-                    className={`p-1.5 rounded-lg ${
+                    className={`p-1.5 rounded-lg transition-colors ${
                       isSelected
                         ? 'bg-white/20 text-[var(--btn-primary-text)]'
+                        : hasImage
+                        ? 'bg-white/90 text-[#2B2622] shadow-xs backdrop-blur-xs'
                         : 'bg-white/60 text-[#2B2622]'
                     }`}
                   >
@@ -113,8 +138,12 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({ id }) => {
                   )}
                 </div>
 
-                <div>
-                  <span className="block text-xs font-bold font-['Archivo'] truncate">
+                <div className="relative z-10">
+                  <span
+                    className={`block text-xs font-bold font-['Archivo'] truncate ${
+                      hasImage && !isSelected ? 'text-white drop-shadow-sm' : ''
+                    }`}
+                  >
                     {cat.name}
                   </span>
                 </div>

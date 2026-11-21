@@ -197,6 +197,7 @@ export interface CategoryItem {
   bgPastel: string; // pastel color class or hex
   darkBg: string;
   iconName: string;
+  imageUrl?: string;
 }
 
 export interface ReportItem {
