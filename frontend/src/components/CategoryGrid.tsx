@@ -80,8 +80,8 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({ id }) => {
           )}
         </div>
 
-        {/* 16 Category Tiles Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-2.5 sm:gap-3">
+        {/* 15 Category Tiles Grid - 5 columns across 3 balanced rows */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
           {CATEGORIES.map((cat) => {
             const isSelected = selectedCategory === cat.name;
             const hasImage = Boolean(cat.imageUrl);
@@ -93,15 +93,13 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({ id }) => {
                 style={{
                   backgroundColor: isSelected ? undefined : (hasImage ? undefined : cat.bgPastel),
                 }}
-                className={`group relative p-3 sm:p-3.5 rounded-xl border transition-all duration-200 text-left flex flex-col justify-between h-24 hover:-translate-y-0.5 hover:shadow-2xs cursor-pointer overflow-hidden ${
+                className={`group relative p-3.5 sm:p-4 rounded-2xl border transition-all duration-300 text-left flex flex-col justify-between h-32 sm:h-36 hover:-translate-y-1 hover:shadow-md cursor-pointer overflow-hidden [&:last-child:nth-child(odd)]:col-span-2 sm:[&:last-child:nth-child(odd)]:col-span-1 ${
                   isSelected
-                    ? 'border-[var(--btn-primary-bg)] bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] ring-2 ring-[var(--accent)]/30'
-                    : hasImage
-                    ? 'border-white/20 text-white shadow-xs'
-                    : 'border-[var(--border-primary)] text-[#2B2622]'
+                    ? 'border-[var(--accent)] ring-2 ring-[var(--accent)]/50 shadow-md'
+                    : 'border-black/10 dark:border-white/10 hover:border-white/40'
                 }`}
               >
-                {/* Background image when provided */}
+                {/* Background image with micro-zoom */}
                 {hasImage && (
                   <>
                     <img
@@ -109,39 +107,42 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({ id }) => {
                       alt={cat.name}
                       loading="lazy"
                       decoding="async"
-                      className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500 ease-out"
+                      className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700 ease-out"
                     />
+                    {/* Vignette contrast gradient */}
                     <div
                       className={`absolute inset-0 transition-opacity duration-300 pointer-events-none ${
                         isSelected
-                          ? 'bg-[var(--btn-primary-bg)]/80'
-                          : 'bg-gradient-to-t from-black/85 via-black/35 to-black/25 group-hover:from-black/75'
+                          ? 'bg-[var(--accent)]/60 backdrop-blur-xs'
+                          : 'bg-gradient-to-t from-black/85 via-black/35 to-black/25 group-hover:from-black/70'
                       }`}
                     />
                   </>
                 )}
 
+                {/* Top: Frosted Icon Badge & Selection Indicator */}
                 <div className="relative z-10 flex items-center justify-between w-full">
                   <div
-                    className={`p-1.5 rounded-lg transition-colors ${
+                    className={`p-2 rounded-xl transition-all duration-200 ${
                       isSelected
-                        ? 'bg-white/20 text-[var(--btn-primary-text)]'
-                        : hasImage
-                        ? 'bg-white/90 text-[#2B2622] shadow-xs backdrop-blur-xs'
-                        : 'bg-white/60 text-[#2B2622]'
+                        ? 'bg-white text-[var(--accent)] shadow-md font-bold'
+                        : 'bg-black/45 backdrop-blur-md text-white border border-white/20 shadow-xs'
                     }`}
                   >
                     {iconMap[cat.iconName]}
                   </div>
                   {isSelected && (
-                    <span className="w-2 h-2 rounded-full bg-[var(--accent)]"></span>
+                    <span className="px-2 py-0.5 rounded-full bg-[var(--accent)] text-white text-[10px] font-bold shadow-xs">
+                      Active
+                    </span>
                   )}
                 </div>
 
+                {/* Bottom: Category Name */}
                 <div className="relative z-10">
                   <span
-                    className={`block text-xs font-bold font-['Archivo'] truncate ${
-                      hasImage && !isSelected ? 'text-white drop-shadow-sm' : ''
+                    className={`block text-xs sm:text-sm font-bold font-['Archivo'] tracking-tight truncate ${
+                      hasImage ? 'text-white drop-shadow-md' : 'text-[var(--text-primary)]'
                     }`}
                   >
                     {cat.name}

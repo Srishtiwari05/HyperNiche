@@ -460,7 +460,7 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
 
             {/* Shortened, Punchy Subtitle */}
             <p className="mt-4 sm:mt-5 text-sm sm:text-lg text-[var(--text-secondary)] max-w-xl mx-auto leading-relaxed">
-              Direct partnerships between Indian brands and specialized creators across 16 niches. Transparent INR budgets, zero agency cuts.
+              Direct partnerships between Indian brands and specialized creators across 15 niches. Transparent INR budgets, zero agency cuts.
             </p>
 
             {/* Dual CTAs (Responsive on Mobile) */}
@@ -1262,7 +1262,7 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onCreateAccount, o
                 <Compass className="w-5 h-5" />
               </div>
               <h3 className="text-base font-bold text-[var(--text-primary)] font-['Archivo']">
-                16 Indian Market Verticals
+                15 Indian Market Verticals
               </h3>
               <p className="mt-2 text-xs text-[var(--text-secondary)] leading-relaxed">
                 Filter by Streetwear, Derm Beauty, Tech, Desi Culinary, Fitness, and more. Locate creators aligned with your target buyer persona.

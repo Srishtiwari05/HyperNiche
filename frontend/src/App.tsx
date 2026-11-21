@@ -188,7 +188,7 @@ const MainAppContent: React.FC = () => {
               onBrowseCategories={scrollToCategories}
             />
 
-            {/* 16 Category Tiles with 5 Pastel Tones */}
+            {/* 15 Category Tiles */}
             <CategoryGrid id="categories-section" />
 
             {/* Marketplace Grid: Creators for Business / Campaigns for Creator */}

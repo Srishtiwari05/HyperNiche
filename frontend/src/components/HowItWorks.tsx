@@ -37,7 +37,7 @@ export const HowItWorks: React.FC = () => {
         {
           num: '01',
           title: 'Find Open Brand Deals',
-          desc: 'Filter 16 niche verticals across D2C fashion, beauty, tech, and food. View exact compensation in INR and deliverable requirements upfront.',
+          desc: 'Filter 15 niche verticals across D2C fashion, beauty, tech, and food. View exact compensation in INR and deliverable requirements upfront.',
           icon: <Target className="w-5 h-5" />,
           pastel: '#FFE3D3',
           darkBg: '#34241E',
