@@ -30,6 +30,72 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://hyperniche.in/#organization",
+      "name": "Hyperniche",
+      "url": "https://hyperniche.in",
+      "description": "An Indian marketplace connecting specialized creators with forward-thinking brands across 15 verticals.",
+      "founder": [
+        {
+          "@type": "Person",
+          "name": "Akshit Vashisht"
+        },
+        {
+          "@type": "Person",
+          "name": "Srish Tiwari"
+        },
+        {
+          "@type": "Person",
+          "name": "Divansh Kaler"
+        }
+      ],
+      "parentOrganization": {
+        "@type": "Organization",
+        "name": "BUSZ Pvt. Ltd."
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer support",
+        "email": "support@hyperniche.in"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://hyperniche.in/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Who is behind Hyperniche?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Hyperniche is founded by Akshit Vashisht, Srish Tiwari, and Divansh Kaler, in association with BUSZ Pvt. Ltd., with a shared vision of building meaningful connections between creators and brands."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does Hyperniche deduct fees from creator payouts?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Never. For creators, joining, publishing a profile, and pitching deals is entirely free. You receive 100% of your agreed commercial fee with no hidden agency cuts taken from your earnings."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How are brands and posting representatives authenticated?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "We evaluate brand accounts against their verified corporate domain, official web presence, and business email signatures. The actual individual posting the campaign is also validated separately to ensure authentic representation."
+          }
+        }
+      ]
+    }
+  ]
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -38,6 +104,12 @@ export default function RootLayout({
   return (
     <html lang="en" data-mode="light" className={archivo.variable} suppressHydrationWarning>
       <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(jsonLd),
+          }}
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `
