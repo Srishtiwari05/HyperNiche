@@ -40,6 +40,7 @@ export const MainMarketplace: React.FC<MainMarketplaceProps> = ({
 
   const [sortBy, setSortBy] = useState<'recommended' | 'rate-asc' | 'rate-desc'>('recommended');
   const [verifiedOnly, setVerifiedOnly] = useState<boolean>(false);
+  const [selectedCity, setSelectedCity] = useState<string>('All');
 
   // Budget Filter Popover State
   const [appliedBudgetFrom, setAppliedBudgetFrom] = useState<number | null>(null);
@@ -187,6 +188,11 @@ export const MainMarketplace: React.FC<MainMarketplaceProps> = ({
       return false;
     }
 
+    // City filter (business browsing creators)
+    if (selectedCity !== 'All') {
+      if ((c.city || '').toLowerCase() !== selectedCity.toLowerCase()) return false;
+    }
+
     return true;
   });
 
@@ -265,6 +271,7 @@ export const MainMarketplace: React.FC<MainMarketplaceProps> = ({
     setSelectedCategory(null);
     setSelectedPlatform('All');
     setSelectedFollowers('All');
+    setSelectedCity('All');
     setAppliedBudgetFrom(null);
     setAppliedBudgetTo(null);
     setInputBudgetFrom('');
@@ -279,7 +286,7 @@ export const MainMarketplace: React.FC<MainMarketplaceProps> = ({
     searchQuery.trim() !== '' ||
     selectedCategory !== null ||
     selectedPlatform !== 'All' ||
-    (role === 'business' && selectedFollowers !== 'All') ||
+    (role === 'business' && (selectedFollowers !== 'All' || selectedCity !== 'All')) ||
     (role === 'creator' && (appliedBudgetFrom !== null || appliedBudgetTo !== null)) ||
     verifiedOnly;
 
@@ -355,6 +362,39 @@ export const MainMarketplace: React.FC<MainMarketplaceProps> = ({
                     <option value="10K-50K">10K - 50K</option>
                     <option value="50K-250K">50K - 250K</option>
                     <option value="Above 250K">Above 250K</option>
+                  </select>
+                </div>
+              )}
+
+              {/* City Filter (Only for Business browsing creators) */}
+              {role === 'business' && (
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-semibold text-[var(--text-secondary)] hidden sm:inline">
+                    City:
+                  </span>
+                  <select
+                    value={selectedCity}
+                    onChange={(e) => setSelectedCity(e.target.value)}
+                    className="px-2.5 py-2 rounded-xl border border-[var(--border-primary)] bg-[var(--input-bg)] text-xs font-semibold text-[var(--text-primary)] focus:outline-none cursor-pointer"
+                  >
+                    <option value="All">All cities</option>
+                    <option value="Mumbai">Mumbai</option>
+                    <option value="Delhi NCR">Delhi NCR</option>
+                    <option value="Bengaluru">Bengaluru</option>
+                    <option value="Hyderabad">Hyderabad</option>
+                    <option value="Pune">Pune</option>
+                    <option value="Chennai">Chennai</option>
+                    <option value="Kolkata">Kolkata</option>
+                    <option value="Ahmedabad">Ahmedabad</option>
+                    <option value="Jaipur">Jaipur</option>
+                    <option value="Lucknow">Lucknow</option>
+                    <option value="Chandigarh">Chandigarh</option>
+                    <option value="Surat">Surat</option>
+                    <option value="Indore">Indore</option>
+                    <option value="Noida">Noida</option>
+                    <option value="Gurgaon">Gurgaon</option>
+                    <option value="Pan India">Pan India</option>
+                    <option value="Remote / Flexible">Remote / Flexible</option>
                   </select>
                 </div>
               )}

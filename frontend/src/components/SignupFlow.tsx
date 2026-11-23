@@ -55,6 +55,7 @@ export const SignupFlow: React.FC<SignupFlowProps> = ({ initialMode = 'signup', 
   const [creatorHandle, setCreatorHandle] = useState('');
   const [creatorFollowers, setCreatorFollowers] = useState('10K-50K');
   const [creatorNiche, setCreatorNiche] = useState('Fashion');
+  const [creatorCity, setCreatorCity] = useState('Mumbai');
 
   // Step 3 Business fields
   const [businessName, setBusinessName] = useState('');
@@ -168,6 +169,7 @@ export const SignupFlow: React.FC<SignupFlowProps> = ({ initialMode = 'signup', 
           handle: creatorHandle.startsWith('@') ? creatorHandle : `@${creatorHandle}`,
           followers: creatorFollowers,
           niche: creatorNiche,
+          city: creatorCity,
           name: creatorHandle.replace('@', ''),
         } : {
           name: businessName,
@@ -225,6 +227,7 @@ export const SignupFlow: React.FC<SignupFlowProps> = ({ initialMode = 'signup', 
           handle: creatorHandle.startsWith('@') ? creatorHandle : `@${creatorHandle}`,
           followers: creatorFollowers,
           niche: creatorNiche,
+          city: creatorCity,
         } : {
           name: businessName,
           handle: businessWebOrInsta.startsWith('@') ? businessWebOrInsta : `@${businessName.toLowerCase().replace(/\s+/g, '')}`,
@@ -569,6 +572,36 @@ export const SignupFlow: React.FC<SignupFlowProps> = ({ initialMode = 'signup', 
                           {c.name}
                         </option>
                       ))}
+                    </select>
+                  </div>
+
+                  {/* Q4: City / Location */}
+                  <div>
+                    <label className="block text-xs font-semibold mb-1.5 text-[var(--text-primary)]">
+                      4. Your city / base location
+                    </label>
+                    <select
+                      value={creatorCity}
+                      onChange={(e) => setCreatorCity(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border-primary)] bg-[var(--input-bg)] text-[var(--text-primary)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+                    >
+                      <option value="Mumbai">Mumbai</option>
+                      <option value="Delhi NCR">Delhi NCR</option>
+                      <option value="Bengaluru">Bengaluru</option>
+                      <option value="Hyderabad">Hyderabad</option>
+                      <option value="Pune">Pune</option>
+                      <option value="Chennai">Chennai</option>
+                      <option value="Kolkata">Kolkata</option>
+                      <option value="Ahmedabad">Ahmedabad</option>
+                      <option value="Jaipur">Jaipur</option>
+                      <option value="Lucknow">Lucknow</option>
+                      <option value="Chandigarh">Chandigarh</option>
+                      <option value="Surat">Surat</option>
+                      <option value="Indore">Indore</option>
+                      <option value="Noida">Noida</option>
+                      <option value="Gurgaon">Gurgaon</option>
+                      <option value="Pan India">Pan India</option>
+                      <option value="Remote / Flexible">Remote / Flexible</option>
                     </select>
                   </div>
                 </>
