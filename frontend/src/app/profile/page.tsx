@@ -188,26 +188,6 @@ export default function ProfilePage() {
               </Badge>
             </CardHeader>
             <CardContent>
-              {currentUser.role === "CREATOR" && !creatorProfile?.isVerified && (
-                <div className="mt-4 rounded-xl border border-indigo-500/30 bg-indigo-500/10 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div>
-                    <div className="flex items-center gap-2 font-bold text-white text-sm">
-                      <ShieldCheck className="h-4 w-4 text-indigo-400" />
-                      Get Verified Creator Badge
-                    </div>
-                    <p className="text-xs text-zinc-400 mt-1">
-                      Stand out to top brands, unlock premium briefs, and boost proposal conversion. (₹499 one-time fee)
-                    </p>
-                  </div>
-                  <Button
-                    onClick={handleVerification}
-                    disabled={verifying}
-                    className="bg-indigo-600 hover:bg-indigo-500 text-xs shrink-0"
-                  >
-                    {verifying ? "Processing..." : "Verify Account (₹499)"}
-                  </Button>
-                </div>
-              )}
             </CardContent>
           </Card>
         </div>

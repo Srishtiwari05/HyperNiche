@@ -3,8 +3,7 @@ import { useMarketplace } from '../context/MarketplaceContext';
 import { useAuth } from '../context/AuthContext';
 import { ApplicationStatus } from '../types';
 import { VerificationBadge } from './VerificationBadge';
-import { VerificationPaymentModal } from './VerificationPaymentModal';
-import { Check, X, MessageSquare, IndianRupee, Clock, CheckCircle2, XCircle, Lock, ShieldCheck } from 'lucide-react';
+import { Check, X, MessageSquare, IndianRupee, Clock, CheckCircle2, XCircle } from 'lucide-react';
 
 interface ManageApplicationsViewProps {
   onOpenMessages?: () => void;
@@ -15,15 +14,10 @@ export const ManageApplicationsView: React.FC<ManageApplicationsViewProps> = ({
   onOpenMessages,
   onViewCreatorProfile,
 }) => {
-  const { campaigns, applications, updateApplicationStatus, setActiveConversation, getBusinessDecisionStats } = useMarketplace();
+  const { campaigns, applications, updateApplicationStatus, setActiveConversation } = useMarketplace();
   const { userProfile } = useAuth();
 
   const [filterStatus, setFilterStatus] = useState<string>('all');
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-
-  const isOwnerVerified = Boolean(userProfile?.isVerified);
-  const decisionStats = getBusinessDecisionStats(userProfile?.id);
-  const canDecide = isOwnerVerified || decisionStats.hasFreeLeft;
 
   const removedCampaignIds = new Set(
     campaigns.filter((c) => c.status === 'removed' || c.removed === true).map((c) => c.id)
@@ -196,66 +190,27 @@ export const ManageApplicationsView: React.FC<ManageApplicationsViewProps> = ({
                       )}
                     </div>
 
-                    {/* Action buttons with 1 Free Approval Rule */}
+                    {/* Action buttons */}
                     <div className="flex flex-col items-end gap-2">
                       {app.status === 'pending' && (
-                        <>
-                          <div className="flex items-center gap-2">
-                            <button
-                              disabled={!canDecide}
-                              onClick={() => canDecide && handleApprove(app)}
-                              title={!canDecide ? 'Free approval used this month. Get verified to approve or reject more applicants.' : 'Approve proposal'}
-                              className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors ${
-                                canDecide
-                                  ? 'bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] hover:bg-[var(--accent)] hover:text-white cursor-pointer'
-                                  : 'bg-[var(--bg-card-subtle)] text-[var(--text-muted)] border border-[var(--border-primary)] cursor-not-allowed opacity-60'
-                              }`}
-                            >
-                              <Check className="w-3.5 h-3.5" />
-                              <span>Approve</span>
-                            </button>
-                            <button
-                              disabled={!canDecide}
-                              onClick={() => canDecide && handleReject(app.id)}
-                              title={!canDecide ? 'Free approval used this month. Get verified to approve or reject more applicants.' : 'Decline proposal'}
-                              className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-colors ${
-                                canDecide
-                                  ? 'border-[var(--border-primary)] hover:bg-[var(--badge-pink-bg)] cursor-pointer'
-                                  : 'border-[var(--border-primary)] text-[var(--text-muted)] cursor-not-allowed opacity-60'
-                              }`}
-                            >
-                              <X className="w-3.5 h-3.5" />
-                              <span>Reject</span>
-                            </button>
-                          </div>
-
-                          {/* Quota indicator near buttons */}
-                          {isOwnerVerified ? (
-                            <span className="text-[11px] font-semibold text-[var(--text-secondary)] flex items-center gap-1">
-                              <ShieldCheck className="w-3 h-3 text-[var(--accent)]" />
-                              <span>Unlimited approvals (verified)</span>
-                            </span>
-                          ) : decisionStats.hasFreeLeft ? (
-                            <span className="text-[11px] font-semibold text-[var(--text-secondary)]">
-                              1 free approval left this month
-                            </span>
-                          ) : (
-                            <div className="flex flex-col items-end gap-1 mt-1 text-right">
-                              <span className="text-[11px] font-semibold text-[var(--accent)] flex items-center gap-1">
-                                <Lock className="w-3 h-3 shrink-0" />
-                                <span>Free approval used this month. Get verified to approve or reject more applicants.</span>
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() => setIsPaymentModalOpen(true)}
-                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[var(--accent)] text-white text-[11px] font-bold hover:opacity-95 shadow-2xs cursor-pointer transition-opacity"
-                              >
-                                <ShieldCheck className="w-3 h-3" />
-                                <span>Get verified</span>
-                              </button>
-                            </div>
-                          )}
-                        </>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleApprove(app)}
+                            title="Approve proposal"
+                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] hover:bg-[var(--accent)] hover:text-white cursor-pointer"
+                          >
+                            <Check className="w-3.5 h-3.5" />
+                            <span>Approve</span>
+                          </button>
+                          <button
+                            onClick={() => handleReject(app.id)}
+                            title="Decline proposal"
+                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-[var(--border-primary)] text-xs font-semibold transition-colors hover:bg-[var(--badge-pink-bg)] cursor-pointer"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                            <span>Reject</span>
+                          </button>
+                        </div>
                       )}
 
                       {app.status === 'accepted' && (
@@ -277,12 +232,6 @@ export const ManageApplicationsView: React.FC<ManageApplicationsViewProps> = ({
           })}
         </div>
       )}
-
-      {/* Verification payment modal */}
-      <VerificationPaymentModal
-        isOpen={isPaymentModalOpen}
-        onClose={() => setIsPaymentModalOpen(false)}
-      />
 
     </div>
   );

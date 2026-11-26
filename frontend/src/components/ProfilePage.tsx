@@ -3,7 +3,6 @@ import { useAuth } from '../context/AuthContext';
 import { useMarketplace } from '../context/MarketplaceContext';
 import { UserProfile, Campaign, Application } from '../types';
 import { VerificationBadge } from './VerificationBadge';
-import { VerificationPaymentModal } from './VerificationPaymentModal';
 import { CATEGORIES } from '../config/categories';
 import { 
   Building2, 
@@ -57,7 +56,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
   // Edit Mode state (for own profile)
   const [isEditing, setIsEditing] = useState(false);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
@@ -297,17 +295,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             <div className="flex flex-wrap items-center gap-2.5 self-start sm:self-end">
               {isOwnProfile ? (
                 <>
-                  {/* If unverified on own profile, show "Get verified" button */}
-                  {!isVerified && (
-                    <button
-                      onClick={() => setIsPaymentModalOpen(true)}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#F06A4D] dark:bg-[#B3121E] text-white text-xs font-bold hover:opacity-95 transition-all shadow-xs cursor-pointer"
-                    >
-                      <ShieldCheck className="w-4 h-4" />
-                      <span>Get verified</span>
-                    </button>
-                  )}
-
                   {!isEditing ? (
                     <button
                       onClick={startEditing}
@@ -643,18 +630,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                       <VerificationBadge isVerified={isVerified} size="sm" />
                     </div>
                   </div>
-
-                  {/* Application usage (used this month, free left, paid extras, hidden for verified users) */}
-                  {!isBusiness && !isVerified && (
-                    <div className="p-3.5 rounded-xl bg-[var(--input-bg)] border border-[var(--border-primary)]">
-                      <span className="text-[10px] font-semibold text-[var(--text-muted)] block">
-                        Application Usage
-                      </span>
-                      <span className="text-xs font-semibold text-[var(--text-primary)] mt-0.5 block">
-                        {usageStats.usedThisMonth} used this month • {usageStats.freeLeft} free left • {usageStats.paidExtras} paid extras
-                      </span>
-                    </div>
-                  )}
                 </div>
               </div>
 
@@ -865,12 +840,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         </div>
 
       </div>
-
-      {/* Razorpay Payment Verification Modal */}
-      <VerificationPaymentModal
-        isOpen={isPaymentModalOpen}
-        onClose={() => setIsPaymentModalOpen(false)}
-      />
 
     </div>
   );

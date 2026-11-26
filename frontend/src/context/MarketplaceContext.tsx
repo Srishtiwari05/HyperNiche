@@ -200,6 +200,7 @@ export interface MarketplaceContextType {
   messages: Message[];
   isLoadingData: boolean;
   dataError: string | null;
+  reloadMarketplace: () => Promise<void>;
   createCampaign: (data: Omit<Campaign, 'id' | 'businessId' | 'businessName' | 'businessHandle' | 'applicantsCount' | 'createdAt'>) => Promise<void>;
   updateCampaign: (campaignId: string, data: Partial<Campaign>) => Promise<void>;
   removeCampaign: (campaignId: string) => Promise<void>;
@@ -261,23 +262,68 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
       setCampaigns([]);
     }
 
+    let apiCreators: UserProfile[] = [];
     try {
       const creatorRes: any = await api.getCreators(creatorParams);
-      setCreators((creatorRes?.content || creatorRes || []).map(normalizeCreator));
+      apiCreators = (creatorRes?.content || creatorRes || []).map(normalizeCreator);
     } catch {
-      const { data } = await supabase.from('creator_profiles').select('*, users(*)').limit(200);
-      if (Array.isArray(data)) {
-        setCreators(data.map((row: any) => normalizeCreator({ ...row.users, ...row })));
-      }
+      apiCreators = [];
     }
 
+    let supabaseCreators: UserProfile[] = [];
+    try {
+      const { data: dbUsers } = await supabase
+        .from('users')
+        .select('*')
+        .in('role', ['CREATOR', 'creator']);
+
+      if (Array.isArray(dbUsers)) {
+        supabaseCreators = dbUsers.map((row: any) => {
+          let fromDb: any = {};
+          if (row.profile_json) {
+            try { fromDb = JSON.parse(row.profile_json); } catch { /* ignore */ }
+          }
+          return normalizeCreator({
+            ...fromDb,
+            ...row,
+            id: row.id,
+            role: 'creator',
+            name: row.display_name || fromDb.name || 'Creator',
+            avatarUrl: row.avatar_url || fromDb.avatarUrl,
+            bio: row.bio || fromDb.bio || '',
+            letBrandsFindMe: fromDb.letBrandsFindMe ?? true,
+          });
+        });
+      }
+    } catch (err) {
+      console.warn('Supabase creators fetch note:', err);
+    }
+
+    const creatorMap = new Map<string, UserProfile>();
+    apiCreators.forEach((c) => {
+      if (c.id) creatorMap.set(c.id, c);
+    });
+    supabaseCreators.forEach((c) => {
+      if (c.id) creatorMap.set(c.id, c);
+    });
+
+    if (userProfile && (userProfile.role === 'creator' || userProfile.activeRole === 'creator')) {
+      const selfCreator = normalizeCreator({
+        ...userProfile,
+        role: 'creator',
+        letBrandsFindMe: userProfile.letBrandsFindMe ?? true,
+      });
+      creatorMap.set(selfCreator.id, selfCreator);
+    }
+
+    setCreators(Array.from(creatorMap.values()));
     setIsLoadingData(false);
   };
 
   useEffect(() => {
     if (isAuthLoading) return;
     void loadMarketplace(true);
-  }, [selectedCategory, currentUser?.id, isAuthLoading]);
+  }, [selectedCategory, currentUser?.id, userProfile?.role, userProfile?.activeRole, isAuthLoading]);
 
   // 2. Fetch authenticated user applications and conversations
   useEffect(() => {
@@ -600,11 +646,6 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
     const currentUid = currentUser?.id || userProfile.id;
     const isCreatorVerified = Boolean(userProfile.isVerified);
-    const usage = getApplicationUsageStats(currentUid);
-    const requiresPayment = !isCreatorVerified && usage.freeLeft <= 0;
-    if (requiresPayment && !paymentId) {
-      throw new Error('You have used your free application this month. Payment of ₹9 is required.');
-    }
 
     let realApp: any = null;
     try {
@@ -632,9 +673,9 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
       pitch: pitch.trim(),
       proposedRate,
       status: 'pending',
-      isFreeApplication: isCreatorVerified ? false : (!requiresPayment && !paymentId),
+      isFreeApplication: true,
       paymentId: paymentId || undefined,
-      isPaidExtra: Boolean(requiresPayment || paymentId),
+      isPaidExtra: false,
       isBoosted: Boolean(options?.isBoosted),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -751,6 +792,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
         messages: accountDataReady ? messages : [],
         isLoadingData,
         dataError,
+        reloadMarketplace: () => loadMarketplace(false),
         createCampaign,
         updateCampaign,
         removeCampaign,

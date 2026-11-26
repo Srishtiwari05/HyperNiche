@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useMarketplace } from '../context/MarketplaceContext';
 import { useAuth } from '../context/AuthContext';
-import { VerificationPaymentModal } from './VerificationPaymentModal';
-import { Clock, CheckCircle2, XCircle, MessageSquare, ArrowRight, Lock, Send, ShieldCheck } from 'lucide-react';
+import { Clock, CheckCircle2, XCircle, MessageSquare, ArrowRight, Send } from 'lucide-react';
 
 interface MyApplicationsViewProps {
   onBrowseDeals?: () => void;
@@ -15,9 +14,6 @@ export const MyApplicationsView: React.FC<MyApplicationsViewProps> = ({
 }) => {
   const { applications, campaigns, setActiveConversation } = useMarketplace();
   const { userProfile } = useAuth();
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-
-  const isCreatorVerified = Boolean(userProfile?.isVerified);
 
   const removedCampaignIds = new Set(
     campaigns.filter((c) => c.status === 'removed' || c.removed === true).map((c) => c.id)
@@ -45,28 +41,6 @@ export const MyApplicationsView: React.FC<MyApplicationsViewProps> = ({
       onOpenMessages();
     }
   };
-
-  // Identify the 1 free application per calendar month for unverified creators
-  const freeAppIdByMonth = React.useMemo(() => {
-    const map = new Map<string, string>();
-    const sorted = [...myApps].sort(
-      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-    );
-    sorted.forEach((app) => {
-      const d = new Date(app.createdAt);
-      const monthKey = `${d.getFullYear()}-${d.getMonth() + 1}`;
-      if (app.isFreeApplication) {
-        if (!map.has(monthKey)) {
-          map.set(monthKey, app.id);
-        }
-      } else if (!app.isPaidExtra && !app.paymentId) {
-        if (!map.has(monthKey)) {
-          map.set(monthKey, app.id);
-        }
-      }
-    });
-    return map;
-  }, [myApps]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-in fade-in duration-200 transition-colors">
@@ -150,74 +124,38 @@ export const MyApplicationsView: React.FC<MyApplicationsViewProps> = ({
                     </span>
                   </div>
 
-                  {/* Status Badge with Free Application & Verification Rules */}
-                  {(() => {
-                    // 1 free application per month gets full status; extra applications show Application sent
-                    const d = new Date(app.createdAt);
-                    const monthKey = `${d.getFullYear()}-${d.getMonth() + 1}`;
-                    const isFreeApp = Boolean(app.isFreeApplication) || freeAppIdByMonth.get(monthKey) === app.id;
-                    const showFullStatus = isCreatorVerified || isFreeApp;
+                  {/* Status Badge */}
+                  <div className="flex flex-col items-end gap-1.5">
+                    {app.status === 'pending' && (
+                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-[var(--badge-yellow-bg)] text-[var(--badge-yellow-text)] border border-[var(--border-primary)]">
+                        <Clock className="w-3.5 h-3.5" />
+                        <span>Pending</span>
+                      </span>
+                    )}
+                    {app.status === 'accepted' && (
+                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-[var(--badge-green-bg)] text-[var(--badge-green-text)] border border-[var(--border-primary)]">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span>Accepted</span>
+                      </span>
+                    )}
+                    {app.status === 'rejected' && (
+                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-[var(--badge-pink-bg)] text-[var(--badge-pink-text)] border border-[var(--border-primary)]">
+                        <XCircle className="w-3.5 h-3.5" />
+                        <span>Rejected</span>
+                      </span>
+                    )}
 
-                    return (
-                      <div className="flex flex-col items-end gap-1.5">
-                        {!showFullStatus ? (
-                          <>
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[var(--bg-card-subtle)] text-[var(--text-secondary)] border border-[var(--border-primary)]">
-                              <Send className="w-3.5 h-3.5 text-[var(--accent)]" />
-                              <span>Application sent</span>
-                            </span>
-
-                            <div className="flex flex-col items-end gap-1 text-right mt-1">
-                              <span className="text-[11px] font-semibold text-[var(--accent)] flex items-center gap-1">
-                                <Lock className="w-3 h-3 shrink-0" />
-                                Get verified to see your application results
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() => setIsPaymentModalOpen(true)}
-                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[var(--accent)] text-white text-[11px] font-bold hover:opacity-95 shadow-2xs cursor-pointer transition-opacity"
-                              >
-                                <ShieldCheck className="w-3 h-3" />
-                                <span>Get verified</span>
-                              </button>
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            {app.status === 'pending' && (
-                              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-[var(--badge-yellow-bg)] text-[var(--badge-yellow-text)] border border-[var(--border-primary)]">
-                                <Clock className="w-3.5 h-3.5" />
-                                <span>Pending</span>
-                              </span>
-                            )}
-                            {app.status === 'accepted' && (
-                              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-[var(--badge-green-bg)] text-[var(--badge-green-text)] border border-[var(--border-primary)]">
-                                <CheckCircle2 className="w-3.5 h-3.5" />
-                                <span>Accepted</span>
-                              </span>
-                            )}
-                            {app.status === 'rejected' && (
-                              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-[var(--badge-pink-bg)] text-[var(--badge-pink-text)] border border-[var(--border-primary)]">
-                                <XCircle className="w-3.5 h-3.5" />
-                                <span>Rejected</span>
-                              </span>
-                            )}
-
-                            {/* Open Chat if Accepted */}
-                            {app.status === 'accepted' && (
-                              <button
-                                onClick={() => handleOpenChat(app)}
-                                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[var(--accent)] text-white text-xs font-bold hover:opacity-95 transition-opacity cursor-pointer shadow-2xs mt-1"
-                              >
-                                <MessageSquare className="w-3.5 h-3.5" />
-                                <span>Chat with brand</span>
-                              </button>
-                            )}
-                          </>
-                        )}
-                      </div>
-                    );
-                  })()}
+                    {/* Open Chat if Accepted */}
+                    {app.status === 'accepted' && (
+                      <button
+                        onClick={() => handleOpenChat(app)}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[var(--accent)] text-white text-xs font-bold hover:opacity-95 transition-opacity cursor-pointer shadow-2xs mt-1"
+                      >
+                        <MessageSquare className="w-3.5 h-3.5" />
+                        <span>Chat with brand</span>
+                      </button>
+                    )}
+                  </div>
 
                 </div>
 
@@ -226,12 +164,6 @@ export const MyApplicationsView: React.FC<MyApplicationsViewProps> = ({
           ))}
         </div>
       )}
-
-      {/* Verification Payment Modal */}
-      <VerificationPaymentModal
-        isOpen={isPaymentModalOpen}
-        onClose={() => setIsPaymentModalOpen(false)}
-      />
 
     </div>
   );

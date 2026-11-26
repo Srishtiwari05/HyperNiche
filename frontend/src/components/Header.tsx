@@ -8,8 +8,8 @@ import { MessageSquare, LogOut, ArrowRightLeft, PlusCircle, Building2, Sparkles 
 import { UserRole } from '../types';
 
 interface HeaderProps {
-  currentTab: 'browse' | 'my-campaigns' | 'applications' | 'messages' | 'profile';
-  setCurrentTab: (tab: 'browse' | 'my-campaigns' | 'applications' | 'messages' | 'profile') => void;
+  currentTab: 'browse' | 'my-campaigns' | 'affiliates' | 'applications' | 'messages' | 'profile';
+  setCurrentTab: (tab: 'browse' | 'my-campaigns' | 'affiliates' | 'applications' | 'messages' | 'profile') => void;
   onOpenCreateCampaign?: () => void;
   onOpenProfile?: () => void;
   onOpenMessages?: () => void;
@@ -23,7 +23,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenMessages,
 }) => {
   const { userProfile, signOut, hasRoleProfile, switchActiveRole } = useAuth();
-  const { applications, campaigns, messages } = useMarketplace();
+  const { applications, campaigns, messages, reloadMarketplace } = useMarketplace();
 
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
   const [switchTargetRole, setSwitchTargetRole] = useState<UserRole>('creator');
@@ -49,9 +49,10 @@ export const Header: React.FC<HeaderProps> = ({
     (m) => m.receiverId === userProfile?.id && !m.read
   ).length;
 
-  const handleRoleSwitchClick = () => {
+  const handleRoleSwitchClick = async () => {
     if (hasRoleProfile(targetRole)) {
-      switchActiveRole(targetRole);
+      await switchActiveRole(targetRole);
+      await reloadMarketplace();
       setCurrentTab('browse');
     } else {
       setSwitchTargetRole(targetRole);
@@ -111,16 +112,29 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
 
               {role === 'business' && (
-                <button
-                  onClick={() => setCurrentTab('my-campaigns')}
-                  className={`px-3 py-1.5 text-xs font-semibold rounded-xl whitespace-nowrap shrink-0 transition-colors ${
-                    currentTab === 'my-campaigns'
-                      ? 'bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)]'
-                      : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--border-primary)]/40'
-                  }`}
-                >
-                  My campaigns
-                </button>
+                <>
+                  <button
+                    onClick={() => setCurrentTab('my-campaigns')}
+                    className={`px-3 py-1.5 text-xs font-semibold rounded-xl whitespace-nowrap shrink-0 transition-colors ${
+                      currentTab === 'my-campaigns'
+                        ? 'bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)]'
+                        : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--border-primary)]/40'
+                    }`}
+                  >
+                    My campaigns
+                  </button>
+
+                  <button
+                    onClick={() => setCurrentTab('affiliates')}
+                    className={`px-3 py-1.5 text-xs font-semibold rounded-xl whitespace-nowrap shrink-0 transition-colors ${
+                      currentTab === 'affiliates'
+                        ? 'bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)]'
+                        : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--border-primary)]/40'
+                    }`}
+                  >
+                    Affiliate marketing
+                  </button>
+                </>
               )}
 
               <button
@@ -238,7 +252,10 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="md:hidden border-t border-[var(--border-primary)] py-3 space-y-2">
               {[
                 { key: 'browse', label: role === 'business' ? 'Browse creators' : 'Browse deals' },
-                ...(role === 'business' ? [{ key: 'my-campaigns', label: 'My campaigns' }] : []),
+                ...(role === 'business' ? [
+                  { key: 'my-campaigns', label: 'My campaigns' },
+                  { key: 'affiliates', label: 'Affiliate Marketing' }
+                ] : []),
                 { key: 'applications', label: role === 'business' ? 'Applicants & deals' : 'My applications' },
                 { key: 'messages', label: 'Messages' },
               ].map((item) => (
@@ -246,7 +263,7 @@ export const Header: React.FC<HeaderProps> = ({
                   key={item.key}
                   type="button"
                   onClick={() => {
-                    setCurrentTab(item.key as 'browse' | 'my-campaigns' | 'applications' | 'messages');
+                    setCurrentTab(item.key as any);
                     setIsMobileMenuOpen(false);
                   }}
                   className={`w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors ${

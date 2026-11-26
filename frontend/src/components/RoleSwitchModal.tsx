@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { UserRole } from '../types';
 import { useAuth } from '../context/AuthContext';
+import { useMarketplace } from '../context/MarketplaceContext';
 import { CATEGORIES } from '../config/categories';
 import { X, ArrowRight, User, Building2, AlertCircle } from 'lucide-react';
 
@@ -38,6 +39,7 @@ export const RoleSwitchModal: React.FC<RoleSwitchModalProps> = ({
   onSuccess,
 }) => {
   const { completeRoleSetup } = useAuth();
+  const { reloadMarketplace } = useMarketplace();
 
   // Creator fields (max 3 questions)
   const [handle, setHandle] = useState('');
@@ -100,6 +102,8 @@ export const RoleSwitchModal: React.FC<RoleSwitchModalProps> = ({
           whatYouSell,
         });
       }
+
+      await reloadMarketplace();
 
       if (onSuccess) {
         onSuccess();

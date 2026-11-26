@@ -451,6 +451,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (c.city) updated.city = c.city;
       updated.creatorProfile = c;
       updated.businessProfile = userProfile.businessProfile;
+      updated.letBrandsFindMe = true;
     } else {
       const b = userProfile.businessProfile || {
         name: userProfile.name || 'Business Partner',
@@ -498,6 +499,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           updated_at: updated.updatedAt,
           profile_json: JSON.stringify(updated),
         });
+        await api.syncUser({
+          id: currentUser.id,
+          email: updated.email || currentUser.email,
+          role: toDbRole(targetRole),
+          displayName: updated.name,
+          avatarUrl: updated.avatarUrl || '',
+          bio: updated.bio || '',
+          handle: updated.handle,
+          niche: updated.niche,
+          websiteUrl: updated.websiteOrInstagram || '',
+          companyName: updated.name,
+          whatYouSell: updated.whatYouSell || '',
+        }).catch(() => null);
       } catch (err) {
         console.warn('Supabase switch role note:', err);
       }
@@ -528,12 +542,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     if (targetRole === 'creator') {
       updated.hasCreatorProfile = true;
+      updated.letBrandsFindMe = true;
       const creatorData = {
         handle: data.handle?.startsWith('@') ? data.handle : `@${data.handle || 'creator'}`,
         followers: data.followers || '10K-50K',
         niche: data.niche || 'Fashion',
         name: data.name || (data.handle ? data.handle.replace('@', '') : 'Creator User'),
         minRate: 25000,
+        letBrandsFindMe: true,
       };
       updated.creatorProfile = creatorData;
       updated.name = creatorData.name;
@@ -569,6 +585,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           updated_at: updated.updatedAt,
           profile_json: JSON.stringify(updated),
         });
+        await api.syncUser({
+          id: currentUser.id,
+          email: updated.email || currentUser.email,
+          role: toDbRole(targetRole),
+          displayName: updated.name,
+          avatarUrl: updated.avatarUrl || '',
+          bio: updated.bio || '',
+          handle: updated.handle,
+          niche: updated.niche,
+          websiteUrl: updated.websiteOrInstagram || '',
+          companyName: updated.name,
+          whatYouSell: updated.whatYouSell || '',
+        }).catch(() => null);
       } catch (err) {
         console.warn('Supabase role setup update note:', err);
       }

@@ -3,8 +3,7 @@ import { Campaign } from '../types';
 import { useMarketplace } from '../context/MarketplaceContext';
 import { useAuth } from '../context/AuthContext';
 import { validateMessageSafety } from '../utils/moderationList';
-import { EXTRA_APPLICATION_FEE_INR } from '../config/marketplaceConfig';
-import { X, Send, IndianRupee, AlertCircle, Sparkles, CheckCircle2 } from 'lucide-react';
+import { X, Send, IndianRupee, AlertCircle } from 'lucide-react';
 
 interface ApplyCampaignModalProps {
   campaign: Campaign | null;
@@ -12,47 +11,21 @@ interface ApplyCampaignModalProps {
   onClose: () => void;
 }
 
-declare global {
-  interface Window {
-    Razorpay?: any;
-  }
-}
-
-const loadRazorpayScript = (): Promise<boolean> => {
-  return new Promise((resolve) => {
-    if (window.Razorpay) {
-      resolve(true);
-      return;
-    }
-    const script = document.createElement('script');
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
-    document.body.appendChild(script);
-  });
-};
-
 export const ApplyCampaignModal: React.FC<ApplyCampaignModalProps> = ({
   campaign,
   isOpen,
   onClose,
 }) => {
-  const { applyToCampaign, getApplicationUsageStats } = useMarketplace();
+  const { applyToCampaign } = useMarketplace();
   const { userProfile } = useAuth();
 
   const [proposedRate, setProposedRate] = useState<string>(
     campaign ? String(campaign.budget) : '25000'
   );
-  const [pitch, setPitch] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState('');
+  const [pitch, setPitch] = useState<string>('');
+  const [error, setError] = useState<string>('');
   const [pitchWarning, setPitchWarning] = useState<string | null>(null);
-
-  // =========================================================================
-  // FUTURE PAID ADDON: "Boost my application" Option
-  // (Placeholder for highlighting pitch and pinning to top of applicant list)
-  // =========================================================================
-  const [isBoostSelected, setIsBoostSelected] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   // Update proposedRate when campaign changes
   useEffect(() => {
@@ -64,10 +37,6 @@ export const ApplyCampaignModal: React.FC<ApplyCampaignModalProps> = ({
   }, [campaign]);
 
   if (!isOpen || !campaign) return null;
-
-  const isCreatorVerified = Boolean(userProfile?.isVerified);
-  const usageStats = getApplicationUsageStats(userProfile?.id);
-  const isFreeLimitExceeded = !isCreatorVerified && usageStats.freeLeft <= 0;
 
   const handlePitchChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const val = e.target.value;
@@ -113,124 +82,7 @@ export const ApplyCampaignModal: React.FC<ApplyCampaignModalProps> = ({
     setIsSubmitting(true);
 
     try {
-      let paymentId: string | undefined = undefined;
-
-      // 3. Application Limit payment workflow:
-      // If free limit (3) exceeded, charge ₹9 via Razorpay
-      if (isFreeLimitExceeded) {
-        // Step A: Create order on server
-        const orderRes = await fetch('/api/razorpay/create-application-order', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userId: userProfile?.id || '',
-            campaignId: campaign.id,
-          }),
-        });
-
-        if (!orderRes.ok) {
-          throw new Error('Could not initiate payment order on server.');
-        }
-
-        const orderData = await orderRes.json();
-        const { orderId, amount, currency, keyId, isSimulated } = orderData;
-
-        // Step B: Load Razorpay SDK only if not simulated and valid key exists
-        if (!isSimulated && keyId && keyId.length > 5 && !keyId.includes('placeholder') && !keyId.includes('hyperniche')) {
-          const scriptLoaded = await loadRazorpayScript();
-          if (scriptLoaded && window.Razorpay) {
-            try {
-              const confirmedPayment = await new Promise<{ paymentId: string }>((resolve, reject) => {
-                const options = {
-                  key: keyId,
-                  amount,
-                  currency: currency || 'INR',
-                  name: 'Hyperniche Technologies',
-                  description: `Campaign Application Fee (₹${EXTRA_APPLICATION_FEE_INR})`,
-                  order_id: orderId,
-                  prefill: {
-                    name: userProfile?.name || 'Creator',
-                    email: userProfile?.email || '',
-                  },
-                  theme: {
-                    color: '#F06A4D',
-                  },
-                  handler: async (response: any) => {
-                    try {
-                      const verifyRes = await fetch('/api/razorpay/verify-application-payment', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                          razorpay_order_id: response.razorpay_order_id || orderId,
-                          razorpay_payment_id: response.razorpay_payment_id,
-                          razorpay_signature: response.razorpay_signature,
-                          userId: userProfile?.id || '',
-                          campaignId: campaign.id,
-                        }),
-                      });
-
-                      const verifyData = await verifyRes.json();
-                      if (verifyRes.ok && verifyData.success) {
-                        resolve({ paymentId: verifyData.paymentId });
-                      } else {
-                        reject(new Error(verifyData.error || 'Payment verification failed on server.'));
-                      }
-                    } catch (verifyErr) {
-                      reject(verifyErr);
-                    }
-                  },
-                  modal: {
-                    ondismiss: () => {
-                      reject(new Error('PAYMENT_DISMISSED'));
-                    },
-                  },
-                };
-
-                const rzp = new window.Razorpay(options);
-                rzp.on('payment.failed', (resp: any) => {
-                  reject(new Error(resp.error?.description || 'Payment was declined'));
-                });
-                rzp.open();
-              });
-
-              paymentId = confirmedPayment.paymentId;
-            } catch (rzpErr: any) {
-              if (rzpErr.message === 'PAYMENT_DISMISSED') {
-                throw new Error('Payment was cancelled. Application was not submitted.');
-              }
-              console.warn('Razorpay live window error, completing application via sandbox:', rzpErr.message || rzpErr);
-            }
-          }
-        }
-
-        if (!paymentId) {
-          // Test mode simulation with server-side confirmation
-          const testPaymentId = 'pay_test_' + Math.random().toString(36).substring(2, 10);
-          const verifyRes = await fetch('/api/razorpay/verify-application-payment', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              razorpay_order_id: orderId,
-              razorpay_payment_id: testPaymentId,
-              userId: userProfile?.id || '',
-              campaignId: campaign.id,
-            }),
-          });
-
-          const verifyData = await verifyRes.json();
-          if (verifyRes.ok && verifyData.success) {
-            paymentId = verifyData.paymentId;
-          } else {
-            throw new Error('Payment confirmation failed.');
-          }
-        }
-      }
-
-      // Step C: Submit application with paymentId
-      await applyToCampaign(campaign, pitch.trim(), rateNum, paymentId, {
-        isBoosted: isBoostSelected,
-      });
-
+      await applyToCampaign(campaign, pitch.trim(), rateNum);
       onClose();
     } catch (err: any) {
       setError(err.message || 'Failed to submit application. Please try again.');
@@ -299,42 +151,6 @@ export const ApplyCampaignModal: React.FC<ApplyCampaignModalProps> = ({
           </div>
         </div>
 
-        {/* Application Limit Notice */}
-        {isCreatorVerified ? (
-          <div className="mb-4 p-3 rounded-xl border border-[var(--border-primary)] bg-[var(--bg-card-subtle)] text-xs flex items-center justify-between">
-            <span className="font-semibold text-[var(--text-primary)]">
-              Unlimited applications (verified)
-            </span>
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[var(--badge-green-bg)] text-[var(--badge-green-text)] border border-[var(--border-primary)]">
-              Verified
-            </span>
-          </div>
-        ) : (
-          <div className="mb-4 p-3 rounded-xl border border-[var(--border-primary)] bg-[var(--bg-card-subtle)] text-xs">
-            <div className="flex items-center justify-between">
-              <span className="font-medium text-[var(--text-secondary)]">
-                {usageStats.freeLeft > 0
-                  ? 'You have 1 free application left this month'
-                  : '0 free applications left, extra ones cost ₹9'}
-              </span>
-              {usageStats.freeLeft > 0 ? (
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[var(--badge-green-bg)] text-[var(--badge-green-text)] border border-[var(--border-primary)]">
-                  Free
-                </span>
-              ) : (
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[var(--badge-yellow-bg)] text-[var(--badge-yellow-text)] border border-[var(--border-primary)]">
-                  ₹{EXTRA_APPLICATION_FEE_INR}/app
-                </span>
-              )}
-            </div>
-            {isFreeLimitExceeded && (
-              <p className="mt-1.5 text-[11px] text-[var(--text-secondary)] leading-relaxed">
-                You have used your free application for this month. You can submit this pitch for ₹{EXTRA_APPLICATION_FEE_INR}.
-              </p>
-            )}
-          </div>
-        )}
-
         {error && (
           <div className="mb-4 p-3 rounded-xl bg-[var(--badge-pink-bg)] text-[var(--badge-pink-text)] text-xs font-semibold flex items-center gap-2 border border-[var(--border-primary)]">
             <AlertCircle className="w-4 h-4 shrink-0" />
@@ -386,7 +202,7 @@ export const ApplyCampaignModal: React.FC<ApplyCampaignModalProps> = ({
             )}
           </div>
 
-          {/* Plain profile attachment line (never says "verified") */}
+          {/* Plain profile attachment line */}
           <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
             Your profile ({userProfile?.handle || '@handle'}, {userProfile?.followers || 'follower range'}) will be attached to this application.
           </p>
@@ -407,15 +223,7 @@ export const ApplyCampaignModal: React.FC<ApplyCampaignModalProps> = ({
               className="px-5 py-2.5 rounded-xl bg-[var(--accent)] text-white text-xs font-bold hover:opacity-95 transition-opacity disabled:opacity-50 flex items-center gap-1.5 cursor-pointer shadow-2xs"
             >
               <Send className="w-3.5 h-3.5" />
-              <span>
-                {isSubmitting
-                  ? isFreeLimitExceeded
-                    ? 'Processing payment...'
-                    : 'Submitting...'
-                  : isFreeLimitExceeded
-                  ? `Pay ₹${EXTRA_APPLICATION_FEE_INR} and submit pitch`
-                  : 'Submit pitch'}
-              </span>
+              <span>{isSubmitting ? 'Submitting...' : 'Submit pitch'}</span>
             </button>
           </div>
         </form>

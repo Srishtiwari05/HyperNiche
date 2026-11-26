@@ -24,6 +24,7 @@ import { SendBriefModal } from './components/SendBriefModal';
 import { ProfilePage } from './components/ProfilePage';
 import { MessagesInbox } from './components/MessagesInbox';
 import { MyCampaignsView } from './components/MyCampaignsView';
+import { AffiliateMarketingView } from './components/AffiliateMarketingView';
 import { ManageApplicationsView } from './components/ManageApplicationsView';
 import { MyApplicationsView } from './components/MyApplicationsView';
 import { UserProfile, Campaign, UserRole } from './types';
@@ -38,9 +39,9 @@ const MainAppContent: React.FC = () => {
     if (!currentUser) setPublicScreen('home');
   }, [currentUser?.id]);
 
-  // Navigation tab: 'browse' | 'my-campaigns' | 'applications' | 'messages' | 'profile'
+  // Navigation tab: 'browse' | 'my-campaigns' | 'affiliates' | 'applications' | 'messages' | 'profile'
   const [currentTab, setCurrentTab] = useState<
-    'browse' | 'my-campaigns' | 'applications' | 'messages' | 'profile'
+    'browse' | 'my-campaigns' | 'affiliates' | 'applications' | 'messages' | 'profile'
   >('browse');
 
   // Currently viewed user profile (null = own profile)
@@ -209,6 +210,14 @@ const MainAppContent: React.FC = () => {
             <MyCampaignsView
               onOpenCreateCampaign={() => setIsCreateCampaignOpen(true)}
               onViewApplicants={() => setCurrentTab('applications')}
+            />
+          </main>
+        )}
+
+        {currentTab === 'affiliates' && role === 'business' && (
+          <main>
+            <AffiliateMarketingView
+              onBrowseCreators={() => scrollToMarketplace('marketplace-section')}
             />
           </main>
         )}
