@@ -87,12 +87,24 @@ public class MessagingService {
             User recipient = userRepository.findById(request.recipientId())
                     .orElseThrow(() -> new IllegalArgumentException("Recipient not found"));
 
-            User brand = "BRAND".equalsIgnoreCase(sender.getRole()) ? sender : recipient;
-            User creator = "CREATOR".equalsIgnoreCase(sender.getRole()) ? sender : recipient;
+            boolean senderIsBrand = "BRAND".equalsIgnoreCase(sender.getRole());
+            boolean senderIsCreator = "CREATOR".equalsIgnoreCase(sender.getRole());
+            if ((!senderIsBrand && !senderIsCreator)
+                    || (senderIsBrand && !"CREATOR".equalsIgnoreCase(recipient.getRole()))
+                    || (senderIsCreator && !"BRAND".equalsIgnoreCase(recipient.getRole()))) {
+                throw new AccessDeniedException("Messages can only be started between a brand and a creator");
+            }
+
+            User brand = senderIsBrand ? sender : recipient;
+            User creator = senderIsCreator ? sender : recipient;
 
             Campaign campaign = null;
             if (request.campaignId() != null) {
-                campaign = campaignRepository.findById(request.campaignId()).orElse(null);
+                campaign = campaignRepository.findById(request.campaignId())
+                        .orElseThrow(() -> new IllegalArgumentException("Campaign not found"));
+                if (!campaign.getBrand().getId().equals(brand.getId())) {
+                    throw new AccessDeniedException("You can only invite creators to your own campaign");
+                }
             }
 
             final Campaign fCampaign = campaign;

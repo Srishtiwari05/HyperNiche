@@ -25,6 +25,7 @@ export const MainMarketplace: React.FC<MainMarketplaceProps> = ({
     applications,
     isLoadingData,
     dataError,
+    reloadMarketplace,
     selectedCategory,
     setSelectedCategory,
     searchQuery,
@@ -572,7 +573,7 @@ export const MainMarketplace: React.FC<MainMarketplaceProps> = ({
               <span>{dataError}</span>
             </div>
             <button
-              onClick={() => window.location.reload()}
+              onClick={() => void reloadMarketplace()}
               className="underline hover:opacity-80 cursor-pointer"
             >
               Retry

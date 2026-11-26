@@ -126,6 +126,14 @@ function mapMessageFromApi(row: any, conversation: Conversation): Message {
   };
 }
 
+function mapConversationFromApi(row: any): Conversation {
+  return {
+    ...row,
+    campaignId: row.campaignId || 'direct-collab',
+    campaignTitle: row.campaignTitle || 'Direct Collab Invitation',
+  };
+}
+
 async function fetchCampaignsFromSupabase(): Promise<Campaign[]> {
   const { data, error } = await supabase
     .from('campaigns')
@@ -251,15 +259,14 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const creatorParams: { niche?: string; size?: number } = { size: 100 };
     if (selectedCategory && selectedCategory !== 'All') creatorParams.niche = selectedCategory;
 
-    if (showSpinner) {
-      setIsLoadingData(true);
-      setDataError(null);
-    }
+    setDataError(null);
+    if (showSpinner) setIsLoadingData(true);
 
     try {
       setCampaigns(await fetchCampaignsFromSupabase());
-    } catch {
+    } catch (err) {
       setCampaigns([]);
+      setDataError(err instanceof Error ? err.message : 'Campaigns could not be loaded.');
     }
 
     let apiCreators: UserProfile[] = [];
@@ -348,6 +355,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
           .map(mapApplicationFromApi);
         const ownConversations = Array.isArray(conversationRows)
           ? conversationRows.filter((row) => row.brandId === currentUser.id || row.creatorId === currentUser.id)
+            .map(mapConversationFromApi)
           : [];
         setApplications(ownApplications);
         setConversations(ownConversations);
@@ -367,32 +375,35 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
     return () => { active = false; };
   }, [currentUser?.id, userProfile?.id, userProfile?.role]);
 
-  // 3. Supabase Realtime subscriptions
+  // 3. Keep campaign changes scoped to campaign data; don't reload creators and account data.
   useEffect(() => {
     if (isAuthLoading) return;
 
+    const refreshCampaigns = () => fetchCampaignsFromSupabase()
+      .then(setCampaigns)
+      .catch(() => {});
     const campaignChannel = supabase
       .channel('public:campaigns')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'campaigns' },
-        async (payload) => {
+        (payload) => {
           if (payload.eventType === 'DELETE') {
             setCampaigns((prev) => prev.filter((c) => c.id !== payload.old.id));
             return;
           }
-
-          const nextRow = payload.new as Record<string, any> | undefined;
-          if (nextRow) {
-            setCampaigns((prev) => upsertById(prev, normalizeCampaign(nextRow)));
-          }
-          await loadMarketplace(false).catch(() => {});
+          void refreshCampaigns();
         }
       )
       .subscribe((status) => {
-        if (status === 'SUBSCRIBED') void loadMarketplace(false);
+        if (status === 'SUBSCRIBED') void refreshCampaigns();
       });
 
+    return () => { supabase.removeChannel(campaignChannel); };
+  }, [isAuthLoading]);
+
+  useEffect(() => {
+    if (isAuthLoading) return;
     const messageChannel = supabase
       .channel('public:messages')
       .on(
@@ -407,7 +418,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
               const rows = await api.getConversations();
               const ownRows = (Array.isArray(rows) ? rows : []).filter((item: Conversation) =>
                 item.brandId === currentUser?.id || item.creatorId === currentUser?.id
-              );
+              ).map(mapConversationFromApi);
               setConversations(ownRows);
               conversation = ownRows.find((item) => item.id === row.conversation_id);
             } catch {
@@ -430,7 +441,6 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
       .subscribe();
 
     return () => {
-      supabase.removeChannel(campaignChannel);
       supabase.removeChannel(messageChannel);
     };
   }, [currentUser?.id, isAuthLoading, conversations]);
@@ -752,8 +762,8 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const receiverId = explicitReceiverId || (currentUid === businessId ? creatorId : businessId);
     const saved: any = await api.sendMessage({
       conversationId: existingConversation?.id,
-      campaignId: existingConversation ? undefined : (campaignId.includes('_') ? null : campaignId),
-      recipientId: existingConversation ? undefined : (receiverId.includes('_') ? null : receiverId),
+      campaignId: existingConversation ? undefined : (campaigns.some((item) => item.id === campaignId) ? campaignId : null),
+      recipientId: existingConversation ? undefined : receiverId,
       messageText: text.trim(),
     });
     const conversation: Conversation = existingConversation || {
@@ -792,7 +802,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
         messages: accountDataReady ? messages : [],
         isLoadingData,
         dataError,
-        reloadMarketplace: () => loadMarketplace(false),
+        reloadMarketplace: () => loadMarketplace(true),
         createCampaign,
         updateCampaign,
         removeCampaign,

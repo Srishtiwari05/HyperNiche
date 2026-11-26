@@ -26,7 +26,7 @@ export const SendBriefModal: React.FC<SendBriefModalProps> = ({
   );
 
   const [selectedCampaignId, setSelectedCampaignId] = useState<string>(
-    businessCampaigns[0]?.id || campaigns[0]?.id || ''
+    businessCampaigns[0]?.id || ''
   );
   const [offerRate, setOfferRate] = useState<string>('30000');
   const [briefMessage, setBriefMessage] = useState('');
@@ -59,7 +59,9 @@ export const SendBriefModal: React.FC<SendBriefModalProps> = ({
 
     setIsSending(true);
     try {
-      const targetCampId = selectedCampaignId || 'direct-collab';
+      const targetCampId = selectedCampaignId === 'custom-collab'
+        ? 'direct-collab'
+        : selectedCampaignId || businessCampaigns[0]?.id || 'direct-collab';
       const text = `[Collab Invitation: ₹${parsedRate.toLocaleString('en-IN')}] ${briefMessage.trim()}`;
 
       await sendMessage(
@@ -144,11 +146,11 @@ export const SendBriefModal: React.FC<SendBriefModalProps> = ({
               Select associated campaign
             </label>
             <select
-              value={selectedCampaignId}
+              value={selectedCampaignId || businessCampaigns[0]?.id || 'custom-collab'}
               onChange={(e) => setSelectedCampaignId(e.target.value)}
               className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border-primary)] bg-[var(--input-bg)] text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
             >
-              {campaigns.slice(0, 5).map((camp) => (
+              {businessCampaigns.map((camp) => (
                 <option key={camp.id} value={camp.id}>
                   {camp.title} (₹{camp.budget.toLocaleString('en-IN')})
                 </option>
