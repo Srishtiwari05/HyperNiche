@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { CheckCircle2, Clock, XCircle } from "lucide-react";
 import { RequireAuth } from "@/components/RequireAuth";
+import { PageLoading } from "@/components/ui/PageLoading";
 
 function ApplicationsPageContent() {
   const [applications, setApplications] = useState<Application[]>([]);
@@ -40,7 +41,7 @@ function ApplicationsPageContent() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 motion-fade-up">
       <div className="mb-8">
         <h1 className="text-3xl font-extrabold text-white tracking-tight">Your Campaign Applications</h1>
         <p className="text-sm text-zinc-400 mt-1">
@@ -49,7 +50,7 @@ function ApplicationsPageContent() {
       </div>
 
       {loading ? (
-        <div className="p-16 text-center text-zinc-500 text-sm">Loading applications...</div>
+        <PageLoading label="Loading your applications" layout="rows" />
       ) : applications.length > 0 ? (
         <div className="space-y-4">
           {applications.map(app => (

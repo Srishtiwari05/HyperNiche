@@ -1,13 +1,14 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Conversation, Message } from "@/types";
 import { api } from "@/lib/api";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { MessageSquare, Send, ShieldAlert, Sparkles } from "lucide-react";
+import { LoaderCircle, Send, ShieldAlert } from "lucide-react";
 import { RequireAuth } from "@/components/RequireAuth";
+import { PageLoading } from "@/components/ui/PageLoading";
 
 function MessagesPageContent() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -15,8 +16,10 @@ function MessagesPageContent() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(true);
+  const [messagesLoading, setMessagesLoading] = useState(false);
   const [sending, setSending] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const messagesRequestId = useRef(0);
 
   useEffect(() => {
     fetchConversations();
@@ -86,13 +89,18 @@ function MessagesPageContent() {
   }
 
   async function fetchMessages(convId: string) {
+    const requestId = ++messagesRequestId.current;
+    setMessages([]);
+    setMessagesLoading(true);
     try {
       const list = await api.getMessages(convId);
-      if (Array.isArray(list)) {
+      if (requestId === messagesRequestId.current && Array.isArray(list)) {
         setMessages(list);
       }
     } catch (e) {
-      console.error("Failed to load messages", e);
+      if (requestId === messagesRequestId.current) console.error("Failed to load messages", e);
+    } finally {
+      if (requestId === messagesRequestId.current) setMessagesLoading(false);
     }
   }
 
@@ -128,7 +136,7 @@ function MessagesPageContent() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 motion-fade-up">
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white tracking-tight">Direct Deal Inbox</h1>
@@ -144,7 +152,9 @@ function MessagesPageContent() {
         {/* Conversations List */}
         <div className="border-r border-zinc-800 p-4 overflow-y-auto">
           <h2 className="text-xs font-bold uppercase tracking-wider text-zinc-500 mb-3">Conversations</h2>
-          {conversations.length > 0 ? (
+          {loading ? (
+            <PageLoading label="Loading conversations" layout="rows" />
+          ) : conversations.length > 0 ? (
             <div className="space-y-2">
               {conversations.map(c => (
                 <button
@@ -165,7 +175,7 @@ function MessagesPageContent() {
             </div>
           ) : (
             <div className="text-center py-12 text-zinc-500 text-xs">
-              No conversations yet. Apply to campaigns to start chatting!
+              No conversations yet. Apply to a campaign or invite a creator to start chatting.
             </div>
           )}
         </div>
@@ -188,7 +198,9 @@ function MessagesPageContent() {
 
               {/* Messages area */}
               <div className="flex-1 p-4 overflow-y-auto space-y-3">
-                {messages.length > 0 ? (
+                {messagesLoading ? (
+                  <PageLoading label="Loading messages" layout="rows" />
+                ) : messages.length > 0 ? (
                   messages.map(m => (
                     <div key={m.id} className="flex flex-col space-y-1">
                       <div className="flex items-center gap-2">
@@ -224,8 +236,8 @@ function MessagesPageContent() {
                     placeholder="Type your message (phone numbers/emails will be filtered)..."
                     className="flex-1 bg-zinc-900 border-zinc-700"
                   />
-                  <Button type="submit" disabled={sending} className="bg-indigo-600 hover:bg-indigo-500">
-                    <Send className="h-4 w-4" />
+                  <Button type="submit" disabled={sending || !text.trim()} aria-label={sending ? "Sending message" : "Send message"} className="bg-indigo-600 hover:bg-indigo-500">
+                    {sending ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                   </Button>
                 </form>
               </div>

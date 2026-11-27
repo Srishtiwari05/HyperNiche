@@ -7,6 +7,7 @@ import { api } from "@/lib/api";
 import { Input } from "@/components/ui/Input";
 import { Search, Sparkles } from "lucide-react";
 import { RequireAuth } from "@/components/RequireAuth";
+import { PageLoading } from "@/components/ui/PageLoading";
 
 const NICHES = ["All", "Tech", "SaaS", "Fitness", "Fintech", "Gaming", "Beauty", "Fashion", "AI Tools"];
 
@@ -42,7 +43,7 @@ function CreatorsPageContent() {
   );
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 motion-fade-up">
       <div className="mb-8">
         <h1 className="text-3xl font-extrabold text-white tracking-tight">Verified Creators Directory</h1>
         <p className="text-sm text-zinc-400 mt-1">
@@ -81,7 +82,7 @@ function CreatorsPageContent() {
 
       {/* Grid */}
       {loading ? (
-        <div className="p-16 text-center text-zinc-500 text-sm">Loading creators directory...</div>
+        <PageLoading label="Loading creators" />
       ) : filtered.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map(cr => (

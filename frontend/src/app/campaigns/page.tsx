@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { PlusCircle, Search, Sparkles } from "lucide-react";
 import { RequireAuth } from "@/components/RequireAuth";
+import { PageLoading } from "@/components/ui/PageLoading";
 
 const CATEGORIES = ["All", "Tech & SaaS", "Fitness & Wellness", "Fintech & Crypto", "Beauty & Skincare", "Gaming & Esports", "Food & Beverage"];
 
@@ -141,7 +142,7 @@ function CampaignsPageContent() {
   );
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 motion-fade-up">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-extrabold text-white tracking-tight">Active Brand Campaigns</h1>
@@ -187,7 +188,7 @@ function CampaignsPageContent() {
 
       {/* Grid */}
       {loading ? (
-        <div className="p-16 text-center text-zinc-500 text-sm">Loading campaigns...</div>
+        <PageLoading label="Loading campaigns" />
       ) : filtered.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map(c => (
