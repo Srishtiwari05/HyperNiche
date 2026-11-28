@@ -35,6 +35,7 @@ supabase:
 instagram:
   app-id: ${INSTAGRAM_APP_ID:}
   app-secret: ${INSTAGRAM_APP_SECRET:}
+  login-config-id: ${INSTAGRAM_LOGIN_CONFIG_ID:}
   redirect-uri: ${INSTAGRAM_REDIRECT_URI:http://localhost:8080/api/v1/instagram/callback}
   frontend-url: ${FRONTEND_URL:http://localhost:3000}
   api-version: ${INSTAGRAM_API_VERSION:v27.0}

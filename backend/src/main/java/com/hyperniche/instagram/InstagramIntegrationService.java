@@ -35,7 +35,7 @@ import java.util.UUID;
 @Service
 public class InstagramIntegrationService {
     private static final Logger log = LoggerFactory.getLogger(InstagramIntegrationService.class);
-    private static final String GRAPH_HOST = "https://graph.instagram.com";
+    private static final String GRAPH_HOST = "https://graph.facebook.com";
     private final JdbcTemplate jdbc;
     private final RestClient http = RestClient.create();
     private final ObjectMapper json;
@@ -43,6 +43,7 @@ public class InstagramIntegrationService {
     private final SecureRandom random = new SecureRandom();
     private final String appId;
     private final String appSecret;
+    private final String loginConfigId;
     private final String redirectUri;
     private final String frontendUrl;
     private final String apiVersion;
@@ -56,6 +57,7 @@ public class InstagramIntegrationService {
             InstagramTokenCipher cipher,
             @Value("${instagram.app-id:}") String appId,
             @Value("${instagram.app-secret:}") String appSecret,
+            @Value("${instagram.login-config-id:}") String loginConfigId,
             @Value("${instagram.redirect-uri:}") String redirectUri,
             @Value("${instagram.frontend-url:http://localhost:3000}") String frontendUrl,
             @Value("${instagram.api-version:v27.0}") String apiVersion,
@@ -68,6 +70,7 @@ public class InstagramIntegrationService {
         this.cipher = cipher;
         this.appId = appId;
         this.appSecret = appSecret;
+        this.loginConfigId = loginConfigId;
         this.redirectUri = redirectUri;
         this.frontendUrl = frontendUrl.replaceAll("/+$", "");
         this.apiVersion = apiVersion;
@@ -83,12 +86,12 @@ public class InstagramIntegrationService {
         jdbc.update("INSERT INTO instagram_oauth_states (state_hash, user_id, expires_at) VALUES (?, ?, ?)",
                 sha256(state), userId, OffsetDateTime.ofInstant(Instant.now().plus(10, ChronoUnit.MINUTES), ZoneOffset.UTC));
 
-        return UriComponentsBuilder.fromUriString("https://www.instagram.com/oauth/authorize")
+        return UriComponentsBuilder.fromUriString("https://www.facebook.com/" + apiVersion + "/dialog/oauth")
                 .queryParam("client_id", appId)
                 .queryParam("redirect_uri", redirectUri)
+                .queryParam("config_id", loginConfigId)
                 .queryParam("response_type", "code")
-                .queryParam("scope", "instagram_business_basic,instagram_business_manage_insights")
-                .queryParam("enable_fb_login", "false")
+                .queryParam("override_default_response_type", "true")
                 .queryParam("state", state)
                 .build().encode().toUriString();
     }
@@ -103,16 +106,21 @@ public class InstagramIntegrationService {
         jdbc.update("DELETE FROM instagram_oauth_states WHERE state_hash = ?", sha256(state));
         if (owners.isEmpty()) throw new IllegalArgumentException("Instagram sign-in expired. Please connect again.");
 
-        JsonNode shortLived = postInstagramCode(code);
-        String token = requiredText(shortLived, "access_token");
-        JsonNode longLived = graphGet("/access_token", Map.of(
-                "grant_type", "ig_exchange_token", "client_secret", appSecret, "access_token", token));
-        token = requiredText(longLived, "access_token");
-        long expiresIn = longLived.path("expires_in").asLong(5_184_000L);
-        JsonNode profile = graphGet("/me", Map.of(
-                "fields", "user_id,username,name,account_type,profile_picture_url,biography,followers_count,follows_count,media_count",
+        JsonNode tokenResponse = exchangeMetaCode(code);
+        String token = requiredText(tokenResponse, "access_token");
+        long expiresIn = tokenResponse.path("expires_in").asLong(3_153_600_000L);
+        JsonNode accounts = graphGet("/me/assigned_instagram_accounts", Map.of(
+                "fields", "id,username,name,account_type,profile_picture_url,biography,followers_count,follows_count,media_count",
                 "access_token", token));
-        String instagramUserId = text(profile, "user_id", text(profile, "id", null));
+        JsonNode data = accounts.path("data");
+        if (!data.isArray() || data.isEmpty()) {
+            throw new IllegalStateException("Meta did not return an Instagram professional account. Check that the account is included in the login configuration.");
+        }
+        if (data.size() > 1) {
+            throw new IllegalStateException("More than one Instagram account was authorized. Configure one Instagram account and reconnect.");
+        }
+        JsonNode profile = data.get(0);
+        String instagramUserId = text(profile, "id", text(profile, "user_id", null));
         String username = text(profile, "username", null);
         if (instagramUserId == null || username == null) throw new IllegalStateException("Instagram did not return the connected profile.");
 
@@ -297,16 +305,6 @@ public class InstagramIntegrationService {
         try {
             String token = cipher.decrypt((String) connection.get("encrypted_access_token"));
             Instant expiresAt = toInstant(connection.get("token_expires_at"));
-            Instant tokenUpdatedAt = toInstant(connection.get("token_updated_at"));
-            if (expiresAt.isBefore(Instant.now().plus(10, ChronoUnit.DAYS))
-                    && tokenUpdatedAt.isBefore(Instant.now().minus(24, ChronoUnit.HOURS))) {
-                JsonNode refreshed = graphGet("/refresh_access_token", Map.of("grant_type", "ig_refresh_token", "access_token", token));
-                token = requiredText(refreshed, "access_token");
-                long seconds = refreshed.path("expires_in").asLong(5_184_000L);
-                expiresAt = Instant.now().plusSeconds(seconds);
-                jdbc.update("UPDATE instagram_connections SET encrypted_access_token = ?, token_expires_at = ?, token_updated_at = NOW() WHERE user_id = ?",
-                        cipher.encrypt(token), OffsetDateTime.ofInstant(expiresAt, ZoneOffset.UTC), userId);
-            }
             if (expiresAt.isBefore(Instant.now())) throw new IllegalStateException("Instagram token expired; reconnect this account.");
 
             String instagramUserId = (String) connection.get("instagram_user_id");
@@ -451,19 +449,18 @@ public class InstagramIntegrationService {
                 && !"RECONNECT_REQUIRED".equals(getMyAccount(userId).get("sync_status"));
     }
 
-    private JsonNode postInstagramCode(String code) {
-        MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
-        form.add("client_id", appId);
-        form.add("client_secret", appSecret);
-        form.add("grant_type", "authorization_code");
-        form.add("redirect_uri", redirectUri);
-        form.add("code", code);
+    private JsonNode exchangeMetaCode(String code) {
         try {
-            JsonNode response = http.post().uri("https://api.instagram.com/oauth/access_token")
-                    .contentType(MediaType.MULTIPART_FORM_DATA).body(form).retrieve().body(JsonNode.class);
+            URI uri = UriComponentsBuilder.fromUriString(GRAPH_HOST + "/" + apiVersion + "/oauth/access_token")
+                    .queryParam("client_id", appId)
+                    .queryParam("client_secret", appSecret)
+                    .queryParam("redirect_uri", redirectUri)
+                    .queryParam("code", code)
+                    .build().encode().toUri();
+            JsonNode response = http.get().uri(uri).retrieve().body(JsonNode.class);
             return unwrap(response);
         } catch (RestClientResponseException ex) {
-            throw new IllegalStateException("Instagram authorization code exchange failed (HTTP " + ex.getStatusCode().value() + ").");
+            throw new IllegalStateException("Meta authorization code exchange failed (HTTP " + ex.getStatusCode().value() + ").");
         }
     }
 
@@ -558,6 +555,10 @@ public class InstagramIntegrationService {
         if (appId.isBlank() || appSecret.isBlank() || redirectUri.isBlank()) {
             throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE,
                     "Instagram connection is not configured yet.");
+        }
+        if (loginConfigId.isBlank()) {
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE,
+                    "Meta Instagram Unified Login configuration ID is missing.");
         }
         try {
             cipher.encrypt("configuration-check");

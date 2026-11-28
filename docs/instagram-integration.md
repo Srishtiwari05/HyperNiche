@@ -4,11 +4,14 @@ The integration uses the existing Spring Boot API and the same PostgreSQL/Supaba
 
 ## Meta setup
 
-1. Create/configure a Meta app with the Instagram API with Instagram Login product and add the exact redirect URI `https://<backend-host>/api/v1/instagram/callback`.
-2. Configure Instagram Login permissions for professional creator accounts. Submit the app for any required Meta App Review/advanced access before inviting creators outside app roles.
-3. Set `INSTAGRAM_APP_ID`, `INSTAGRAM_APP_SECRET`, `INSTAGRAM_REDIRECT_URI`, `FRONTEND_URL`, and `INSTAGRAM_TOKEN_ENCRYPTION_KEY` on the existing backend deployment. The encryption key must be base64 for exactly 32 random bytes; keep it stable and backed up because losing it makes stored tokens unreadable.
-4. Apply `database/migrations/V5__instagram_creator_integration.sql` once to the same Supabase PostgreSQL project Hyperniche already uses. Ensure the backend connects with its trusted database role, not the browser anon key.
-5. Creators connect from **Profile → Instagram account**. Discovery and sharing of summary insights are separate opt-ins and default off. Disconnect removes the stored token and synced history.
+New Meta apps use Instagram API with Unified Login (Facebook Login for Business), not the legacy Instagram OAuth endpoint.
+
+1. In the app dashboard open **Use cases → Manage messaging & content on Instagram → API setup with Unified login** and choose **Create new configuration**. Use the Instagram API template, General login, System-user access token, and Never expiration. Select the Instagram account asset and grant `instagram_basic` and `instagram_manage_insights` (plus other permissions only if needed).
+2. Copy the configuration ID. Register `https://<backend-host>/api/v1/instagram/callback` as its redirect URL. For this deployment: `https://hyperniche-402u.onrender.com/api/v1/instagram/callback`.
+3. Set `INSTAGRAM_APP_ID` and `INSTAGRAM_APP_SECRET` to the Meta app's credentials, and set `INSTAGRAM_LOGIN_CONFIG_ID` to the configuration ID. Also set `INSTAGRAM_REDIRECT_URI`, `FRONTEND_URL`, and `INSTAGRAM_TOKEN_ENCRYPTION_KEY` on the existing backend deployment. The encryption key must be base64 for exactly 32 random bytes; keep it stable and backed up because losing it makes stored tokens unreadable.
+4. Redeploy the existing backend. In development mode, the Instagram account must be added as an app tester and the invitation accepted. For creators outside app roles, complete required App Review and advanced access before onboarding them.
+5. Apply `database/migrations/V5__instagram_creator_integration.sql` once to the same Supabase PostgreSQL project Hyperniche already uses. Ensure the backend connects with its trusted database role, not the browser anon key.
+6. Creators connect from **Profile → Instagram account**. Discovery and sharing of summary insights are separate opt-ins and default off. Disconnect removes the stored token and synced history.
 
 Instagram only returns fields/insights permitted for the connected professional account, granted scopes, API version, app access level, and account eligibility. Some demographic and media insights are unavailable for some accounts. The dashboard therefore shows metrics only when Meta returns them.
 
