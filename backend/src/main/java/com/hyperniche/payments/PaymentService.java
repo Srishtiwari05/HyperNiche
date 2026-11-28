@@ -90,6 +90,8 @@ public class PaymentService {
             paymentRepository.save(tx);
 
             if ("VERIFICATION".equalsIgnoreCase(tx.getType())) {
+                userRepository.findByIdForUpdate(userId)
+                        .orElseThrow(() -> new IllegalArgumentException("User not found"));
                 CreatorProfile profile = creatorRepository.findById(userId).orElseGet(() -> {
                     CreatorProfile cp = new CreatorProfile(userId);
                     cp.setUser(tx.getUser());

@@ -37,7 +37,7 @@ public class CreatorService {
 
     @Transactional
     public CreatorProfileDto updateProfile(UUID userId, CreatorProfileDto dto) {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdForUpdate(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
 
         CreatorProfile profile = creatorRepository.findById(userId).orElseGet(() -> {

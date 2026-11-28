@@ -41,7 +41,7 @@ public class UserService {
             throw new IllegalArgumentException("User ID does not match authenticated session");
         }
 
-        User user = userRepository.findById(targetId).orElseGet(() -> {
+        User user = userRepository.findByIdForUpdate(targetId).orElseGet(() -> {
             User newUser = new User();
             newUser.setId(targetId);
             return newUser;
