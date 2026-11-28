@@ -309,14 +309,14 @@ public class InstagramIntegrationService {
 
             String instagramUserId = (String) connection.get("instagram_user_id");
             JsonNode profile = graphGet("/" + instagramUserId, Map.of(
-                    "fields", "user_id,username,name,account_type,profile_picture_url,biography,followers_count,follows_count,media_count",
+                    "fields", "username,name,profile_picture_url,biography,followers_count,follows_count,media_count",
                     "access_token", token));
             jdbc.update("""
                     UPDATE instagram_connections SET username = ?, name = ?, account_type = ?,
                         profile_picture_url = ?, biography = ?, followers_count = ?, follows_count = ?,
                         media_count = ?, updated_at = NOW() WHERE user_id = ?
                     """, text(profile, "username", (String) connection.get("username")),
-                    text(profile, "name", null), text(profile, "account_type", null),
+                    text(profile, "name", null), text(profile, "account_type", (String) connection.get("account_type")),
                     text(profile, "profile_picture_url", null), text(profile, "biography", null),
                     number(profile, "followers_count"), number(profile, "follows_count"), number(profile, "media_count"), userId);
 
@@ -481,7 +481,10 @@ public class InstagramIntegrationService {
                     continue;
                 }
                 if (status == 400 || status == 401 || status == 403) {
-                    throw new IllegalStateException("Instagram denied this data request. Check the granted permissions and account type.");
+                    JsonNode error = parseJsonNode(ex.getResponseBodyAsString()).path("error");
+                    String code = error.path("code").isNumber() ? error.path("code").asText() : "unknown";
+                    String message = text(error, "message", "Check the granted permissions and account type.");
+                    throw new IllegalStateException("Instagram API denied the request (Meta error " + code + "): " + message);
                 }
                 throw new IllegalStateException("Instagram API request failed (HTTP " + status + ").");
             } catch (Exception ex) {
@@ -501,6 +504,11 @@ public class InstagramIntegrationService {
         if (node == null) throw new IllegalStateException("Instagram returned an empty response.");
         JsonNode data = node.path("data");
         return data.isArray() && data.size() == 1 && data.get(0).has("access_token") ? data.get(0) : node;
+    }
+
+    private JsonNode parseJsonNode(String body) {
+        try { return body == null || body.isBlank() ? json.createObjectNode() : json.readTree(body); }
+        catch (Exception ex) { return json.createObjectNode(); }
     }
 
     private void addLatestMetrics(Map<String, Object> metrics, JsonNode values) {

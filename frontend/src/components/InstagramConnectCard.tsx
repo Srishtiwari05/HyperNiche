@@ -60,10 +60,13 @@ export function InstagramConnectCard({ creatorId }: { creatorId: string }) {
     setError("");
     setMessage("");
     try {
-      await api.syncInstagram();
+      const result = await api.syncInstagram();
       await loadAccount();
-      setMessage("Instagram data refreshed.");
+      setMessage(result.status === "PARTIAL"
+        ? "Instagram profile refreshed, but some insights are unavailable. Check Meta permissions."
+        : "Instagram data refreshed.");
     } catch (err: any) {
+      await loadAccount();
       setError(err.message || "Instagram sync failed.");
     } finally {
       setBusy(false);

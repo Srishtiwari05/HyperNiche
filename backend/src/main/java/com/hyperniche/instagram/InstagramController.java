@@ -64,7 +64,13 @@ public class InstagramController {
     @PreAuthorize("hasRole('CREATOR')")
     public ResponseEntity<ApiResponse<Map<String, String>>> sync(@AuthenticationPrincipal UserPrincipal principal) {
         instagram.syncOne(principal.getId());
-        return ResponseEntity.ok(ApiResponse.success(Map.of("status", String.valueOf(instagram.getMyAccount(principal.getId()).get("sync_status")))));
+        Map<String, Object> account = instagram.getMyAccount(principal.getId());
+        String status = String.valueOf(account.get("sync_status"));
+        if ("SYNC_FAILED".equals(status) || "RECONNECT_REQUIRED".equals(status)) {
+            String error = String.valueOf(account.getOrDefault("last_sync_error", "Instagram sync failed. Please reconnect and try again."));
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(ApiResponse.error(error));
+        }
+        return ResponseEntity.ok(ApiResponse.success(Map.of("status", status)));
     }
 
     @PatchMapping("/me/visibility")
