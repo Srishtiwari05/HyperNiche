@@ -2,6 +2,8 @@ package com.hyperniche.instagram;
 
 import com.hyperniche.common.ApiResponse;
 import com.hyperniche.common.UserPrincipal;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,6 +18,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/instagram")
 public class InstagramController {
+    private static final Logger log = LoggerFactory.getLogger(InstagramController.class);
     private final InstagramIntegrationService instagram;
 
     public InstagramController(InstagramIntegrationService instagram) {
@@ -40,6 +43,7 @@ public class InstagramController {
             else instagram.completeLogin(code, state);
         } catch (RuntimeException ex) {
             status = "error";
+            log.warn("Instagram OAuth callback failed: {}", ex.getMessage());
         }
         return new RedirectView(instagram.frontendUrl() + "/profile?instagram=" + status);
     }
