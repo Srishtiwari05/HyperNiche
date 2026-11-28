@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useMarketplace } from '../context/MarketplaceContext';
 import { UserProfile, Campaign, Application } from '../types';
 import { VerificationBadge } from './VerificationBadge';
+import { InstagramConnectCard } from './InstagramConnectCard';
 import { CATEGORIES } from '../config/categories';
 import { 
   Building2, 
@@ -326,6 +327,12 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             </div>
 
           </div>
+
+          {!isBusiness && isOwnProfile && (
+            <div className="mb-6">
+              <InstagramConnectCard creatorId={profile.id} />
+            </div>
+          )}
 
           {/* Success Notification on save */}
           {saveSuccess && (
