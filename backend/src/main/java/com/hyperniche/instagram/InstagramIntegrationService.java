@@ -325,7 +325,7 @@ public class InstagramIntegrationService {
             String partialError = null;
             try {
                 JsonNode accountInsights = graphGet("/" + instagramUserId + "/insights", Map.of(
-                        "metric", "reach,views,accounts_engaged,total_interactions,follower_count",
+                        "metric", "reach,views,accounts_engaged,total_interactions",
                         "period", "day", "metric_type", "total_value", "access_token", token));
                 addLatestMetrics(metrics, accountInsights.path("data"));
             } catch (RuntimeException ex) {
