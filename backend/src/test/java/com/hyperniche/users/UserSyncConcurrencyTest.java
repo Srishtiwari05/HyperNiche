@@ -28,8 +28,8 @@ class UserSyncConcurrencyTest {
         CountDownLatch start = new CountDownLatch(1);
         var pool = Executors.newFixedThreadPool(2);
         try {
-            var first = pool.submit(() -> { start.await(); userService.syncUser(id, request); });
-            var second = pool.submit(() -> { start.await(); userService.syncUser(id, request); });
+            var first = pool.submit(() -> { start.await(); return userService.syncUser(id, request); });
+            var second = pool.submit(() -> { start.await(); return userService.syncUser(id, request); });
             start.countDown();
             first.get(15, TimeUnit.SECONDS);
             second.get(15, TimeUnit.SECONDS);
