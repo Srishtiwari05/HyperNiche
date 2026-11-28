@@ -28,6 +28,9 @@ class CampaignVisibilityTest {
     private CampaignRepository campaignRepository;
 
     @Autowired
+    private CampaignService campaignService;
+
+    @Autowired
     private UserRepository userRepository;
 
     @Autowired
@@ -68,6 +71,9 @@ class CampaignVisibilityTest {
         assertTrue(campaigns.getTotalElements() >= 2);
         assertTrue(campaigns.stream().anyMatch(c -> c.getTitle().equals("Spring drops")));
         assertTrue(campaigns.stream().anyMatch(c -> c.getTitle().equals("Creator market test")));
+
+        var filtered = campaignService.listActiveCampaigns("FASHION", "instagram", PageRequest.of(0, 50));
+        assertEquals(1, filtered.getTotalElements());
     }
 
     @Test

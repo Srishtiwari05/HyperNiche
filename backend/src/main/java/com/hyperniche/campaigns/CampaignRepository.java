@@ -15,11 +15,11 @@ import java.util.UUID;
 public interface CampaignRepository extends JpaRepository<Campaign, UUID> {
 
     @Query(value = "SELECT c FROM Campaign c JOIN FETCH c.brand b WHERE c.status = 'ACTIVE' " +
-           "AND (:category IS NULL OR LOWER(c.category) = LOWER(:category)) " +
-           "AND (:platform IS NULL OR LOWER(c.platform) LIKE CONCAT('%', LOWER(:platform), '%'))",
+           "AND (:category IS NULL OR LOWER(c.category) = :category) " +
+           "AND (:platform IS NULL OR LOWER(c.platform) LIKE CONCAT('%', :platform, '%'))",
            countQuery = "SELECT count(c) FROM Campaign c WHERE c.status = 'ACTIVE' " +
-           "AND (:category IS NULL OR LOWER(c.category) = LOWER(:category)) " +
-           "AND (:platform IS NULL OR LOWER(c.platform) LIKE CONCAT('%', LOWER(:platform), '%'))")
+           "AND (:category IS NULL OR LOWER(c.category) = :category) " +
+           "AND (:platform IS NULL OR LOWER(c.platform) LIKE CONCAT('%', :platform, '%'))")
     Page<Campaign> findActiveCampaigns(
             @Param("category") String category,
             @Param("platform") String platform,

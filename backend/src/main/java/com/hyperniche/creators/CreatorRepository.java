@@ -12,7 +12,7 @@ import java.util.UUID;
 @Repository
 public interface CreatorRepository extends JpaRepository<CreatorProfile, UUID> {
 
-    @Query(value = "SELECT c FROM CreatorProfile c JOIN FETCH c.user u WHERE (:niche IS NULL OR LOWER(c.niche) = LOWER(:niche))",
-           countQuery = "SELECT count(c) FROM CreatorProfile c WHERE (:niche IS NULL OR LOWER(c.niche) = LOWER(:niche))")
+    @Query(value = "SELECT c FROM CreatorProfile c JOIN FETCH c.user u WHERE (:niche IS NULL OR LOWER(c.niche) = :niche)",
+           countQuery = "SELECT count(c) FROM CreatorProfile c WHERE (:niche IS NULL OR LOWER(c.niche) = :niche)")
     Page<CreatorProfile> findByNiche(@Param("niche") String niche, Pageable pageable);
 }

@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Locale;
 import java.util.UUID;
 
 @Service
@@ -23,7 +24,8 @@ public class CreatorService {
 
     @Transactional(readOnly = true)
     public Page<CreatorProfileDto> listCreators(String niche, Pageable pageable) {
-        return creatorRepository.findByNiche(niche, pageable).map(CreatorProfileDto::fromEntity);
+        String normalizedNiche = niche == null ? null : niche.trim().toLowerCase(Locale.ROOT);
+        return creatorRepository.findByNiche(normalizedNiche, pageable).map(CreatorProfileDto::fromEntity);
     }
 
     @Transactional(readOnly = true)

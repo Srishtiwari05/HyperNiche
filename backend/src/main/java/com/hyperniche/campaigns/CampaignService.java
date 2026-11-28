@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -27,8 +28,12 @@ public class CampaignService {
 
     @Transactional(readOnly = true)
     public Page<CampaignResponse> listActiveCampaigns(String category, String platform, Pageable pageable) {
-        return campaignRepository.findActiveCampaigns(category, platform, pageable)
+        return campaignRepository.findActiveCampaigns(normalizeFilter(category), normalizeFilter(platform), pageable)
                 .map(CampaignResponse::fromEntity);
+    }
+
+    private String normalizeFilter(String value) {
+        return value == null ? null : value.trim().toLowerCase(Locale.ROOT);
     }
 
     @Transactional(readOnly = true)
