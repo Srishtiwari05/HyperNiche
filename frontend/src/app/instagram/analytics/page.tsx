@@ -88,7 +88,7 @@ function InstagramAnalyticsContent() {
     ["Followers", formatNumber(data.followers_count), followerGrowth === null ? "Historical growth builds after daily syncs" : `${followerGrowth >= 0 ? "+" : ""}${formatNumber(followerGrowth)} since first saved snapshot`],
     ["Reach", formatNumber(metrics.reach), "Authorized account insight"],
     ["Views", formatNumber(metrics.views), "Instagram API view metric"],
-    ["Interactions", formatNumber(metrics.total_interactions), "Likes, comments, shares and other available interactions"],
+    ["Interactions", formatNumber(metrics.total_interactions), "Account total for the last 90 days"],
     ["Accounts engaged", formatNumber(metrics.accounts_engaged), "Unique engaged accounts when available"],
     ["Engagement rate", typeof metrics.engagement_rate === "number" ? `${metrics.engagement_rate}%` : "—", "Interactions divided by current followers"],
   ];
@@ -147,7 +147,7 @@ function InstagramAnalyticsContent() {
 
 export default function InstagramAnalyticsPage() {
   return <RequireAuth><main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 space-y-6">
-    <div><Link href="/profile" className="text-xs text-indigo-400 hover:text-indigo-300">← Profile settings</Link><h1 className="mt-3 text-3xl font-extrabold text-white">Instagram analytics</h1><p className="mt-1 text-sm text-zinc-400">Authorized insights, recent post performance, and sync history.</p></div>
+    <div><Link href="/profile" className="text-xs text-indigo-400 hover:text-indigo-300">← Profile settings</Link><h1 className="mt-3 text-3xl font-extrabold text-white">Instagram analytics</h1><p className="mt-1 text-sm text-zinc-400">Authorized account insights for the last 90 days, recent post performance, and sync history.</p></div>
     <InstagramAnalyticsContent />
   </main></RequireAuth>;
 }

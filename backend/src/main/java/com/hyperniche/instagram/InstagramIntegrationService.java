@@ -324,9 +324,12 @@ public class InstagramIntegrationService {
             metrics.put("follower_count", number(profile, "followers_count"));
             String partialError = null;
             try {
+                Instant now = Instant.now();
                 JsonNode accountInsights = graphGet("/" + instagramUserId + "/insights", Map.of(
                         "metric", "reach,views,accounts_engaged,total_interactions",
-                        "period", "day", "metric_type", "total_value", "access_token", token));
+                        "period", "day", "metric_type", "total_value",
+                        "since", Long.toString(now.minus(90, ChronoUnit.DAYS).getEpochSecond()),
+                        "until", Long.toString(now.getEpochSecond()), "access_token", token));
                 addLatestMetrics(metrics, accountInsights.path("data"));
             } catch (RuntimeException ex) {
                 partialError = "Account insights unavailable: " + safeError(ex);
