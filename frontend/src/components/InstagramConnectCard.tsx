@@ -31,7 +31,7 @@ export function InstagramConnectCard({ creatorId }: { creatorId: string }) {
     try {
       setAccount(await api.getInstagramAccount());
     } catch (err: any) {
-      setError(err.message || "Could not load Instagram connection.");
+      setError(`Instagram status check failed: ${err.message || "Could not load connection status."}`);
     }
   }
 
@@ -50,7 +50,7 @@ export function InstagramConnectCard({ creatorId }: { creatorId: string }) {
       const { authorizationUrl } = await api.connectInstagram();
       window.location.assign(authorizationUrl);
     } catch (err: any) {
-      setError(err.message || "Instagram connection could not be started.");
+      setError(`Instagram login could not start: ${err.message || "Please try again."}`);
       setBusy(false);
     }
   }

@@ -557,7 +557,12 @@ public class InstagramIntegrationService {
             throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE,
                     "Instagram connection is not configured yet.");
         }
-        cipher.encrypt("configuration-check");
+        try {
+            cipher.encrypt("configuration-check");
+        } catch (IllegalStateException ex) {
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE,
+                    "Instagram token encryption key is missing or invalid.");
+        }
     }
 
     private String newState() {
