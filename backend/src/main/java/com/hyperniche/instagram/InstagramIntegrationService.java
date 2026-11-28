@@ -518,7 +518,8 @@ public class InstagramIntegrationService {
             if (name == null) continue;
             JsonNode totalValue = metric.path("total_value");
             if (!totalValue.isMissingNode() && !totalValue.isNull()) {
-                metrics.put(name, totalValue);
+                JsonNode value = totalValue.isObject() ? totalValue.path("value") : totalValue;
+                metrics.put(name, value.isNumber() ? value.numberValue() : totalValue);
                 continue;
             }
             if (!points.isArray() || points.isEmpty()) continue;
