@@ -122,7 +122,7 @@ export function InstagramConnectCard({ creatorId }: { creatorId: string }) {
             </Button>
           </div>
         ) : (
-          <Button onClick={connect} disabled={busy || !account} size="sm" className="bg-indigo-600 hover:bg-indigo-500">
+          <Button onClick={connect} disabled={busy} size="sm" className="bg-indigo-600 hover:bg-indigo-500">
             {busy ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Instagram className="h-4 w-4" />}
             Connect Instagram
           </Button>
