@@ -329,8 +329,8 @@ public class InstagramIntegrationService {
                         "period", "day", "access_token", token));
                 addLatestMetrics(metrics, accountInsights.path("data"));
             } catch (RuntimeException ex) {
-                partialError = "Account insights are unavailable for the granted permissions or this account.";
-                log.info("Instagram account insights unavailable for creator {}", userId);
+                partialError = "Account insights unavailable: " + safeError(ex);
+                log.info("Instagram account insights unavailable for creator {}: {}", userId, safeError(ex));
             }
             try {
                 JsonNode demographics = graphGet("/" + instagramUserId + "/insights", Map.of(
