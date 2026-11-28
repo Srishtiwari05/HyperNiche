@@ -457,10 +457,12 @@ public class InstagramIntegrationService {
                     .queryParam("redirect_uri", redirectUri)
                     .queryParam("code", code)
                     .build().encode().toUri();
-            JsonNode response = http.get().uri(uri).retrieve().body(JsonNode.class);
-            return unwrap(response);
+            String response = http.get().uri(uri).retrieve().body(String.class);
+            return unwrap(json.readTree(response));
         } catch (RestClientResponseException ex) {
             throw new IllegalStateException("Meta authorization code exchange failed (HTTP " + ex.getStatusCode().value() + ").");
+        } catch (Exception ex) {
+            throw new IllegalStateException("Meta returned an unreadable authorization response.");
         }
     }
 
@@ -469,8 +471,8 @@ public class InstagramIntegrationService {
                 .queryParams(toQuery(query)).build().encode().toUri();
         for (int attempt = 0; attempt < 3; attempt++) {
             try {
-                JsonNode response = http.get().uri(uri).retrieve().body(JsonNode.class);
-                return unwrap(response);
+                String response = http.get().uri(uri).retrieve().body(String.class);
+                return unwrap(json.readTree(response));
             } catch (RestClientResponseException ex) {
                 int status = ex.getStatusCode().value();
                 if ((status == 429 || status >= 500) && attempt < 2) {
@@ -482,6 +484,8 @@ public class InstagramIntegrationService {
                     throw new IllegalStateException("Instagram denied this data request. Check the granted permissions and account type.");
                 }
                 throw new IllegalStateException("Instagram API request failed (HTTP " + status + ").");
+            } catch (Exception ex) {
+                throw new IllegalStateException("Instagram API returned an unreadable response.");
             }
         }
         throw new IllegalStateException("Instagram API is temporarily unavailable.");
