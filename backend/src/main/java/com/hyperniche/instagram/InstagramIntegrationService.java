@@ -326,7 +326,7 @@ public class InstagramIntegrationService {
             try {
                 JsonNode accountInsights = graphGet("/" + instagramUserId + "/insights", Map.of(
                         "metric", "reach,views,accounts_engaged,total_interactions,follower_count",
-                        "period", "day", "access_token", token));
+                        "period", "day", "metric_type", "total_value", "access_token", token));
                 addLatestMetrics(metrics, accountInsights.path("data"));
             } catch (RuntimeException ex) {
                 partialError = "Account insights unavailable: " + safeError(ex);
