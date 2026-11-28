@@ -22,6 +22,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.HexFormat;
@@ -79,7 +81,7 @@ public class InstagramIntegrationService {
         String state = newState();
         jdbc.update("DELETE FROM instagram_oauth_states WHERE expires_at < NOW()");
         jdbc.update("INSERT INTO instagram_oauth_states (state_hash, user_id, expires_at) VALUES (?, ?, ?)",
-                sha256(state), userId, Instant.now().plus(10, ChronoUnit.MINUTES));
+                sha256(state), userId, OffsetDateTime.ofInstant(Instant.now().plus(10, ChronoUnit.MINUTES), ZoneOffset.UTC));
 
         return UriComponentsBuilder.fromUriString("https://www.instagram.com/oauth/authorize")
                 .queryParam("client_id", appId)
@@ -131,7 +133,7 @@ public class InstagramIntegrationService {
                 """, owners.get(0), instagramUserId, username, text(profile, "name", null),
                 text(profile, "account_type", null), text(profile, "profile_picture_url", null),
                 text(profile, "biography", null), number(profile, "followers_count"), number(profile, "follows_count"),
-                number(profile, "media_count"), cipher.encrypt(token), Instant.now().plusSeconds(expiresIn));
+                number(profile, "media_count"), cipher.encrypt(token), OffsetDateTime.ofInstant(Instant.now().plusSeconds(expiresIn), ZoneOffset.UTC));
         syncOne(owners.get(0));
     }
 
@@ -303,7 +305,7 @@ public class InstagramIntegrationService {
                 long seconds = refreshed.path("expires_in").asLong(5_184_000L);
                 expiresAt = Instant.now().plusSeconds(seconds);
                 jdbc.update("UPDATE instagram_connections SET encrypted_access_token = ?, token_expires_at = ?, token_updated_at = NOW() WHERE user_id = ?",
-                        cipher.encrypt(token), expiresAt, userId);
+                        cipher.encrypt(token), OffsetDateTime.ofInstant(expiresAt, ZoneOffset.UTC), userId);
             }
             if (expiresAt.isBefore(Instant.now())) throw new IllegalStateException("Instagram token expired; reconnect this account.");
 
