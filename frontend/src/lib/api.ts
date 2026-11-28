@@ -47,6 +47,16 @@ export const api = {
   },
   getCreator: (id: string) => fetchWithAuth<any>(`/creators/${id}`),
   updateCreatorProfile: (data: any) => fetchWithAuth<any>("/creators/profile", { method: "PUT", body: JSON.stringify(data) }),
+  connectInstagram: () => fetchWithAuth<{ authorizationUrl: string }>("/instagram/connect", { method: "POST" }),
+  getInstagramAccount: () => fetchWithAuth<any>("/instagram/me"),
+  getInstagramAnalytics: () => fetchWithAuth<any>("/instagram/me/analytics"),
+  syncInstagram: () => fetchWithAuth<any>("/instagram/me/sync", { method: "POST" }),
+  updateInstagramVisibility: (data: { discoverable: boolean; shareInsights: boolean }) =>
+    fetchWithAuth<void>("/instagram/me/visibility", { method: "PATCH", body: JSON.stringify(data) }),
+  disconnectInstagram: () => fetchWithAuth<void>("/instagram/me", { method: "DELETE" }),
+  searchInstagramCreators: (query: string) =>
+    fetchWithAuth<any[]>(`/instagram/search?q=${encodeURIComponent(query)}`),
+  getPublicInstagramCreator: (id: string) => fetchWithAuth<any>(`/instagram/creators/${id}`),
 
   // Campaigns
   getCampaigns: (params?: { category?: string; platform?: string; page?: number; size?: number }) => {

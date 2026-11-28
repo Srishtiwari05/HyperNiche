@@ -43,6 +43,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/campaigns", "/api/v1/campaigns/**").permitAll()
                         // Safety moderation check endpoint
                         .requestMatchers(HttpMethod.POST, "/api/v1/safety/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/instagram/callback", "/api/v1/instagram/webhooks").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/instagram/webhooks", "/api/v1/instagram/workflow-sync").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/users/sync").authenticated()
                         // Authenticated APIs
                         .anyRequest().authenticated())

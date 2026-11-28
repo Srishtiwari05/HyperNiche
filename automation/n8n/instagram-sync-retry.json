@@ -1,0 +1,63 @@
+{
+  "name": "Hyperniche Instagram sync retry",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "hyperniche-instagram-sync-retry",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "0a2f65ec-f955-4f97-9e49-e59f8db01c3c",
+      "name": "Instagram sync failed",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "hyperniche-instagram-sync-retry"
+    },
+    {
+      "parameters": { "amount": 60, "unit": "seconds" },
+      "id": "eb08a0c4-6cbe-4965-9035-a44ca8b917b2",
+      "name": "Wait before retry",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [460, 300],
+      "webhookId": "hyperniche-instagram-sync-retry-wait"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.HYPERNICHE_API_URL + '/api/v1/instagram/workflow-sync' }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-Instagram-Workflow-Secret", "value": "={{ $env.INSTAGRAM_WORKFLOW_SECRET }}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ userId: $json.body.userId }) }}",
+        "options": { "response": { "response": { "neverError": false } } }
+      },
+      "id": "42e3ac1d-6ec6-4eb0-81b1-2598bbfae1b5",
+      "name": "Request secure backend retry",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 60000
+    }
+  ],
+  "connections": {
+    "Instagram sync failed": { "main": [[{ "node": "Wait before retry", "type": "main", "index": 0 }]] },
+    "Wait before retry": { "main": [[{ "node": "Request secure backend retry", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "versionId": "9b763e64-212a-44f7-a45d-76f2a87d5f3b",
+  "meta": { "templateCredsSetupCompleted": true },
+  "tags": []
+}

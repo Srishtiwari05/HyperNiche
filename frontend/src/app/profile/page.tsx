@@ -10,6 +10,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { CheckCircle2, ShieldCheck, Sparkles, User as UserIcon, Camera, Loader2 } from "lucide-react";
 import { uploadMedia } from "@/lib/storage";
+import { InstagramConnectCard } from "@/components/InstagramConnectCard";
 
 export default function ProfilePage() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -190,6 +191,7 @@ export default function ProfilePage() {
             <CardContent>
             </CardContent>
           </Card>
+          {currentUser.role?.toUpperCase() === "CREATOR" && <InstagramConnectCard creatorId={currentUser.id} />}
         </div>
       ) : (
         <Card className="max-w-md mx-auto">

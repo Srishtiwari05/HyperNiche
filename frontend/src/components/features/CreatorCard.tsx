@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { CreatorProfile } from "@/types";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -66,7 +67,7 @@ export function CreatorCard({ creator }: CreatorCardProps) {
 
       <div className="p-6 pt-0 flex items-center justify-between border-t border-zinc-800/80 pt-3 text-xs">
         <span className="text-zinc-400">Starting Reel Rate</span>
-        <span className="font-bold text-zinc-100">{formattedRate}</span>
+        <div className="flex items-center gap-3"><span className="font-bold text-zinc-100">{formattedRate}</span><Link href={`/creators/${creator.userId}`} className="font-semibold text-indigo-400 hover:text-indigo-300">View profile</Link></div>
       </div>
     </Card>
   );
